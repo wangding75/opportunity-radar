@@ -1,0 +1,9 @@
+{
+  "task":"T140",
+  "status":"PASS",
+  "screen_count":34,
+  "screens":["P01","P02","P03","P04","P05","P06","P07","P08","P09","P10","P11","P12","P13","P14","P15","P16","P17","P18","P19","P20","P21","P22","P23","P24","P25","P26","P27","P28","P29-A","P29-B","P29-C","P29-D","P29-E","P30"],
+  "status_definitions":{"MATCHED":"current API or browser capability","UI_ONLY":"no backend call required","DEFERRED_UNAVAILABLE":"no safe current capability; UI guarded","MINIMAL_BACKEND_SUPPLEMENT":"none required","FORBIDDEN_DOMAIN_EXPANSION":"prototype-only semantics excluded"},
+  "deferred_registry":"validation/ui_r02/T140_DEFERRED_UI_BACKEND_GAPS.json",
+  "binding_contract":"docs/ui-r02/RESOLVED_UI_BACKEND_BINDINGS.json"
+}

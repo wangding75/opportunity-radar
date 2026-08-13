@@ -1,0 +1,17 @@
+{
+  "task": "T140",
+  "status": "PASS",
+  "gaps": [
+    {"capability":"global_search.unified","pages":["P03"],"ui":"CLIENT_AGGREGATE_EXISTING_READS"},
+    {"capability":"opportunity.state_write","pages":["P12","P13"],"ui":"HIDE"},
+    {"capability":"research.workflow_mutations","pages":["P13","P14","P15","P16","P17"],"ui":"HIDE_OR_READ_ONLY"},
+    {"capability":"source.configuration_mutation","pages":["P18","P19"],"ui":"READ_ONLY"},
+    {"capability":"planner_mutation","pages":["P20"],"ui":"HIDE"},
+    {"capability":"run_retry","pages":["P21","P22"],"ui":"HIDE"},
+    {"capability":"analysis_queue_retry","pages":["P23"],"ui":"HIDE"},
+    {"capability":"alert_inbox_read_state","pages":["P24"],"ui":"READ_ONLY"},
+    {"capability":"alert_rule_delete_or_test","pages":["P25"],"ui":"HIDE"},
+    {"capability":"settings.general_security_notifications_integrations","pages":["P29-A","P29-B","P29-C","P29-D"],"ui":"READ_ONLY_OR_DEFERRED_PAGE_SECTION"},
+    {"capability":"source_preference.restore_or_reorder","pages":["P29-E"],"ui":"HIDE"}
+  ]
+}
