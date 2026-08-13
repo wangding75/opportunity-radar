@@ -1,38 +1,122 @@
-import { parseRoute, type RouteState } from "./router.js";
-import { createAppShell, renderFramePlaceholder } from "./shell.js";
+import { api, getAuthConfig, loginRequest, logoutRequest, setCsrfCookieName, ApiError } from "./client.js";
+import { parseRoute, navigate, type RouteState } from "./router.js";
+import { createAppShell, renderFramePlaceholder, updateAppShell } from "./shell.js";
 import { installR02Theme } from "./theme.js";
 import { installComponentStyles } from "./ui.js";
+import { renderScreen } from "./screens.js";
 
-const SCREEN_LABELS: Record<string, string> = {
-  P01: "登录", P02: "Dashboard", P03: "全局搜索", P04: "无权限", P05: "未找到", P06: "Observation",
-  P07: "Observation 详情", P08: "关键词发现", P09: "关注关键词", P10: "趋势分析", P11: "关系图谱",
-  P12: "Opportunity", P13: "Opportunity 详情", P14: "结构化分析", P15: "Research Workflow",
-  P16: "Workflow 详情", P17: "Research Result", P18: "来源管理", P19: "Source Health", P20: "监控计划",
-  P21: "运行记录", P22: "运行详情", P23: "Analysis Queue", P24: "告警收件箱", P25: "告警规则",
-  P26: "审计日志", P27: "用户与角色", P28: "账户与安全", "P29-A": "设置 / 常规", "P29-B": "设置 / 安全",
-  "P29-C": "设置 / 通知", "P29-D": "设置 / Integrations", "P29-E": "设置 / Source Preference", P30: "系统诊断",
-};
+type AuthSession = {label: string; role: string};
+let session: AuthSession | null = null;
+let shell: HTMLElement | null = null;
+let rootElement: HTMLElement | null = null;
+let renderSequence = 0;
 
 export function renderApp(root: HTMLElement): void {
   installR02Theme();
   installComponentStyles();
-  const render = (): void => {
-    const route = parseRoute();
-    root.replaceChildren(route.screen === "P01" ? renderLoginPlaceholder() : createAppShell(route.screen, renderSkeleton(route)));
-  };
+  rootElement = root;
+  const render = (): void => { void renderRoute(parseRoute()); };
   window.addEventListener("hashchange", render);
-  render();
+  void bootstrap(render);
 }
 
-function renderSkeleton(route: RouteState): HTMLElement {
-  const wrapper = renderFramePlaceholder(route.screen);
-  wrapper.dataset.screen = route.screen;
-  return wrapper;
+async function bootstrap(render: () => void): Promise<void> {
+  try {
+    const config = await getAuthConfig();
+    setCsrfCookieName(config.csrf_cookie_name);
+    if (config.auth_mode === "disabled") {
+      session = {label: "开发模式", role: "OWNER"};
+    } else {
+      const me = await api("/api/v1/auth/me");
+      session = {label: String(me.user?.username ?? me.actor ?? "User"), role: String(me.role ?? "VIEWER")};
+    }
+  } catch (error) {
+    if (!(error instanceof ApiError && error.status === 401)) session = null;
+  }
+  const route = parseRoute();
+  if (!session && route.screen !== "P01") navigate("P01");
+  else if (session && route.screen === "P01") navigate("P02");
+  else render();
 }
 
-function renderLoginPlaceholder(): HTMLElement {
+async function renderRoute(route: RouteState): Promise<void> {
+  if (!rootElement) return;
+  const sequence = ++renderSequence;
+  try {
+    if (route.screen === "P01" || !session) {
+      shell = null;
+      rootElement.replaceChildren(renderLoginPage());
+      return;
+    }
+    const activeSession = session;
+    if (!activeSession) return;
+    const content = await renderScreen(route, activeSession, {onSessionExpired: handleSessionExpired});
+    if (sequence !== renderSequence || !session) return;
+    if (!shell) {
+      shell = createAppShell(route.screen, content, activeSession.label, activeSession.role, handleLogout);
+      rootElement.replaceChildren(shell);
+    } else {
+      updateAppShell(shell, route.screen, content);
+    }
+  } catch (error) {
+    if (sequence !== renderSequence) return;
+    const fallback = document.createElement("div");
+    fallback.append(statePanelForError(error, () => { void renderRoute(parseRoute()); }));
+    if (shell) updateAppShell(shell, route.screen, fallback);
+    else { shell = createAppShell(route.screen, fallback, session?.label, session?.role, handleLogout); rootElement.replaceChildren(shell); }
+  }
+}
+
+function statePanelForError(error: unknown, retry: () => void): HTMLElement {
+  const panel = document.createElement("div");
+  panel.className = "r02-state r02-state-error";
+  const title = document.createElement("strong");
+  title.textContent = "Unable to load";
+  const message = document.createElement("span");
+  message.textContent = error instanceof Error ? error.message : String(error);
+  const retryButton = document.createElement("button");
+  retryButton.className = "r02-button r02-button-secondary";
+  retryButton.type = "button";
+  retryButton.textContent = "Retry";
+  retryButton.addEventListener("click", retry);
+  panel.append(title, message, retryButton);
+  return panel;
+}
+
+function renderLoginPage(message = ""): HTMLElement {
   const wrapper = document.createElement("main");
   wrapper.className = "r02-login";
-  wrapper.innerHTML = `<section class="r02-login-card r02-skeleton" aria-labelledby="login-title"><div><span class="r02-brand-mark">R</span><h1 id="login-title">Opportunity Radar</h1><p>Unauthenticated entry frame reserved for T144.</p></div></section>`;
+  wrapper.innerHTML = `<section class="r02-login-card r02-card" aria-labelledby="login-title"><div class="r02-brand"><span class="r02-brand-mark">R</span><span class="r02-brand-copy"><strong>Opportunity Radar</strong><span>Decision workspace · R02</span></span></div><h1 id="login-title" class="r02-page-title">登录工作台</h1><p class="r02-page-subtitle">使用已有账户访问机会情报。</p><form id="r02-login-form" class="r02-form"><label class="r02-field-wrap"><span class="r02-field-label">用户名</span><input class="r02-field" name="username" autocomplete="username" required></label><label class="r02-field-wrap"><span class="r02-field-label">密码</span><input class="r02-field" name="password" type="password" autocomplete="current-password" required></label><div id="r02-login-error" class="r02-inline-alert r02-inline-alert-danger">${escapeHtml(message)}</div><button class="r02-button r02-button-primary" type="submit">登录</button></form></section>`;
+  const error = wrapper.querySelector<HTMLElement>("#r02-login-error");
+  if (error && !message) error.hidden = true;
+  wrapper.querySelector<HTMLFormElement>("#r02-login-form")?.addEventListener("submit", (event) => { event.preventDefault(); void submitLogin(wrapper); });
   return wrapper;
 }
+
+async function submitLogin(wrapper: HTMLElement): Promise<void> {
+  const form = wrapper.querySelector<HTMLFormElement>("#r02-login-form");
+  const error = wrapper.querySelector<HTMLElement>("#r02-login-error");
+  if (!form || !error) return;
+  const submit = form.querySelector<HTMLButtonElement>("button[type=submit]");
+  if (submit) { submit.disabled = true; submit.textContent = "登录中…"; }
+  error.hidden = true;
+  try {
+    const data = new FormData(form);
+    await loginRequest(String(data.get("username") ?? ""), String(data.get("password") ?? ""));
+    const me = await api("/api/v1/auth/me");
+    session = {label: String(me.user?.username ?? me.actor ?? "User"), role: String(me.role ?? "VIEWER")};
+    navigate("P02");
+  } catch (requestError) {
+    const status = requestError instanceof ApiError ? requestError.status : 0;
+    error.textContent = status === 429 ? "登录请求过于频繁，请稍后重试。" : status === 401 ? "用户名或密码不正确。" : "认证服务暂时不可用，请稍后重试。";
+    error.hidden = false;
+  } finally { if (submit) { submit.disabled = false; submit.textContent = "登录"; } }
+}
+
+async function handleLogout(): Promise<void> {
+  try { await logoutRequest(); } finally { session = null; shell = null; navigate("P01"); }
+}
+
+function handleSessionExpired(): void { session = null; shell = null; navigate("P01"); }
+
+function escapeHtml(value: string): string { return value.replace(/[&<>"']/g, (char) => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&#39;"}[char] ?? char)); }

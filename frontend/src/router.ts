@@ -23,10 +23,15 @@ const LEGACY_ALIASES: Record<string, ScreenId> = {
 };
 
 export function routeFor(screen: ScreenId, params: Record<string, string | number> = {}): string {
+  let path = SCREEN_ROUTES[screen];
   const query = new URLSearchParams();
-  Object.entries(params).forEach(([key, value]) => query.set(key, String(value)));
+  Object.entries(params).forEach(([key, value]) => {
+    const marker = `:${key}`;
+    if (path.includes(marker)) path = path.replace(marker, encodeURIComponent(String(value)));
+    else query.set(key, String(value));
+  });
   const suffix = query.toString() ? `?${query.toString()}` : "";
-  return `#${SCREEN_ROUTES[screen]}${suffix}`;
+  return `#${path}${suffix}`;
 }
 
 export function parseRoute(hash = window.location.hash): RouteState {

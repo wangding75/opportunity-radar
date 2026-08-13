@@ -13,10 +13,17 @@ const LEGACY_ALIASES = {
     observations: "P06", users: "P27", operations: "P21", login: "P01",
 };
 export function routeFor(screen, params = {}) {
+    let path = SCREEN_ROUTES[screen];
     const query = new URLSearchParams();
-    Object.entries(params).forEach(([key, value]) => query.set(key, String(value)));
+    Object.entries(params).forEach(([key, value]) => {
+        const marker = `:${key}`;
+        if (path.includes(marker))
+            path = path.replace(marker, encodeURIComponent(String(value)));
+        else
+            query.set(key, String(value));
+    });
     const suffix = query.toString() ? `?${query.toString()}` : "";
-    return `#${SCREEN_ROUTES[screen]}${suffix}`;
+    return `#${path}${suffix}`;
 }
 export function parseRoute(hash = window.location.hash) {
     const raw = hash.replace(/^#/, "") || "/dashboard";

@@ -35,11 +35,11 @@ const LABELS: Record<ScreenId, string> = {
 
 export function screenLabel(screen: ScreenId): string { return LABELS[screen]; }
 
-export function createAppShell(route: ScreenId, content: HTMLElement, userLabel = "未登录", role = "VIEWER"): HTMLElement {
+export function createAppShell(route: ScreenId, content: HTMLElement, userLabel = "未登录", role = "VIEWER", onLogout?: () => void): HTMLElement {
   const shell = document.createElement("div");
   shell.className = "r02-app r02-shell";
   shell.dataset.shell = "r02-app-shell";
-  shell.append(createSideNav(route, role), createMainFrame(route, content, userLabel, role));
+  shell.append(createSideNav(route, role), createMainFrame(route, content, userLabel, role, onLogout));
   return shell;
 }
 
@@ -90,14 +90,14 @@ function isActiveNav(current: ScreenId, candidate: ScreenId): boolean {
   return current === candidate;
 }
 
-function createMainFrame(route: ScreenId, content: HTMLElement, userLabel: string, role: string): HTMLElement {
+function createMainFrame(route: ScreenId, content: HTMLElement, userLabel: string, role: string, onLogout?: () => void): HTMLElement {
   const main = document.createElement("div");
   main.className = "r02-main";
   main.dataset.component = "GlobalContentArea";
   const topbar = document.createElement("header");
   topbar.className = "r02-topbar";
   topbar.dataset.component = "TopBar";
-  topbar.innerHTML = `<div class="r02-topbar-title">${screenLabel(route)}</div><a class="r02-topbar-search" href="${routeFor("P03")}" aria-label="打开全局搜索"><span aria-hidden="true">⌕</span><span>搜索机会、证据、关键词…</span><kbd>/</kbd></a><span class="r02-topbar-spacer"></span><div class="r02-topbar-user"><span class="r02-avatar">${escapeText(userLabel.slice(0, 1).toUpperCase())}</span><span>${escapeText(userLabel)} · ${escapeText(role)}</span></div>`;
+  topbar.innerHTML = `<div class="r02-topbar-title">${screenLabel(route)}</div><a class="r02-topbar-search" href="${routeFor("P03")}" aria-label="打开全局搜索"><span aria-hidden="true">⌕</span><span>搜索机会、证据、关键词…</span><kbd>/</kbd></a><span class="r02-topbar-spacer"></span><div class="r02-topbar-user"><span class="r02-avatar">${escapeText(userLabel.slice(0, 1).toUpperCase())}</span><span>${escapeText(userLabel)} · ${escapeText(role)}</span>${onLogout ? `<button class="r02-button r02-button-ghost" data-r02-logout type="button">退出</button>` : ""}</div>`;
   main.append(topbar);
   const contentArea = document.createElement("div");
   contentArea.className = "r02-content";
@@ -111,6 +111,22 @@ function createMainFrame(route: ScreenId, content: HTMLElement, userLabel: strin
   contentArea.append(frame);
   main.append(contentArea);
   return main;
+}
+
+export function updateAppShell(shell: HTMLElement, route: ScreenId, content: HTMLElement): void {
+  const title = shell.querySelector<HTMLElement>(".r02-topbar-title");
+  if (title) title.textContent = screenLabel(route);
+  shell.querySelectorAll<HTMLAnchorElement>(".r02-nav-link").forEach((link) => {
+    const active = link.href.endsWith(routeFor(route));
+    link.classList.toggle("is-active", active);
+    link.setAttribute("aria-current", active ? "page" : "false");
+  });
+  const frame = shell.querySelector<HTMLElement>("[data-component='PageFrame']");
+  if (!frame) return;
+  const header = document.createElement("header");
+  header.className = "r02-page-header";
+  header.innerHTML = `<div class="r02-page-heading"><div class="r02-breadcrumb"><a href="${routeFor("P02")}">Workspace</a><span aria-hidden="true">/</span><span>${screenLabel(route)}</span></div><h1 class="r02-page-title">${screenLabel(route)}</h1><p class="r02-page-subtitle">R02 dynamic content frame · route ${escapeText(SCREEN_ROUTES[route])}</p></div>`;
+  frame.replaceChildren(header, content);
 }
 
 function escapeText(value: string): string {

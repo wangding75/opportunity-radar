@@ -1,5 +1,12 @@
 let csrfCookieName = "or_csrf";
 
+export class ApiError extends Error {
+  constructor(public readonly status: number, message: string) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
 export function setCsrfCookieName(value: string): void {
   csrfCookieName = value || "or_csrf";
 }
@@ -35,7 +42,7 @@ export async function api(url: string, opt: RequestInit = {}): Promise<any> {
       const body = await response.json();
       message += ` ${typeof body.detail === "string" ? body.detail : JSON.stringify(body.detail)}`;
     } catch {/* non-JSON error */}
-    throw new Error(message);
+    throw new ApiError(response.status, message);
   }
   const contentType = response.headers.get("content-type") || "";
   return contentType.includes("json") ? response.json() : response.text();
@@ -43,7 +50,7 @@ export async function api(url: string, opt: RequestInit = {}): Promise<any> {
 
 export async function getAuthConfig(): Promise<{auth_mode:string;csrf_cookie_name:string}> {
   const response = await fetch("/api/v1/auth/config", {credentials: "same-origin"});
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  if (!response.ok) throw new ApiError(response.status, `HTTP ${response.status}`);
   return response.json();
 }
 
