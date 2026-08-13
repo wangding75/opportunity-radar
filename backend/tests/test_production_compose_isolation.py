@@ -44,3 +44,16 @@ def test_dev_compose_explicitly_restores_mock_services_for_local_integration():
     assert MOCK_SERVICES.issubset(services)
     assert "mock-mail" in dev["services"]["api"]["depends_on"]
     assert {"mock-mail", "mock-webhook"}.issubset(dev["services"]["worker-alerts"]["depends_on"])
+
+
+def test_production_api_has_readiness_healthcheck_and_restart_policy():
+    production = _compose(ROOT / "docker-compose.yml")
+    api = production["services"]["api"]
+    assert api["restart"] == "unless-stopped"
+    healthcheck = api["healthcheck"]
+    assert healthcheck["test"][0] == "CMD"
+    assert "127.0.0.1:8000/ready" in healthcheck["test"][-1]
+    assert healthcheck["interval"] == "10s"
+    assert healthcheck["timeout"] == "5s"
+    assert healthcheck["retries"] == 10
+    assert healthcheck["start_period"] == "20s"
