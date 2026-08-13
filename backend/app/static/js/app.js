@@ -1,6 +1,7 @@
 import { parseRoute } from "./router.js";
 import { createAppShell, renderFramePlaceholder } from "./shell.js";
 import { installR02Theme } from "./theme.js";
+import { installComponentStyles } from "./ui.js";
 const SCREEN_LABELS = {
     P01: "登录", P02: "Dashboard", P03: "全局搜索", P04: "无权限", P05: "未找到", P06: "Observation",
     P07: "Observation 详情", P08: "关键词发现", P09: "关注关键词", P10: "趋势分析", P11: "关系图谱",
@@ -12,6 +13,7 @@ const SCREEN_LABELS = {
 };
 export function renderApp(root) {
     installR02Theme();
+    installComponentStyles();
     const render = () => {
         const route = parseRoute();
         root.replaceChildren(route.screen === "P01" ? renderLoginPlaceholder() : createAppShell(route.screen, renderSkeleton(route)));
