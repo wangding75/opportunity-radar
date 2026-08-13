@@ -717,22 +717,22 @@ async function loadTokens(list, context) { try {
 catch (error) {
     list.replaceChildren(errorState(error, context));
 } }
-function renderSettings(route, active, title, message) { const child = document.createElement("div"); append(child, card(title, statePanel("permission", message))); return settingsFrame(active, child); }
-async function renderSourcePreferenceSettings(route, context) { const host = document.createElement("div"); const inner = content("Source preference", "Runtime enablement and notes use the existing admin source-preference endpoint."); try {
+function renderSettings(_route, active, title, message) { const child = document.createElement("div"); append(child, card(title, statePanel("permission", message))); return settingsFrame(active, child); }
+async function renderSourcePreferenceSettings(_route, context) { const frame = document.createElement("div"); const inner = content("Source preference", "Runtime enablement and notes use the existing admin source-preference endpoint."); try {
     const rows = await api("/api/v1/sources");
     const tableRows = (rows ?? []).map((row) => { const toggle = button(row.runtime_enabled ? "Disable" : "Enable", { onClick: async () => { toggle.disabled = true; try {
             await api(`/api/v1/sources/${encodeURIComponent(row.source_id)}/preference`, { method: "PATCH", body: JSON.stringify({ enabled: !row.runtime_enabled, note: row.preference_note ?? "" }) });
-            const next = await renderSourcePreferenceSettings(route, context);
-            host.replaceChildren(...Array.from(next.childNodes));
+            const next = await renderSourcePreferenceSettings(_route, context);
+            frame.replaceChildren(...Array.from(next.childNodes));
         }
         catch (error) {
-            host.append(errorState(error, context));
+            frame.append(errorState(error, context));
         } } }); return [text(row.source_id), row.runtime_enabled ? badge("Enabled", "success") : badge("Disabled", "neutral"), text(row.preference_note), toggle]; });
     append(inner, tableRows.length ? table(["Source", "Runtime", "Note", "Action"], tableRows) : statePanel("empty", "No source preference records exist."));
 }
 catch (error) {
     append(inner, errorState(error, context));
-} append(host, settingsFrame("P29-E", inner)); return host; }
+} frame.append(settingsFrame("P29-E", inner)); return frame; }
 async function renderDiagnostics(context) { const host = content("System diagnostics", "Read-only runtime health checks from the application and provider registries."); const endpoints = [["Health", "/health"], ["Ready", "/ready"], ["Sources", "/api/v1/sources/health"], ["Analysis providers", "/api/v1/analysis/providers"], ["Provider route", "/api/v1/analysis/providers/route"]]; const results = await Promise.allSettled(endpoints.map(([, url]) => api(url))); const rows = results.map((result, index) => [endpoints[index][0], result.status === "fulfilled" ? badge("OK", "success") : badge("Failed", "danger"), result.status === "fulfilled" ? JSON.stringify(result.value) : text(result.reason)]); append(host, table(["Check", "Status", "Response"], rows)); const failed = results.find((result) => result.status === "rejected"); if (failed && failed.status === "rejected")
     host.append(errorState(failed.reason, context)); return host; }
 function installScreenStyles() {
