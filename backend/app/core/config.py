@@ -113,7 +113,7 @@ def validate_runtime_settings(value: Settings = settings) -> None:
         raise ValueError("MOCK_MAIL_TIMEOUT_SECONDS must be between 1 and 120")
     if value.smtp_use_tls and value.smtp_use_ssl:
         raise ValueError("SMTP_USE_TLS and SMTP_USE_SSL cannot both be true")
-    if value.email_delivery_provider == "smtp":
+    if value.email_delivery_provider == "smtp" and value.email_delivery_enabled:
         if not value.smtp_host:
             raise ValueError("SMTP_HOST is required when EMAIL_DELIVERY_PROVIDER=smtp")
         if not value.smtp_from_address:

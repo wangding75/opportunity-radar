@@ -102,6 +102,16 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
+生产基线 `docker-compose.yml` 只启动 PostgreSQL、迁移、API 和真实 Worker；它不包含 Mock Mail、Webhook、Analysis 或 Enterprise Messaging，也不依赖这些服务的健康状态。生产通知默认使用 `EMAIL_DELIVERY_PROVIDER=smtp`，但 `EMAIL_DELIVERY_ENABLED=false`；启用通知前必须提供真实 SMTP 配置。
+
+本地联调若需要 Mock 服务，必须显式叠加开发文件：
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+```
+
+开发覆盖层中的 Mock 只绑定到宿主机回环地址，不能成为生产部署的隐式依赖。
+
 首次部署后创建第一个 OWNER：
 
 ```bash

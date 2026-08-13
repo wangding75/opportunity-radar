@@ -3,10 +3,11 @@ $ErrorActionPreference = "Stop"
 # T115-05 acceptance: exercise the provider-neutral HTTP adapter against the
 # Compose-only MOCK Enterprise Messaging service using one SYNTHETIC message.
 $project = "opportunity-radar-enterprise-acceptance"
+$composeFiles = @("-f", "docker-compose.yml", "-f", "docker-compose.dev.yml")
 $env:MOCK_ENTERPRISE_MESSAGING_HOST_PORT = "18084"
 
 try {
-    docker compose -p $project up -d mock-enterprise-messaging
+    docker compose -p $project @composeFiles up -d mock-enterprise-messaging
     $health = Invoke-RestMethod "http://localhost:18084/health"
     if ($health.data_class -ne "MOCK" -or $health.contract_version -ne "enterprise-messaging-v1") {
         throw "Mock Enterprise Messaging health contract is invalid"
@@ -35,7 +36,7 @@ print(json.dumps({"status": result.status.value, "data_class": request.data_clas
 if result.status.value != "SENT":
     raise SystemExit("Mock Enterprise Messaging adapter did not return SENT")
 '@
-    $adapterResult = $code | docker compose -p $project run --rm --no-deps api python -
+    $adapterResult = $code | docker compose -p $project @composeFiles run --rm --no-deps api python -
     if ($LASTEXITCODE -ne 0) {
         throw "adapter container failed: $adapterResult"
     }
@@ -48,5 +49,5 @@ if result.status.value != "SENT":
     Write-Output "PASS: Docker adapter delivered one SYNTHETIC message to the MOCK Enterprise Messaging service."
 }
 finally {
-    docker compose -p $project down -v --remove-orphans
+    docker compose -p $project @composeFiles down -v --remove-orphans
 }

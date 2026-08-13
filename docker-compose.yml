@@ -54,10 +54,8 @@ services:
       WEBHOOK_DELIVERY_ENABLED: ${WEBHOOK_DELIVERY_ENABLED:-false}
       WEBHOOK_DELIVERY_TIMEOUT_SECONDS: ${WEBHOOK_DELIVERY_TIMEOUT_SECONDS:-10}
       WEBHOOK_ALLOWED_HOSTS: ${WEBHOOK_ALLOWED_HOSTS:-}
-      EMAIL_DELIVERY_PROVIDER: ${EMAIL_DELIVERY_PROVIDER:-mock}
+      EMAIL_DELIVERY_PROVIDER: ${EMAIL_DELIVERY_PROVIDER:-smtp}
       EMAIL_DELIVERY_RECIPIENTS: ${EMAIL_DELIVERY_RECIPIENTS:-}
-      MOCK_MAIL_URL: ${MOCK_MAIL_URL:-http://mock-mail:8082}
-      MOCK_MAIL_TIMEOUT_SECONDS: ${MOCK_MAIL_TIMEOUT_SECONDS:-10}
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USERNAME: ${SMTP_USERNAME:-}
@@ -79,65 +77,6 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully
-      mock-mail:
-        condition: service_healthy
-
-  mock-mail:
-    build: .
-    command: ["python", "-m", "app.mock_mail_service"]
-    environment:
-      MOCK_MAIL_PORT: 8082
-    ports:
-      - "127.0.0.1:${MOCK_MAIL_HOST_PORT:-8082}:8082"
-    healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8082/health', timeout=2).read()\""]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    restart: unless-stopped
-
-  mock-webhook:
-    build: .
-    command: ["python", "-m", "app.mock_webhook_service"]
-    environment:
-      MOCK_WEBHOOK_PORT: 8083
-      MOCK_WEBHOOK_SECRET: ${MOCK_WEBHOOK_SECRET:-synthetic-webhook-secret-0123456789}
-    ports:
-      - "127.0.0.1:${MOCK_WEBHOOK_HOST_PORT:-8083}:8083"
-    healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; response=urllib.request.urlopen('http://127.0.0.1:8083/health', timeout=2); assert response.status == 200\""]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    restart: unless-stopped
-
-  mock-enterprise-messaging:
-    build: .
-    command: ["python", "-m", "app.mock_enterprise_messaging_service"]
-    environment:
-      MOCK_ENTERPRISE_MESSAGING_PORT: 8084
-    ports:
-      - "127.0.0.1:${MOCK_ENTERPRISE_MESSAGING_HOST_PORT:-8084}:8084"
-    healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; response=urllib.request.urlopen('http://127.0.0.1:8084/health', timeout=2); assert response.status == 200\""]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    restart: unless-stopped
-
-  mock-analysis:
-    build: .
-    command: ["python", "-m", "app.mock_analysis_service"]
-    environment:
-      MOCK_ANALYSIS_PORT: 8080
-    ports:
-      - "127.0.0.1:${MOCK_ANALYSIS_HOST_PORT:-8081}:8080"
-    healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=2).read()\""]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    restart: unless-stopped
 
   worker-collection:
     build: .
@@ -166,10 +105,8 @@ services:
       WEBHOOK_DELIVERY_ENABLED: ${WEBHOOK_DELIVERY_ENABLED:-false}
       WEBHOOK_DELIVERY_TIMEOUT_SECONDS: ${WEBHOOK_DELIVERY_TIMEOUT_SECONDS:-10}
       WEBHOOK_ALLOWED_HOSTS: ${WEBHOOK_ALLOWED_HOSTS:-}
-      EMAIL_DELIVERY_PROVIDER: ${EMAIL_DELIVERY_PROVIDER:-mock}
+      EMAIL_DELIVERY_PROVIDER: ${EMAIL_DELIVERY_PROVIDER:-smtp}
       EMAIL_DELIVERY_RECIPIENTS: ${EMAIL_DELIVERY_RECIPIENTS:-}
-      MOCK_MAIL_URL: ${MOCK_MAIL_URL:-http://mock-mail:8082}
-      MOCK_MAIL_TIMEOUT_SECONDS: ${MOCK_MAIL_TIMEOUT_SECONDS:-10}
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USERNAME: ${SMTP_USERNAME:-}
@@ -205,10 +142,6 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully
-      mock-mail:
-        condition: service_healthy
-      mock-webhook:
-        condition: service_healthy
     restart: unless-stopped
 
   worker-maintenance:

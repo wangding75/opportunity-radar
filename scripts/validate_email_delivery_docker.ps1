@@ -3,13 +3,14 @@ $ErrorActionPreference = "Stop"
 # T113-05 acceptance: exercise AlertEvent -> queue -> worker -> Compose Mock Mail.
 # This uses only synthetic rows and a task-scoped Compose project.
 $project = "opportunity-radar-email-acceptance"
+$composeFiles = @("-f", "docker-compose.yml", "-f", "docker-compose.dev.yml")
 $env:PORT = "18080"
 $env:MOCK_MAIL_HOST_PORT = "18082"
 $env:EMAIL_DELIVERY_ENABLED = "false"
 $env:EMAIL_DELIVERY_PROVIDER = "mock"
 
 try {
-    docker compose -p $project up -d postgres migrate api worker-alerts mock-mail
+    docker compose -p $project @composeFiles up -d postgres migrate api worker-alerts mock-mail
     $ready = Invoke-RestMethod "http://localhost:18080/ready"
     if ($ready.schema_revision -ne "0026_email_delivery_queue") {
         throw "unexpected schema revision: $($ready.schema_revision)"
@@ -28,9 +29,9 @@ SELECT id, 'docker-synthetic-email-event', 'NEW', 3, 'SYNTHETIC Docker alert', '
 FROM alert_rules WHERE name = 'DOCKER_SYNTHETIC_EMAIL'
 ON CONFLICT (event_key) DO UPDATE SET status = 'NEW';
 "@
-    $sql | docker compose -p $project exec -T postgres psql -U opportunity_radar -d opportunity_radar -v ON_ERROR_STOP=1
+    $sql | docker compose -p $project @composeFiles exec -T postgres psql -U opportunity_radar -d opportunity_radar -v ON_ERROR_STOP=1
 
-    docker compose -p $project run --rm --no-deps `
+    docker compose -p $project @composeFiles run --rm --no-deps `
         -e APP_ENV=development `
         -e AUTH_MODE=disabled `
         -e EMAIL_DELIVERY_ENABLED=true `
@@ -39,7 +40,7 @@ ON CONFLICT (event_key) DO UPDATE SET status = 'NEW';
         -e MOCK_MAIL_URL=http://mock-mail:8082 `
         worker-alerts python -m app.worker --once --mode alerts --no-sync
 
-    $queue = docker compose -p $project exec -T postgres psql -U opportunity_radar -d opportunity_radar -Atc "SELECT status || '|' || attempt_count FROM email_delivery_queue WHERE alert_event_id = (SELECT id FROM alert_events WHERE event_key = 'docker-synthetic-email-event');"
+    $queue = docker compose -p $project @composeFiles exec -T postgres psql -U opportunity_radar -d opportunity_radar -Atc "SELECT status || '|' || attempt_count FROM email_delivery_queue WHERE alert_event_id = (SELECT id FROM alert_events WHERE event_key = 'docker-synthetic-email-event');"
     if ($queue.Trim() -ne "SENT|1") {
         throw "unexpected queue result: $queue"
     }
@@ -50,5 +51,5 @@ ON CONFLICT (event_key) DO UPDATE SET status = 'NEW';
     Write-Output "PASS: Docker email delivery accepted one SYNTHETIC AlertEvent through queue, worker, and MOCK Mail."
 }
 finally {
-    docker compose -p $project down -v --remove-orphans
+    docker compose -p $project @composeFiles down -v --remove-orphans
 }
