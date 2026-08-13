@@ -137,7 +137,7 @@ jobs:
           cache-dependency-path: backend/requirements-dev.lock
 
       - name: Install Python test dependencies
-        run: python -m pip install --disable-pip-version-check -r backend/requirements-dev.lock
+        run: python -m pip install --disable-pip-version-check -r backend/requirements-prod.lock -r backend/requirements-dev.lock
 
       - name: Apply fresh Alembic migration
         working-directory: backend
