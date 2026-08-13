@@ -129,6 +129,17 @@ export function updateAppShell(shell: HTMLElement, route: ScreenId, content: HTM
   const header = document.createElement("header");
   header.className = "r02-page-header";
   header.innerHTML = `<div class="r02-page-heading"><div class="r02-breadcrumb"><a href="${routeFor("P02")}">Workspace</a><span aria-hidden="true">/</span><span>${screenLabel(route)}</span></div><h1 class="r02-page-title">${screenLabel(route)}</h1><p class="r02-page-subtitle">R02 dynamic content frame · route ${escapeText(SCREEN_ROUTES[route])}</p></div>`;
+  const existingSettings = frame.querySelector<HTMLElement>("[data-component='SettingsFrame']");
+  const nextSettings = content.querySelector<HTMLElement>("[data-component='SettingsFrame']");
+  if (existingSettings && nextSettings) {
+    const existingSlot = existingSettings.querySelector<HTMLElement>("[data-component='SettingsChildFrame']");
+    const nextSlot = nextSettings.querySelector<HTMLElement>("[data-component='SettingsChildFrame']");
+    if (existingSlot && nextSlot) {
+      existingSlot.replaceChildren(...Array.from(nextSlot.childNodes));
+      frame.replaceChildren(header, existingSettings);
+      return;
+    }
+  }
   frame.replaceChildren(header, content);
 }
 

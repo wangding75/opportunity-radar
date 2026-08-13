@@ -240,7 +240,7 @@ async function renderObservations(context) {
             params.set("item_type", type.value);
         try {
             const data = await api(`/api/v1/observations?${params.toString()}`);
-            const rows = (data.items ?? []).map((row) => [linkTo("P07", text(row.title), { id: row.id, q: q?.value ?? "" }), text(row.source_id), text(row.item_type), badge(text(row.evidence_quality), row.evidence_quality === "A" ? "success" : "neutral"), formatDate(row.observed_at)]);
+            const rows = (data.items ?? []).map((row) => [linkTo("P07", text(row.title), { id: row.id, q: row.title, source_id: row.source_id }), text(row.source_id), text(row.item_type), badge(text(row.evidence_quality), row.evidence_quality === "A" ? "success" : "neutral"), formatDate(row.observed_at)]);
             const body = rows.length ? table(["Observation", "Source", "Type", "Quality", "Observed"], rows) : statePanel("empty", q?.value ? "No observations match the current filters." : "No observations have been collected yet.");
             results.replaceChildren(body);
             const pager = document.createElement("div");
@@ -265,7 +265,12 @@ async function renderObservationDetail(route, context) {
         return host;
     }
     try {
-        const data = await api("/api/v1/observations?limit=500");
+        const detailParams = new URLSearchParams({ limit: "500" });
+        if (route.params.get("q"))
+            detailParams.set("q", route.params.get("q"));
+        if (route.params.get("source_id"))
+            detailParams.set("source_id", route.params.get("source_id"));
+        const data = await api(`/api/v1/observations?${detailParams.toString()}`);
         const row = (data.items ?? []).find((item) => String(item.id) === id);
         if (!row) {
             append(host, objectNotFound("Observation", id));
@@ -646,19 +651,21 @@ async function renderUsers(context) {
 }
 async function loadUsers(list, context) { try {
     const rows = await api("/api/v1/admin/users");
-    const tableRows = (rows ?? []).map((row) => { const toggle = button(row.enabled ? "Disable" : "Enable", { variant: row.enabled ? "danger" : "secondary", onClick: async () => { toggle.disabled = true; try {
+    const tableRows = (rows ?? []).map((row) => { const controls = document.createElement("div"); controls.className = "r02-action-row"; const toggle = button(row.enabled ? "Disable" : "Enable", { variant: row.enabled ? "danger" : "secondary", onClick: async () => { toggle.disabled = true; try {
             await api(`/api/v1/admin/users/${row.id}`, { method: "PATCH", body: JSON.stringify({ enabled: !row.enabled }) });
             await loadUsers(list, context);
         }
         catch (error) {
-            list.replaceChildren(errorState(error, context));
+            controls.append(errorState(error, context));
+            toggle.disabled = false;
         } } }); const role = select("Role", ["VIEWER", "OPERATOR", "ADMIN", "OWNER"], text(row.role, "VIEWER")); const roleSelect = role.querySelector("select"); const saveRole = button("Save role", { variant: "ghost", onClick: async () => { saveRole.disabled = true; try {
             await api(`/api/v1/admin/users/${row.id}`, { method: "PATCH", body: JSON.stringify({ role: roleSelect?.value }) });
             await loadUsers(list, context);
         }
         catch (error) {
-            list.replaceChildren(errorState(error, context));
-        } } }); const controls = document.createElement("div"); controls.className = "r02-action-row"; controls.append(role, saveRole, toggle); return [text(row.username), badge(text(row.role), row.role === "OWNER" ? "success" : "info"), row.enabled ? "Yes" : "No", formatDate(row.last_login_at), text(row.failed_login_count), controls]; });
+            controls.append(errorState(error, context));
+            saveRole.disabled = false;
+        } } }); controls.append(role, saveRole, toggle); return [text(row.username), badge(text(row.role), row.role === "OWNER" ? "success" : "info"), row.enabled ? "Yes" : "No", formatDate(row.last_login_at), text(row.failed_login_count), controls]; });
     list.replaceChildren(tableRows.length ? table(["Username", "Role", "Enabled", "Last login", "Failures", "Server-authorized actions"], tableRows) : statePanel("empty", "No users are configured."));
 }
 catch (error) {
