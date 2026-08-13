@@ -1,6 +1,6 @@
 import { api, ApiError } from "./client.js";
 import { routeFor, navigate } from "./router.js";
-import { appendActionRow, badge, button, card, drawer, input, linkTo, select, settingsFrame, statePanel, table } from "./ui.js";
+import { appendActionRow, badge, button, card, drawer, input, linkTo, modal, select, settingsFrame, statePanel, table } from "./ui.js";
 export async function renderScreen(route, _session, context) {
     installScreenStyles();
     switch (route.screen) {
@@ -615,28 +615,108 @@ async function renderAudit(context) { const host = content("Audit log", "Adminis
 catch (error) {
     append(host, errorState(error, context));
 } return host; }
-async function renderUsers(context) { const host = content("Users and roles", "Administrative identities from the existing RBAC user API."); try {
+async function renderUsers(context) {
+    const host = content("Users and roles", "Administrative identities from the existing RBAC user API. The server remains authoritative for OWNER invariants.");
+    const form = document.createElement("form");
+    form.className = "r02-inline-form";
+    const usernameWrap = input("Username", { placeholder: "new user" });
+    const passwordWrap = input("Initial password", { type: "password", placeholder: "at least 12 characters" });
+    const roleWrap = select("Role", ["VIEWER", "OPERATOR", "ADMIN", "OWNER"], "VIEWER");
+    const username = usernameWrap.querySelector("input");
+    const password = passwordWrap.querySelector("input");
+    const role = roleWrap.querySelector("select");
+    const create = button("Create user", { variant: "primary", type: "submit" });
+    appendActionRow(form, create);
+    form.prepend(usernameWrap, passwordWrap, roleWrap);
+    const list = document.createElement("div");
+    form.addEventListener("submit", async (event) => { event.preventDefault(); create.disabled = true; try {
+        await api("/api/v1/admin/users", { method: "POST", body: JSON.stringify({ username: username?.value ?? "", password: password?.value ?? "", role: role?.value ?? "VIEWER", enabled: true }) });
+        form.reset();
+        await loadUsers(list, context);
+    }
+    catch (error) {
+        list.replaceChildren(errorState(error, context));
+    }
+    finally {
+        create.disabled = false;
+    } });
+    append(host, form, list);
+    await loadUsers(list, context);
+    return host;
+}
+async function loadUsers(list, context) { try {
     const rows = await api("/api/v1/admin/users");
-    append(host, rows.length ? table(["Username", "Role", "Enabled", "Last login", "Failures"], rows.map((row) => [text(row.username), badge(text(row.role), row.role === "OWNER" ? "success" : "info"), row.enabled ? "Yes" : "No", formatDate(row.last_login_at), text(row.failed_login_count)])) : statePanel("empty", "No users are configured."));
+    const tableRows = (rows ?? []).map((row) => { const toggle = button(row.enabled ? "Disable" : "Enable", { variant: row.enabled ? "danger" : "secondary", onClick: async () => { toggle.disabled = true; try {
+            await api(`/api/v1/admin/users/${row.id}`, { method: "PATCH", body: JSON.stringify({ enabled: !row.enabled }) });
+            await loadUsers(list, context);
+        }
+        catch (error) {
+            list.replaceChildren(errorState(error, context));
+        } } }); const role = select("Role", ["VIEWER", "OPERATOR", "ADMIN", "OWNER"], text(row.role, "VIEWER")); const roleSelect = role.querySelector("select"); const saveRole = button("Save role", { variant: "ghost", onClick: async () => { saveRole.disabled = true; try {
+            await api(`/api/v1/admin/users/${row.id}`, { method: "PATCH", body: JSON.stringify({ role: roleSelect?.value }) });
+            await loadUsers(list, context);
+        }
+        catch (error) {
+            list.replaceChildren(errorState(error, context));
+        } } }); const controls = document.createElement("div"); controls.className = "r02-action-row"; controls.append(role, saveRole, toggle); return [text(row.username), badge(text(row.role), row.role === "OWNER" ? "success" : "info"), row.enabled ? "Yes" : "No", formatDate(row.last_login_at), text(row.failed_login_count), controls]; });
+    list.replaceChildren(tableRows.length ? table(["Username", "Role", "Enabled", "Last login", "Failures", "Server-authorized actions"], tableRows) : statePanel("empty", "No users are configured."));
 }
 catch (error) {
-    append(host, errorState(error, context));
-} return host; }
-async function renderAccount(context) { const host = content("Account and security", "Personal API tokens are managed through the existing authenticated token API."); try {
+    list.replaceChildren(errorState(error, context));
+} }
+async function renderAccount(context) {
+    const host = content("Account and security", "Personal API tokens are managed through the existing authenticated token API. Token plaintext is shown once after creation.");
+    const form = document.createElement("form");
+    form.className = "r02-inline-form";
+    const nameWrap = input("Token name", { placeholder: "local integration" });
+    const expiresWrap = input("Expires in days", { type: "number", placeholder: "optional" });
+    const name = nameWrap.querySelector("input");
+    const expires = expiresWrap.querySelector("input");
+    const issue = button("Issue API token", { variant: "primary", type: "submit" });
+    appendActionRow(form, issue);
+    form.prepend(nameWrap, expiresWrap);
+    const list = document.createElement("div");
+    form.addEventListener("submit", async (event) => { event.preventDefault(); issue.disabled = true; try {
+        const payload = { name: name?.value ?? "", scopes: ["read"] };
+        if (expires?.value)
+            payload.expires_in_days = Number(expires.value);
+        const result = await api("/api/v1/auth/tokens", { method: "POST", body: JSON.stringify(payload) });
+        const secret = document.createElement("div");
+        const copy = document.createElement("p");
+        copy.textContent = "This token will not be shown again after closing this dialog.";
+        const value = document.createElement("code");
+        value.className = "r02-secret-value";
+        value.textContent = text(result.token);
+        const copyButton = button("Copy token", { variant: "secondary", onClick: () => { void navigator.clipboard?.writeText(text(result.token)); copyButton.textContent = "Copied"; } });
+        append(secret, copy, value, copyButton);
+        host.append(modal("New API token", secret));
+        form.reset();
+        await loadTokens(list, context);
+    }
+    catch (error) {
+        list.replaceChildren(errorState(error, context));
+    }
+    finally {
+        issue.disabled = false;
+    } });
+    append(host, form, list);
+    await loadTokens(list, context);
+    return host;
+}
+async function loadTokens(list, context) { try {
     const rows = await api("/api/v1/auth/tokens");
     const tokenRows = (rows ?? []).map((row) => { const revoke = button("Revoke", { variant: "danger", onClick: async () => { revoke.disabled = true; try {
             await api(`/api/v1/auth/tokens/${row.id}`, { method: "DELETE" });
-            const next = await renderAccount(context);
-            host.replaceChildren(...Array.from(next.childNodes));
+            await loadTokens(list, context);
         }
         catch (error) {
-            host.append(errorState(error, context));
+            list.replaceChildren(errorState(error, context));
         } } }); return [text(row.name), text((row.scopes ?? []).join(", ")), formatDate(row.created_at), formatDate(row.expires_at), row.revoked_at ? badge("Revoked", "danger") : badge("Active", "success"), revoke]; });
-    append(host, card("API tokens", tokenRows.length ? table(["Name", "Scopes", "Created", "Expires", "State", "Action"], tokenRows) : statePanel("empty", "No personal API tokens are issued.")));
+    list.replaceChildren(tokenRows.length ? table(["Name", "Scopes", "Created", "Expires", "State", "Action"], tokenRows) : statePanel("empty", "No personal API tokens are issued."));
 }
 catch (error) {
-    append(host, errorState(error, context));
-} return host; }
+    list.replaceChildren(errorState(error, context));
+} }
 function renderSettings(route, active, title, message) { const child = document.createElement("div"); append(child, card(title, statePanel("permission", message))); return settingsFrame(active, child); }
 async function renderSourcePreferenceSettings(route, context) { const host = document.createElement("div"); const inner = content("Source preference", "Runtime enablement and notes use the existing admin source-preference endpoint."); try {
     const rows = await api("/api/v1/sources");
