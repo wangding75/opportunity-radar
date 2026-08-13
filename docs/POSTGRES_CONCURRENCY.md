@@ -8,12 +8,13 @@ docker compose -f docker-compose.concurrency.yml -p opportunity-radar-t12101 up 
 docker compose -f docker-compose.concurrency.yml -p opportunity-radar-t12101 down -v --remove-orphans
 ```
 
-The runner applies the real Alembic head, starts eight concurrent application
-workers, and exercises the existing PostgreSQL advisory-lock/idempotency path
-for score-jump materialization and alert-event creation. It requires exactly
-one score-jump record, one alert event, and the original two score snapshots
-after all workers commit. The fixture is synthetic only and collects zero real
-external records.
+The runner applies the real Alembic head and executes
+`scripts/validate_postgres_runtime_e2e.py` against the same PostgreSQL service.
+It reports the PostgreSQL version and migration revision, then uses independent
+SQLAlchemy sessions to verify the T131 OWNER invariant, an exclusive
+`ProbeTask` lease, durable email queue idempotency under eight concurrent
+workers, and dispose/reconnect recovery. Every fixture row is prefixed with a
+unique run ID and is deleted in a `finally` cleanup block.
 
 The PostgreSQL service is health-gated before the runner starts, and its named
 volume is separate from the production compose volume.

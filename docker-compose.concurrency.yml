@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_DB: opportunity_radar_concurrency
       POSTGRES_USER: opportunity_radar
-      POSTGRES_PASSWORD: synthetic-postgres-password-012345
+      POSTGRES_PASSWORD: runtime-test-postgres-password-012345
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U opportunity_radar -d opportunity_radar_concurrency"]
       interval: 2s
@@ -20,10 +20,10 @@ services:
       - .:/workspace:ro
     environment:
       APP_ENV: test
-      AUTH_MODE: permissive
-      DATABASE_URL: postgresql+psycopg://opportunity_radar:synthetic-postgres-password-012345@postgres-concurrency:5432/opportunity_radar_concurrency
+      AUTH_MODE: disabled
+      DATABASE_URL: postgresql+psycopg://opportunity_radar:runtime-test-postgres-password-012345@postgres-concurrency:5432/opportunity_radar_concurrency
       PYTHONPATH: /workspace/backend
-    command: ["bash", "-lc", "cd /workspace/backend && python -m alembic upgrade head && cd /workspace && python scripts/validate_postgres_concurrency.py"]
+    command: ["python", "scripts/validate_postgres_runtime_e2e.py"]
     depends_on:
       postgres-concurrency:
         condition: service_healthy
