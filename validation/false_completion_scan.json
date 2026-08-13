@@ -1,0 +1,59 @@
+{
+  "ruleset_id": "opportunity-radar-false-completion",
+  "ruleset_version": "1.0",
+  "status": "PASS",
+  "scanned_files": 225,
+  "violation_count": 0,
+  "allowlisted_count": 8,
+  "violations": [],
+  "allowlisted": [
+    {
+      "rule": "not-implemented-allowlist",
+      "file": "backend/app/connectors/base.py",
+      "line": 28,
+      "detail": "Abstract SourceConnector contract; concrete connectors implement descriptor and collect."
+    },
+    {
+      "rule": "not-implemented-allowlist",
+      "file": "backend/app/connectors/base.py",
+      "line": 32,
+      "detail": "Abstract SourceConnector contract; concrete connectors implement descriptor and collect."
+    },
+    {
+      "rule": "not-implemented-allowlist",
+      "file": "backend/app/services/enterprise_messaging_adapters.py",
+      "line": 59,
+      "detail": "Abstract provider payload hook; Slack, Feishu and WeCom implement it."
+    },
+    {
+      "rule": "not-implemented-allowlist",
+      "file": "backend/app/services/opportunity_analysis.py",
+      "line": 87,
+      "detail": "Abstract OpportunityAnalyzer contract; heuristic and provider adapters implement it."
+    },
+    {
+      "rule": "empty-class-allowlist",
+      "file": "backend/app/services/provider_registry.py",
+      "line": 26,
+      "detail": "Typed exception marker used by provider routing."
+    },
+    {
+      "rule": "empty-class-allowlist",
+      "file": "backend/app/services/provider_registry.py",
+      "line": 30,
+      "detail": "Typed exception marker used by provider routing."
+    },
+    {
+      "rule": "empty-class-allowlist",
+      "file": "backend/app/services/provider_registry.py",
+      "line": 34,
+      "detail": "Typed exception marker used by provider routing."
+    },
+    {
+      "rule": "empty-class-allowlist",
+      "file": "backend/app/services/provider_registry.py",
+      "line": 38,
+      "detail": "Typed exception marker used by provider routing."
+    }
+  ]
+}

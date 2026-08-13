@@ -1,0 +1,24 @@
+{
+  "report_id": "opportunity-radar-frontend-rbac-consistency",
+  "report_version": "1.0",
+  "status": "PASS",
+  "checks": {
+    "matrix_version": true,
+    "role_levels": true,
+    "frontend_role_helpers": true,
+    "admin_view_guard": true,
+    "compiled_permission_module": true,
+    "admin_actions_match_backend": true,
+    "write_actions_match_backend": true,
+    "no_browser_credential_storage": true
+  },
+  "summary": {
+    "backend_routes_checked": 99,
+    "admin_actions_checked": 5,
+    "write_actions_checked": 5,
+    "permission_matrix_version": "rbac-v1",
+    "node_syntax_check": "PASS",
+    "real_data_collected": 0,
+    "data_policy": "SYNTHETIC_OR_MOCK_ONLY"
+  }
+}

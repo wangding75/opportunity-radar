@@ -1,0 +1,166 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:f16af3c4-9123-5956-a831-46a15a81b39f",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-08-12T08:05:57Z",
+    "component": {
+      "type": "application",
+      "name": "opportunity-radar",
+      "version": "0.8.0"
+    },
+    "properties": [
+      {
+        "name": "opportunity-radar:dependency-fingerprint",
+        "value": "0231e601e06687b7ad7edf23b9246d236a94749238fb76dca1ff2abe3b246ff8"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "typescript",
+      "version": "5.8.3",
+      "purl": "pkg:npm/typescript@5.8.3"
+    },
+    {
+      "type": "library",
+      "name": "alembic",
+      "version": "1.18.4",
+      "purl": "pkg:pypi/alembic@1.18.4"
+    },
+    {
+      "type": "library",
+      "name": "annotated-doc",
+      "version": "0.0.4",
+      "purl": "pkg:pypi/annotated-doc@0.0.4"
+    },
+    {
+      "type": "library",
+      "name": "annotated-types",
+      "version": "0.7.0",
+      "purl": "pkg:pypi/annotated-types@0.7.0"
+    },
+    {
+      "type": "library",
+      "name": "anyio",
+      "version": "4.13.0",
+      "purl": "pkg:pypi/anyio@4.13.0"
+    },
+    {
+      "type": "library",
+      "name": "certifi",
+      "version": "2026.5.20",
+      "purl": "pkg:pypi/certifi@2026.5.20"
+    },
+    {
+      "type": "library",
+      "name": "click",
+      "version": "8.1.8",
+      "purl": "pkg:pypi/click@8.1.8"
+    },
+    {
+      "type": "library",
+      "name": "fastapi",
+      "version": "0.128.2",
+      "purl": "pkg:pypi/fastapi@0.128.2"
+    },
+    {
+      "type": "library",
+      "name": "greenlet",
+      "version": "3.5.1",
+      "purl": "pkg:pypi/greenlet@3.5.1"
+    },
+    {
+      "type": "library",
+      "name": "h11",
+      "version": "0.16.0",
+      "purl": "pkg:pypi/h11@0.16.0"
+    },
+    {
+      "type": "library",
+      "name": "httpcore",
+      "version": "1.0.9",
+      "purl": "pkg:pypi/httpcore@1.0.9"
+    },
+    {
+      "type": "library",
+      "name": "httpx",
+      "version": "0.28.1",
+      "purl": "pkg:pypi/httpx@0.28.1"
+    },
+    {
+      "type": "library",
+      "name": "idna",
+      "version": "3.17",
+      "purl": "pkg:pypi/idna@3.17"
+    },
+    {
+      "type": "library",
+      "name": "Mako",
+      "version": "1.3.12",
+      "purl": "pkg:pypi/mako@1.3.12"
+    },
+    {
+      "type": "library",
+      "name": "MarkupSafe",
+      "version": "3.0.3",
+      "purl": "pkg:pypi/markupsafe@3.0.3"
+    },
+    {
+      "type": "library",
+      "name": "psycopg-binary",
+      "version": "3.3.4",
+      "purl": "pkg:pypi/psycopg-binary@3.3.4"
+    },
+    {
+      "type": "library",
+      "name": "psycopg",
+      "version": "3.3.4",
+      "purl": "pkg:pypi/psycopg@3.3.4"
+    },
+    {
+      "type": "library",
+      "name": "pydantic_core",
+      "version": "2.46.4",
+      "purl": "pkg:pypi/pydantic-core@2.46.4"
+    },
+    {
+      "type": "library",
+      "name": "pydantic",
+      "version": "2.13.4",
+      "purl": "pkg:pypi/pydantic@2.13.4"
+    },
+    {
+      "type": "library",
+      "name": "SQLAlchemy",
+      "version": "2.0.50",
+      "purl": "pkg:pypi/sqlalchemy@2.0.50"
+    },
+    {
+      "type": "library",
+      "name": "starlette",
+      "version": "0.50.0",
+      "purl": "pkg:pypi/starlette@0.50.0"
+    },
+    {
+      "type": "library",
+      "name": "typing_extensions",
+      "version": "4.16.0",
+      "purl": "pkg:pypi/typing-extensions@4.16.0"
+    },
+    {
+      "type": "library",
+      "name": "typing-inspection",
+      "version": "0.4.2",
+      "purl": "pkg:pypi/typing-inspection@0.4.2"
+    },
+    {
+      "type": "library",
+      "name": "uvicorn",
+      "version": "0.48.0",
+      "purl": "pkg:pypi/uvicorn@0.48.0"
+    }
+  ]
+}

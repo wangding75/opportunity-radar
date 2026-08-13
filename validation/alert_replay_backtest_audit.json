@@ -1,0 +1,22 @@
+{
+  "audit_id": "opportunity-radar-alert-replay-backtest",
+  "contract_version": "alert-replay-backtest-v1",
+  "status": "PASS",
+  "violations": [],
+  "summary": {
+    "alert_rules": 0,
+    "alert_events": 0,
+    "alert_evaluation_queue": 0,
+    "email_deliveries": 0,
+    "webhook_deliveries": 0,
+    "score_snapshots": 0,
+    "score_jump_records": 0,
+    "risk_escalation_records": 0,
+    "keyword_burst_records": 0,
+    "replay_boundary_checks": 0,
+    "backtest_candidate_signals": 0,
+    "backtest_immature_signals": 0,
+    "real_data_collected": 0,
+    "data_policy": "SYNTHETIC_OR_MOCK_ONLY"
+  }
+}

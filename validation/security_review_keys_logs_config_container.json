@@ -1,0 +1,73 @@
+{
+  "review_id": "opportunity-radar-keys-logs-config-container-review",
+  "review_version": "1.0",
+  "data_policy": "SYNTHETIC_OR_MOCK_ONLY",
+  "real_data_collected": 0,
+  "status": "PASS",
+  "controls": [
+    {
+      "control_id": "KEY-001",
+      "control": "Production secret and authentication configuration",
+      "status": "PASS",
+      "code_targets": ["backend/app/core/config.py", "backend/app/core/security.py"],
+      "test_targets": ["backend/tests/test_product_security.py", "backend/tests/test_security_keys_logs_config.py"],
+      "evidence": "Production requires RBAC/PostgreSQL, rejects legacy API keys, and validates secret-dependent SMTP/provider configuration."
+    },
+    {
+      "control_id": "KEY-002",
+      "control": "Database credentials stay out of process arguments",
+      "status": "PASS",
+      "code_targets": ["backend/app/core/postgres_cli.py", "scripts/backup_database.py", "scripts/restore_database.py"],
+      "test_targets": ["backend/tests/test_product_hardening.py", "backend/tests/test_security_keys_logs_config.py"],
+      "evidence": "PostgreSQL passwords are passed through PGPASSWORD/environment to pg_dump, pg_restore and psql, never argv."
+    },
+    {
+      "control_id": "KEY-003",
+      "control": "Structured log secret redaction",
+      "status": "PASS",
+      "code_targets": ["backend/app/core/observability.py", "backend/app/services/sanitizer.py"],
+      "test_targets": ["backend/tests/test_security_keys_logs_config.py"],
+      "evidence": "Common token/password/API-key forms and URL userinfo are redacted from messages and exception text before JSON logging."
+    },
+    {
+      "control_id": "KEY-004",
+      "control": "Audit query and repository secret boundary",
+      "status": "PASS",
+      "code_targets": ["backend/app/main.py", "backend/app/services/sanitizer.py", ".dockerignore", ".gitignore"],
+      "test_targets": ["backend/tests/test_security_keys_logs_config.py", "backend/tests/test_api.py"],
+      "evidence": "Persisted audit query strings remove sensitive fields and .env/backup/database artifacts are excluded from source/container context."
+    },
+    {
+      "control_id": "KEY-005",
+      "control": "Non-root production container",
+      "status": "PASS",
+      "code_targets": ["Dockerfile", "docker-compose.yml"],
+      "test_targets": ["backend/tests/test_security_keys_logs_config.py"],
+      "evidence": "The application image creates appuser UID/GID 10001, prepares the archive volume path and switches to USER appuser before runtime."
+    },
+    {
+      "control_id": "KEY-006",
+      "control": "Compose production secret wiring",
+      "status": "PASS",
+      "code_targets": ["docker-compose.yml", "Dockerfile"],
+      "test_targets": ["backend/tests/test_product_hardening.py", "backend/tests/test_security_keys_logs_config.py"],
+      "evidence": "Compose requires POSTGRES_PASSWORD, keeps production auth fail-closed, does not hard-code real credentials and mounts only the archive write volume."
+    },
+    {
+      "control_id": "KEY-007",
+      "control": "Mock secret/data separation",
+      "status": "PASS",
+      "code_targets": ["backend/app/mock_webhook_service.py", "backend/app/mock_mail_service.py", "docker-compose.yml"],
+      "test_targets": ["backend/tests/test_mock_webhook_service.py", "backend/tests/test_mock_mail_service.py", "backend/tests/test_security_keys_logs_config.py"],
+      "evidence": "Mock services use synthetic defaults or explicit environment overrides and remain separate from production provider credentials."
+    },
+    {
+      "control_id": "KEY-008",
+      "control": "Lock/SBOM and runtime build boundary",
+      "status": "PASS",
+      "code_targets": ["backend/requirements-prod.lock", "frontend/package-lock.json", "sbom.cyclonedx.json", "scripts/generate_sbom.py", "scripts/validate_supply_chain.py"],
+      "test_targets": ["backend/tests/test_security_keys_logs_config.py"],
+      "evidence": "Production dependencies are locked and the checked SBOM fingerprint is validated before product tests."
+    }
+  ]
+}

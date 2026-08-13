@@ -1,0 +1,270 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: opportunity_radar
+      POSTGRES_USER: opportunity_radar
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - opportunity_radar_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U opportunity_radar -d opportunity_radar"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  migrate:
+    build: .
+    command: ["python", "-m", "alembic", "upgrade", "head"]
+    environment:
+      APP_ENV: production
+      AUTH_MODE: rbac
+      ALLOW_LEGACY_API_KEY: "false"
+      DATABASE_URL: postgresql+psycopg://opportunity_radar@postgres:5432/opportunity_radar
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build: .
+    environment:
+      APP_ENV: production
+      AUTH_MODE: rbac
+      ALLOW_LEGACY_API_KEY: "false"
+      DATABASE_URL: postgresql+psycopg://opportunity_radar@postgres:5432/opportunity_radar
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GOOGLE_TRENDS_GEOS: ${GOOGLE_TRENDS_GEOS:-US,TW}
+      ANALYSIS_PROVIDER: ${ANALYSIS_PROVIDER:-heuristic}
+      ANALYSIS_PROVIDER_PRIORITY: ${ANALYSIS_PROVIDER_PRIORITY:-}
+      ANALYSIS_PROVIDER_SELECTION_POLICY: ${ANALYSIS_PROVIDER_SELECTION_POLICY:-priority}
+      ANALYSIS_PROVIDER_RETRY_ATTEMPTS: ${ANALYSIS_PROVIDER_RETRY_ATTEMPTS:-2}
+      ANALYSIS_PROVIDER_RETRY_BACKOFF_SECONDS: ${ANALYSIS_PROVIDER_RETRY_BACKOFF_SECONDS:-0.25}
+      ANALYSIS_PROVIDER_CIRCUIT_OPEN_SECONDS: ${ANALYSIS_PROVIDER_CIRCUIT_OPEN_SECONDS:-60}
+      ANALYSIS_HTTP_ENDPOINT: ${ANALYSIS_HTTP_ENDPOINT:-}
+      ANALYSIS_HTTP_API_KEY: ${ANALYSIS_HTTP_API_KEY:-}
+      DISCOVERY_FEEDS_JSON: ${DISCOVERY_FEEDS_JSON:-[]}
+      COLLECTION_RUN_RETENTION_DAYS: ${COLLECTION_RUN_RETENTION_DAYS:-180}
+      AUDIT_LOG_RETENTION_DAYS: ${AUDIT_LOG_RETENTION_DAYS:-365}
+      ALERT_EVENT_RETENTION_DAYS: ${ALERT_EVENT_RETENTION_DAYS:-365}
+      EMAIL_DELIVERY_ENABLED: ${EMAIL_DELIVERY_ENABLED:-false}
+      WEBHOOK_DELIVERY_ENABLED: ${WEBHOOK_DELIVERY_ENABLED:-false}
+      WEBHOOK_DELIVERY_TIMEOUT_SECONDS: ${WEBHOOK_DELIVERY_TIMEOUT_SECONDS:-10}
+      WEBHOOK_ALLOWED_HOSTS: ${WEBHOOK_ALLOWED_HOSTS:-}
+      EMAIL_DELIVERY_PROVIDER: ${EMAIL_DELIVERY_PROVIDER:-mock}
+      EMAIL_DELIVERY_RECIPIENTS: ${EMAIL_DELIVERY_RECIPIENTS:-}
+      MOCK_MAIL_URL: ${MOCK_MAIL_URL:-http://mock-mail:8082}
+      MOCK_MAIL_TIMEOUT_SECONDS: ${MOCK_MAIL_TIMEOUT_SECONDS:-10}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM_ADDRESS: ${SMTP_FROM_ADDRESS:-}
+      SMTP_USE_TLS: ${SMTP_USE_TLS:-true}
+      SMTP_USE_SSL: ${SMTP_USE_SSL:-false}
+      SMTP_REQUIRE_AUTH: ${SMTP_REQUIRE_AUTH:-true}
+      SMTP_TIMEOUT_SECONDS: ${SMTP_TIMEOUT_SECONDS:-10}
+      RAW_OBSERVATION_RETENTION_DAYS: ${RAW_OBSERVATION_RETENTION_DAYS:-0}
+      RAW_PAYLOAD_ARCHIVE_DIR: /var/lib/opportunity-radar/archives
+      RAW_PAYLOAD_ARCHIVE_AFTER_DAYS: ${RAW_PAYLOAD_ARCHIVE_AFTER_DAYS:-90}
+      RAW_PAYLOAD_ARCHIVE_BATCH_SIZE: ${RAW_PAYLOAD_ARCHIVE_BATCH_SIZE:-1000}
+      AUTH_RECORD_RETENTION_DAYS: ${AUTH_RECORD_RETENTION_DAYS:-90}
+    ports:
+      - "${PORT:-8000}:8000"
+    volumes:
+      - opportunity_radar_archives:/var/lib/opportunity-radar/archives
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      mock-mail:
+        condition: service_healthy
+
+  mock-mail:
+    build: .
+    command: ["python", "-m", "app.mock_mail_service"]
+    environment:
+      MOCK_MAIL_PORT: 8082
+    ports:
+      - "127.0.0.1:${MOCK_MAIL_HOST_PORT:-8082}:8082"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8082/health', timeout=2).read()\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  mock-webhook:
+    build: .
+    command: ["python", "-m", "app.mock_webhook_service"]
+    environment:
+      MOCK_WEBHOOK_PORT: 8083
+      MOCK_WEBHOOK_SECRET: ${MOCK_WEBHOOK_SECRET:-synthetic-webhook-secret-0123456789}
+    ports:
+      - "127.0.0.1:${MOCK_WEBHOOK_HOST_PORT:-8083}:8083"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; response=urllib.request.urlopen('http://127.0.0.1:8083/health', timeout=2); assert response.status == 200\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  mock-enterprise-messaging:
+    build: .
+    command: ["python", "-m", "app.mock_enterprise_messaging_service"]
+    environment:
+      MOCK_ENTERPRISE_MESSAGING_PORT: 8084
+    ports:
+      - "127.0.0.1:${MOCK_ENTERPRISE_MESSAGING_HOST_PORT:-8084}:8084"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; response=urllib.request.urlopen('http://127.0.0.1:8084/health', timeout=2); assert response.status == 200\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  mock-analysis:
+    build: .
+    command: ["python", "-m", "app.mock_analysis_service"]
+    environment:
+      MOCK_ANALYSIS_PORT: 8080
+    ports:
+      - "127.0.0.1:${MOCK_ANALYSIS_HOST_PORT:-8081}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=2).read()\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  worker-collection:
+    build: .
+    command: ["python", "-m", "app.worker", "--mode", "collection", "--interval", "60"]
+    environment: &worker-env
+      APP_ENV: production
+      AUTH_MODE: rbac
+      ALLOW_LEGACY_API_KEY: "false"
+      DATABASE_URL: postgresql+psycopg://opportunity_radar@postgres:5432/opportunity_radar
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GOOGLE_TRENDS_GEOS: ${GOOGLE_TRENDS_GEOS:-US,TW}
+      ANALYSIS_PROVIDER: ${ANALYSIS_PROVIDER:-heuristic}
+      ANALYSIS_PROVIDER_PRIORITY: ${ANALYSIS_PROVIDER_PRIORITY:-}
+      ANALYSIS_PROVIDER_SELECTION_POLICY: ${ANALYSIS_PROVIDER_SELECTION_POLICY:-priority}
+      ANALYSIS_PROVIDER_RETRY_ATTEMPTS: ${ANALYSIS_PROVIDER_RETRY_ATTEMPTS:-2}
+      ANALYSIS_PROVIDER_RETRY_BACKOFF_SECONDS: ${ANALYSIS_PROVIDER_RETRY_BACKOFF_SECONDS:-0.25}
+      ANALYSIS_PROVIDER_CIRCUIT_OPEN_SECONDS: ${ANALYSIS_PROVIDER_CIRCUIT_OPEN_SECONDS:-60}
+      ANALYSIS_HTTP_ENDPOINT: ${ANALYSIS_HTTP_ENDPOINT:-}
+      ANALYSIS_HTTP_API_KEY: ${ANALYSIS_HTTP_API_KEY:-}
+      DISCOVERY_FEEDS_JSON: ${DISCOVERY_FEEDS_JSON:-[]}
+      COLLECTION_RUN_RETENTION_DAYS: ${COLLECTION_RUN_RETENTION_DAYS:-180}
+      AUDIT_LOG_RETENTION_DAYS: ${AUDIT_LOG_RETENTION_DAYS:-365}
+      ALERT_EVENT_RETENTION_DAYS: ${ALERT_EVENT_RETENTION_DAYS:-365}
+      EMAIL_DELIVERY_ENABLED: ${EMAIL_DELIVERY_ENABLED:-false}
+      WEBHOOK_DELIVERY_ENABLED: ${WEBHOOK_DELIVERY_ENABLED:-false}
+      WEBHOOK_DELIVERY_TIMEOUT_SECONDS: ${WEBHOOK_DELIVERY_TIMEOUT_SECONDS:-10}
+      WEBHOOK_ALLOWED_HOSTS: ${WEBHOOK_ALLOWED_HOSTS:-}
+      EMAIL_DELIVERY_PROVIDER: ${EMAIL_DELIVERY_PROVIDER:-mock}
+      EMAIL_DELIVERY_RECIPIENTS: ${EMAIL_DELIVERY_RECIPIENTS:-}
+      MOCK_MAIL_URL: ${MOCK_MAIL_URL:-http://mock-mail:8082}
+      MOCK_MAIL_TIMEOUT_SECONDS: ${MOCK_MAIL_TIMEOUT_SECONDS:-10}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM_ADDRESS: ${SMTP_FROM_ADDRESS:-}
+      SMTP_USE_TLS: ${SMTP_USE_TLS:-true}
+      SMTP_USE_SSL: ${SMTP_USE_SSL:-false}
+      SMTP_REQUIRE_AUTH: ${SMTP_REQUIRE_AUTH:-true}
+      SMTP_TIMEOUT_SECONDS: ${SMTP_TIMEOUT_SECONDS:-10}
+      RAW_OBSERVATION_RETENTION_DAYS: ${RAW_OBSERVATION_RETENTION_DAYS:-0}
+      RAW_PAYLOAD_ARCHIVE_DIR: /var/lib/opportunity-radar/archives
+      RAW_PAYLOAD_ARCHIVE_AFTER_DAYS: ${RAW_PAYLOAD_ARCHIVE_AFTER_DAYS:-90}
+      RAW_PAYLOAD_ARCHIVE_BATCH_SIZE: ${RAW_PAYLOAD_ARCHIVE_BATCH_SIZE:-1000}
+      AUTH_RECORD_RETENTION_DAYS: ${AUTH_RECORD_RETENTION_DAYS:-90}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  worker-analysis:
+    build: .
+    command: ["python", "-m", "app.worker", "--mode", "analysis", "--interval", "30", "--no-sync"]
+    environment: *worker-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  worker-alerts:
+    build: .
+    command: ["python", "-m", "app.worker", "--mode", "alerts", "--interval", "30", "--no-sync"]
+    environment: *worker-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      mock-mail:
+        condition: service_healthy
+      mock-webhook:
+        condition: service_healthy
+    restart: unless-stopped
+
+  worker-maintenance:
+    build: .
+    command: ["python", "-m", "app.worker", "--mode", "maintenance", "--interval", "${MAINTENANCE_INTERVAL_SECONDS:-21600}", "--no-sync"]
+    environment: *worker-env
+    volumes:
+      - opportunity_radar_archives:/var/lib/opportunity-radar/archives
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  digest-daily:
+    build: .
+    command: ["python", "-m", "app.worker", "--mode", "digest", "--interval", "${DIGEST_INTERVAL_SECONDS:-86400}", "--no-sync"]
+    environment: *worker-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  trends-weekly:
+    build: .
+    command: ["python", "-m", "app.worker", "--mode", "weekly", "--interval", "${WEEKLY_TRENDS_INTERVAL_SECONDS:-604800}", "--no-sync"]
+    environment: *worker-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  maintenance:
+    build: .
+    profiles: ["maintenance"]
+    command: ["python", "-m", "app.worker", "--mode", "maintenance", "--once"]
+    environment:
+      APP_ENV: production
+      AUTH_MODE: rbac
+      ALLOW_LEGACY_API_KEY: "false"
+      DATABASE_URL: postgresql+psycopg://opportunity_radar@postgres:5432/opportunity_radar
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      COLLECTION_RUN_RETENTION_DAYS: ${COLLECTION_RUN_RETENTION_DAYS:-180}
+      AUDIT_LOG_RETENTION_DAYS: ${AUDIT_LOG_RETENTION_DAYS:-365}
+      ALERT_EVENT_RETENTION_DAYS: ${ALERT_EVENT_RETENTION_DAYS:-365}
+      RAW_OBSERVATION_RETENTION_DAYS: ${RAW_OBSERVATION_RETENTION_DAYS:-0}
+      RAW_PAYLOAD_ARCHIVE_DIR: /var/lib/opportunity-radar/archives
+      RAW_PAYLOAD_ARCHIVE_AFTER_DAYS: ${RAW_PAYLOAD_ARCHIVE_AFTER_DAYS:-90}
+      RAW_PAYLOAD_ARCHIVE_BATCH_SIZE: ${RAW_PAYLOAD_ARCHIVE_BATCH_SIZE:-1000}
+      AUTH_RECORD_RETENTION_DAYS: ${AUTH_RECORD_RETENTION_DAYS:-90}
+    volumes:
+      - opportunity_radar_archives:/var/lib/opportunity-radar/archives
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+
+volumes:
+  opportunity_radar_pgdata:
+  opportunity_radar_archives:

@@ -1,0 +1,10 @@
+.git
+.gitignore
+.env
+*.db
+*.zip
+*.bundle
+__pycache__
+.pytest_cache
+validation/_delivery
+backups

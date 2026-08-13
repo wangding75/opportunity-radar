@@ -1,0 +1,32 @@
+services:
+  postgres-concurrency:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: opportunity_radar_concurrency
+      POSTGRES_USER: opportunity_radar
+      POSTGRES_PASSWORD: synthetic-postgres-password-012345
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U opportunity_radar -d opportunity_radar_concurrency"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - opportunity_radar_concurrency_pgdata:/var/lib/postgresql/data
+
+  concurrency-runner:
+    build: .
+    working_dir: /workspace
+    volumes:
+      - .:/workspace:ro
+    environment:
+      APP_ENV: test
+      AUTH_MODE: permissive
+      DATABASE_URL: postgresql+psycopg://opportunity_radar:synthetic-postgres-password-012345@postgres-concurrency:5432/opportunity_radar_concurrency
+      PYTHONPATH: /workspace/backend
+    command: ["bash", "-lc", "cd /workspace/backend && python -m alembic upgrade head && cd /workspace && python scripts/validate_postgres_concurrency.py"]
+    depends_on:
+      postgres-concurrency:
+        condition: service_healthy
+
+volumes:
+  opportunity_radar_concurrency_pgdata:

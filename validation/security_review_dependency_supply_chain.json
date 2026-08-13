@@ -1,0 +1,57 @@
+{
+  "review_id": "opportunity-radar-dependency-supply-chain-review",
+  "review_version": "1.0",
+  "data_policy": "SYNTHETIC_OR_MOCK_ONLY",
+  "real_data_collected": 0,
+  "status": "PASS",
+  "controls": [
+    {
+      "control_id": "DEPEND-001",
+      "control": "Production Python dependency lock",
+      "status": "PASS",
+      "code_targets": ["backend/requirements-prod.lock", "Dockerfile", "scripts/validate_supply_chain.py"],
+      "test_targets": ["backend/tests/test_dependency_supply_chain.py"],
+      "evidence": "Every production Python requirement is exact-version pinned and Docker installs only requirements-prod.lock."
+    },
+    {
+      "control_id": "DEPEND-002",
+      "control": "Development/test dependency lock",
+      "status": "PASS",
+      "code_targets": ["backend/requirements-dev.lock", "scripts/validate_supply_chain.py"],
+      "test_targets": ["backend/tests/test_dependency_supply_chain.py"],
+      "evidence": "Test and development tools are separately exact-version locked and the validator checks installed versions."
+    },
+    {
+      "control_id": "DEPEND-003",
+      "control": "Frontend package lock and build pin",
+      "status": "PASS",
+      "code_targets": ["frontend/package.json", "frontend/package-lock.json", "scripts/build_frontend.sh"],
+      "test_targets": ["backend/tests/test_dependency_supply_chain.py"],
+      "evidence": "TypeScript is pinned in package.json/package-lock and the frontend build uses the locked compiler."
+    },
+    {
+      "control_id": "DEPEND-004",
+      "control": "SBOM completeness and dependency fingerprint",
+      "status": "PASS",
+      "code_targets": ["sbom.cyclonedx.json", "scripts/generate_sbom.py", "scripts/validate_supply_chain.py"],
+      "test_targets": ["backend/tests/test_dependency_supply_chain.py"],
+      "evidence": "CycloneDX includes the production Python and frontend package purls and a fingerprint derived from the locked set."
+    },
+    {
+      "control_id": "DEPEND-005",
+      "control": "Build context and runtime image boundary",
+      "status": "PASS",
+      "code_targets": ["Dockerfile", ".dockerignore", "docker-compose.yml"],
+      "test_targets": ["backend/tests/test_dependency_supply_chain.py", "backend/tests/test_security_keys_logs_config.py"],
+      "evidence": "The image excludes .env and local artifacts, installs the production lock and runs the application as appuser."
+    },
+    {
+      "control_id": "DEPEND-006",
+      "control": "Supply-chain validation in product gate",
+      "status": "PASS",
+      "code_targets": ["scripts/validate_product.sh", "scripts/validate_supply_chain.py"],
+      "test_targets": ["backend/tests/test_dependency_supply_chain.py"],
+      "evidence": "Product validation invokes the supply-chain checker before backend regression tests and rejects stale SBOM fingerprints."
+    }
+  ]
+}

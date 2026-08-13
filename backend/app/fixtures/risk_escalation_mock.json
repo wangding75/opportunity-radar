@@ -1,0 +1,15 @@
+{
+  "fixture_name": "risk-escalation-mock-v1",
+  "data_class": "SYNTHETIC",
+  "keyword_canonical": "synthetic risk escalation",
+  "keyword_display_name": "SYNTHETIC Risk Escalation",
+  "opportunity_key": "mock-risk:synthetic-risk-escalation",
+  "opportunity_title": "SYNTHETIC risk escalation opportunity",
+  "snapshots": [
+    {"model_version": "risk-v1", "input_signature": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "score": 70, "risk_score": 20, "stage": "DISCOVERY", "evidence_count": 1, "breakdown": {"data_class": "SYNTHETIC", "risk": 20}, "calculated_at": "2026-08-01T00:00:00"},
+    {"model_version": "risk-v1", "input_signature": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "score": 75, "risk_score": 55, "stage": "VALIDATED", "evidence_count": 2, "breakdown": {"data_class": "SYNTHETIC", "risk": 55}, "calculated_at": "2026-08-02T00:00:00"}
+  ],
+  "evidence": [
+    {"source_id": "synthetic-risk-source", "external_id": "risk-001", "query": "synthetic risk escalation", "item_type": "NEWS", "title": "SYNTHETIC risk signal", "text": "SYNTHETIC evidence for a risk escalation", "url": "https://synthetic.invalid/risk/001", "observed_at": "2026-08-01T12:00:00"}
+  ]
+}

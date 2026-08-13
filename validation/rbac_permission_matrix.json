@@ -1,0 +1,39 @@
+{
+  "matrix_id": "opportunity-radar-rbac-permission-matrix",
+  "matrix_version": "rbac-v1",
+  "role_order": ["OWNER", "ADMIN", "RESEARCHER", "VIEWER"],
+  "role_level": {"VIEWER": 10, "RESEARCHER": 20, "ADMIN": 30, "OWNER": 40},
+  "scope_minimum_role": {"read": "VIEWER", "write": "RESEARCHER", "admin": "ADMIN"},
+  "role_scopes": {
+    "OWNER": ["admin", "read", "write"],
+    "ADMIN": ["admin", "read", "write"],
+    "RESEARCHER": ["read", "write"],
+    "VIEWER": ["read"]
+  },
+  "capabilities": {
+    "product.read": {"scope": "read", "minimum_role": "VIEWER", "roles": ["OWNER", "ADMIN", "RESEARCHER", "VIEWER"]},
+    "auth.me": {"scope": "read", "minimum_role": "VIEWER", "roles": ["OWNER", "ADMIN", "RESEARCHER", "VIEWER"]},
+    "auth.tokens.read": {"scope": "read", "minimum_role": "VIEWER", "roles": ["OWNER", "ADMIN", "RESEARCHER", "VIEWER"]},
+    "auth.tokens.write": {"scope": "write", "minimum_role": "RESEARCHER", "interactive_session": true, "roles": ["OWNER", "ADMIN", "RESEARCHER"]},
+    "research.write": {"scope": "write", "minimum_role": "RESEARCHER", "roles": ["OWNER", "ADMIN", "RESEARCHER"]},
+    "alerts.rules.write": {"scope": "write", "minimum_role": "RESEARCHER", "roles": ["OWNER", "ADMIN", "RESEARCHER"]},
+    "data.ingest": {"scope": "admin", "minimum_role": "ADMIN", "roles": ["OWNER", "ADMIN"]},
+    "data.collect": {"scope": "admin", "minimum_role": "ADMIN", "roles": ["OWNER", "ADMIN"]},
+    "analysis.execute": {"scope": "admin", "minimum_role": "ADMIN", "roles": ["OWNER", "ADMIN"]},
+    "alerts.evaluate": {"scope": "admin", "minimum_role": "ADMIN", "roles": ["OWNER", "ADMIN"]},
+    "operations.read": {"scope": "admin", "minimum_role": "ADMIN", "roles": ["OWNER", "ADMIN"]},
+    "operations.write": {"scope": "admin", "minimum_role": "ADMIN", "roles": ["OWNER", "ADMIN"]},
+    "source.manage": {"scope": "admin", "minimum_role": "ADMIN", "roles": ["OWNER", "ADMIN"]},
+    "users.manage": {"scope": "admin", "minimum_role": "ADMIN", "roles": ["OWNER", "ADMIN"]},
+    "owner.manage": {"scope": "admin", "minimum_role": "OWNER", "owner_only": true, "roles": ["OWNER"]},
+    "exports.read": {"scope": "read", "minimum_role": "VIEWER", "roles": ["OWNER", "ADMIN", "RESEARCHER", "VIEWER"]},
+    "metrics.read": {"scope": "read", "minimum_role": "VIEWER", "roles": ["OWNER", "ADMIN", "RESEARCHER", "VIEWER"]}
+  },
+  "invariants": [
+    "A live role is an upper bound for every session or personal-token scope.",
+    "Only OWNER may create or mutate an OWNER account.",
+    "The last enabled OWNER cannot be removed or disabled.",
+    "Session write and admin mutations require a valid CSRF token.",
+    "Production authentication defaults fail closed through AUTH_MODE=rbac."
+  ]
+}

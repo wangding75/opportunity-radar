@@ -1,0 +1,21 @@
+{
+  "records": [
+    {
+      "source_id": "manual_research",
+      "query": "AI短剧",
+      "item_type": "PRODUCT",
+      "title": "AI短剧批量生成与多平台分发工具",
+      "text": "自动生成短剧素材、批量剪辑、内容分发",
+      "url": "https://example.invalid/item/1",
+      "payload": {"price": 99}
+    },
+    {
+      "source_id": "manual_jobs",
+      "query": "AI短剧",
+      "item_type": "JOB",
+      "title": "招聘 AI 短剧剪辑运营",
+      "text": "负责 AI视频、短剧剪辑和矩阵运营",
+      "url": "https://example.invalid/job/1"
+    }
+  ]
+}

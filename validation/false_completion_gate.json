@@ -1,0 +1,29 @@
+{
+  "gate_id": "opportunity-radar-false-completion-gate",
+  "gate_version": "1.0",
+  "status": "PASS",
+  "checks": {
+    "false_completion_scan": true,
+    "itemized_fix_ledger": true,
+    "functional_traceability": true,
+    "functional_gap_scan": true,
+    "functional_audit_report": true,
+    "safe_data_policy": true
+  },
+  "summary": {
+    "scanned_files": 226,
+    "scan_violations": 0,
+    "ledger_items": 9,
+    "traceability_entries": 30,
+    "functional_rows": 30,
+    "functional_gaps": 0,
+    "real_data_collected": 0
+  },
+  "artifacts": [
+    "validation/false_completion_rules.json",
+    "validation/false_completion_scan.json",
+    "validation/false_completion_fix_ledger.json",
+    "validation/functional_traceability.json",
+    "validation/functional_audit_report.json"
+  ]
+}

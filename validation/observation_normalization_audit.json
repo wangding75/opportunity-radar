@@ -1,0 +1,15 @@
+{
+  "audit_id": "opportunity-radar-observation-normalization",
+  "contract_version": "normalization-v1",
+  "status": "PASS",
+  "violations": [],
+  "summary": {
+    "raw_observations": 0,
+    "normalized_items": 0,
+    "normalized_coverage": 1.0,
+    "duplicate_content_hashes": 0,
+    "keyword_mention_duplicate_pairs": 0,
+    "real_data_collected": 0,
+    "data_policy": "SYNTHETIC_OR_MOCK_ONLY"
+  }
+}

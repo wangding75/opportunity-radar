@@ -1,0 +1,2216 @@
+{
+  "inventory_id": "opportunity-radar-api-permission-inventory",
+  "inventory_version": "1.0",
+  "status": "PASS",
+  "source": "FastAPI APIRoute dependency graph",
+  "routes": [
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/",
+      "operation_id": null,
+      "route_name": "index",
+      "auth_dependency": null,
+      "dependency_names": [],
+      "required_scope": "public",
+      "minimum_role": null,
+      "allowed_roles": [
+        "ANONYMOUS"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/admin/users",
+      "operation_id": null,
+      "route_name": "list_users",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/admin/users",
+      "operation_id": null,
+      "route_name": "admin_create_user",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "PATCH"
+      ],
+      "path": "/api/v1/admin/users/{user_id}",
+      "operation_id": null,
+      "route_name": "admin_patch_user",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/alerts/cross-source/evaluate",
+      "operation_id": null,
+      "route_name": "cross_source_alerts_evaluate",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/alerts/cross-source/records",
+      "operation_id": null,
+      "route_name": "cross_source_records",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/alerts/email/enqueue",
+      "operation_id": null,
+      "route_name": "email_delivery_enqueue",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/alerts/email/process",
+      "operation_id": null,
+      "route_name": "email_delivery_process",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/alerts/email/records",
+      "operation_id": null,
+      "route_name": "email_delivery_records",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/alerts/evaluate",
+      "operation_id": null,
+      "route_name": "alerts_evaluate",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/alerts/events",
+      "operation_id": null,
+      "route_name": "alert_events",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "PATCH"
+      ],
+      "path": "/api/v1/alerts/events/{event_id}",
+      "operation_id": null,
+      "route_name": "patch_alert_event",
+      "auth_dependency": "require_write_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth",
+        "require_write_auth"
+      ],
+      "required_scope": "write",
+      "minimum_role": "RESEARCHER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/alerts/high-signal/evaluate",
+      "operation_id": null,
+      "route_name": "high_signal_alerts_evaluate",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/alerts/hiring/evaluate",
+      "operation_id": null,
+      "route_name": "hiring_surge_alerts_evaluate",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/alerts/hiring/records",
+      "operation_id": null,
+      "route_name": "hiring_surge_records",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/alerts/keyword-burst/evaluate",
+      "operation_id": null,
+      "route_name": "keyword_burst_alerts_evaluate",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/alerts/keyword-burst/records",
+      "operation_id": null,
+      "route_name": "keyword_burst_records",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/alerts/keyword-burst/replay",
+      "operation_id": null,
+      "route_name": "keyword_burst_replay",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/alerts/risk/evaluate",
+      "operation_id": null,
+      "route_name": "risk_escalations_evaluate",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/alerts/risk/records",
+      "operation_id": null,
+      "route_name": "risk_escalation_records",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/alerts/risk/replay",
+      "operation_id": null,
+      "route_name": "risk_escalation_replay",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/alerts/rules",
+      "operation_id": null,
+      "route_name": "alert_rules",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/alerts/rules",
+      "operation_id": null,
+      "route_name": "create_alert_rule",
+      "auth_dependency": "require_write_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth",
+        "require_write_auth"
+      ],
+      "required_scope": "write",
+      "minimum_role": "RESEARCHER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "PATCH"
+      ],
+      "path": "/api/v1/alerts/rules/{rule_id}",
+      "operation_id": null,
+      "route_name": "patch_alert_rule",
+      "auth_dependency": "require_write_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth",
+        "require_write_auth"
+      ],
+      "required_scope": "write",
+      "minimum_role": "RESEARCHER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/alerts/run-pending",
+      "operation_id": null,
+      "route_name": "alerts_run_pending",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/alerts/tool-products/evaluate",
+      "operation_id": null,
+      "route_name": "tool_product_alerts_evaluate",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/alerts/webhooks/enqueue",
+      "operation_id": null,
+      "route_name": "webhook_delivery_enqueue",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/alerts/webhooks/process",
+      "operation_id": null,
+      "route_name": "webhook_delivery_process",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/alerts/webhooks/records",
+      "operation_id": null,
+      "route_name": "webhook_delivery_records",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/analysis/providers",
+      "operation_id": null,
+      "route_name": "analysis_providers",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/analysis/providers/route",
+      "operation_id": null,
+      "route_name": "analysis_provider_route",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/analysis/refresh",
+      "operation_id": null,
+      "route_name": "refresh_analysis",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/analysis/run-pending",
+      "operation_id": null,
+      "route_name": "run_pending_analysis",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/audit",
+      "operation_id": null,
+      "route_name": "audit_log",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/auth/config",
+      "operation_id": null,
+      "route_name": "auth_config",
+      "auth_dependency": null,
+      "dependency_names": [],
+      "required_scope": "public",
+      "minimum_role": null,
+      "allowed_roles": [
+        "ANONYMOUS"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/auth/login",
+      "operation_id": null,
+      "route_name": "login",
+      "auth_dependency": null,
+      "dependency_names": [
+        "get_db"
+      ],
+      "required_scope": "public",
+      "minimum_role": null,
+      "allowed_roles": [
+        "ANONYMOUS"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/auth/logout",
+      "operation_id": null,
+      "route_name": "logout",
+      "auth_dependency": "require_write_auth",
+      "dependency_names": [
+        "get_db",
+        "require_write_auth"
+      ],
+      "required_scope": "write",
+      "minimum_role": "RESEARCHER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/auth/me",
+      "operation_id": null,
+      "route_name": "me",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/auth/tokens",
+      "operation_id": null,
+      "route_name": "list_api_tokens",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/auth/tokens",
+      "operation_id": null,
+      "route_name": "issue_api_token",
+      "auth_dependency": "require_write_auth",
+      "dependency_names": [
+        "get_db",
+        "require_write_auth"
+      ],
+      "required_scope": "write",
+      "minimum_role": "RESEARCHER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": true
+    },
+    {
+      "methods": [
+        "DELETE"
+      ],
+      "path": "/api/v1/auth/tokens/{token_id}",
+      "operation_id": null,
+      "route_name": "revoke_api_token",
+      "auth_dependency": "require_write_auth",
+      "dependency_names": [
+        "get_db",
+        "require_write_auth"
+      ],
+      "required_scope": "write",
+      "minimum_role": "RESEARCHER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/collect/{source_id}",
+      "operation_id": null,
+      "route_name": "collect",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/collection-runs",
+      "operation_id": null,
+      "route_name": "collection_runs",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/dashboard",
+      "operation_id": null,
+      "route_name": "dashboard",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/digests/daily",
+      "operation_id": null,
+      "route_name": "daily_digest",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/digests/daily/generate",
+      "operation_id": null,
+      "route_name": "generate_daily_digest_endpoint",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/digests/daily/{digest_date}",
+      "operation_id": null,
+      "route_name": "daily_digest_by_date",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/exports/observations.csv",
+      "operation_id": null,
+      "route_name": "export_observations_csv",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/exports/opportunities.csv",
+      "operation_id": null,
+      "route_name": "export_opportunities_csv",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/exports/trends/weekly.csv",
+      "operation_id": null,
+      "route_name": "export_weekly_trends_csv",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/hiring/surges",
+      "operation_id": null,
+      "route_name": "hiring_surges",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/import",
+      "operation_id": null,
+      "route_name": "import_records",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/instrumented-app/observations",
+      "operation_id": null,
+      "route_name": "import_instrumented",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/instrumented-app/schema-drift",
+      "operation_id": null,
+      "route_name": "instrumented_schema_drift",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/keyword-graph",
+      "operation_id": null,
+      "route_name": "graph",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/keywords",
+      "operation_id": null,
+      "route_name": "keywords",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/keywords/{keyword_id}/trend",
+      "operation_id": null,
+      "route_name": "keyword_trend",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/maintenance/archive-raw-payloads",
+      "operation_id": null,
+      "route_name": "archive_raw_payloads_run",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/maintenance/restore-raw-payload-archive",
+      "operation_id": null,
+      "route_name": "restore_raw_payload_archive_run",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/maintenance/retention",
+      "operation_id": null,
+      "route_name": "retention_run",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/observations",
+      "operation_id": null,
+      "route_name": "observations",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/opportunities",
+      "operation_id": null,
+      "route_name": "opportunities",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/opportunities/page",
+      "operation_id": null,
+      "route_name": "opportunities_page",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/opportunities/{opportunity_id}",
+      "operation_id": null,
+      "route_name": "opportunity",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "PATCH"
+      ],
+      "path": "/api/v1/opportunities/{opportunity_id}/research",
+      "operation_id": null,
+      "route_name": "update_opportunity_research",
+      "auth_dependency": "require_write_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth",
+        "require_write_auth"
+      ],
+      "required_scope": "write",
+      "minimum_role": "RESEARCHER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/probes/plan",
+      "operation_id": null,
+      "route_name": "probe_plan",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/probes/run-due",
+      "operation_id": null,
+      "route_name": "probe_run_due",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/probes/sync",
+      "operation_id": null,
+      "route_name": "probe_sync",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/probes/tasks",
+      "operation_id": null,
+      "route_name": "probe_tasks",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/risk/escalations",
+      "operation_id": null,
+      "route_name": "risk_escalations",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/scoring/backtest",
+      "operation_id": null,
+      "route_name": "backtest",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/scoring/models",
+      "operation_id": null,
+      "route_name": "models",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/scoring/opportunities/{opportunity_id}/history",
+      "operation_id": null,
+      "route_name": "history",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/scoring/opportunities/{opportunity_id}/replay",
+      "operation_id": null,
+      "route_name": "replay",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/scoring/score-jumps/evaluate",
+      "operation_id": null,
+      "route_name": "evaluate_score_jumps",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/scoring/score-jumps/records",
+      "operation_id": null,
+      "route_name": "score_jump_records",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/scoring/score-jumps/replay",
+      "operation_id": null,
+      "route_name": "replay_score_jumps",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/sources",
+      "operation_id": null,
+      "route_name": "list_sources",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/sources/health",
+      "operation_id": null,
+      "route_name": "source_health",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "PATCH"
+      ],
+      "path": "/api/v1/sources/{source_id}/preference",
+      "operation_id": null,
+      "route_name": "update_source_preference",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/tool-products/entities",
+      "operation_id": null,
+      "route_name": "tool_product_entities",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/tool-products/entities/{entity_key}",
+      "operation_id": null,
+      "route_name": "tool_product_entity",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/tool-products/normalize",
+      "operation_id": null,
+      "route_name": "normalize_tool_products",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/tool-products/occurrences",
+      "operation_id": null,
+      "route_name": "tool_product_occurrences",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/tool-products/occurrences/materialize",
+      "operation_id": null,
+      "route_name": "materialize_tool_product_occurrences_endpoint",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/trends/weekly",
+      "operation_id": null,
+      "route_name": "weekly_trend_report",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/trends/weekly/generate",
+      "operation_id": null,
+      "route_name": "generate_weekly_trend_report_endpoint",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/trends/weekly/{week_start}",
+      "operation_id": null,
+      "route_name": "weekly_trend_report_by_week",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/watch-keywords",
+      "operation_id": null,
+      "route_name": "watch_keywords",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/watch-keywords",
+      "operation_id": null,
+      "route_name": "add_watch_keyword",
+      "auth_dependency": "require_write_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth",
+        "require_write_auth"
+      ],
+      "required_scope": "write",
+      "minimum_role": "RESEARCHER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "PATCH"
+      ],
+      "path": "/api/v1/watch-keywords/{watch_id}",
+      "operation_id": null,
+      "route_name": "update_watch_keyword",
+      "auth_dependency": "require_write_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth",
+        "require_write_auth"
+      ],
+      "required_scope": "write",
+      "minimum_role": "RESEARCHER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/webhooks/endpoints",
+      "operation_id": null,
+      "route_name": "webhook_endpoints",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/webhooks/endpoints",
+      "operation_id": null,
+      "route_name": "webhook_endpoint_create",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "DELETE"
+      ],
+      "path": "/api/v1/webhooks/endpoints/{endpoint_id}",
+      "operation_id": null,
+      "route_name": "webhook_endpoint_delete",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "PATCH"
+      ],
+      "path": "/api/v1/webhooks/endpoints/{endpoint_id}",
+      "operation_id": null,
+      "route_name": "webhook_endpoint_patch",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": true,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/workers",
+      "operation_id": null,
+      "route_name": "workers",
+      "auth_dependency": "require_admin_auth",
+      "dependency_names": [
+        "get_db",
+        "require_admin_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "admin",
+      "minimum_role": "ADMIN",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/health",
+      "operation_id": null,
+      "route_name": "health",
+      "auth_dependency": null,
+      "dependency_names": [],
+      "required_scope": "public",
+      "minimum_role": null,
+      "allowed_roles": [
+        "ANONYMOUS"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/metrics",
+      "operation_id": null,
+      "route_name": "prometheus_metrics",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/ready",
+      "operation_id": null,
+      "route_name": "ready",
+      "auth_dependency": null,
+      "dependency_names": [],
+      "required_scope": "public",
+      "minimum_role": null,
+      "allowed_roles": [
+        "ANONYMOUS"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    }
+  ],
+  "summary": {
+    "route_count": 99,
+    "protected_route_count": 94,
+    "public_route_count": 5,
+    "read_route_count": 44,
+    "write_route_count": 9,
+    "admin_route_count": 41,
+    "real_data_collected": 0,
+    "data_policy": "SYNTHETIC_OR_MOCK_ONLY"
+  }
+}

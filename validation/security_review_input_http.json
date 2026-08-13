@@ -1,0 +1,73 @@
+{
+  "review_id": "opportunity-radar-input-output-ssrf-xml-http-review",
+  "review_version": "1.0",
+  "data_policy": "SYNTHETIC_OR_MOCK_ONLY",
+  "real_data_collected": 0,
+  "status": "PASS",
+  "controls": [
+    {
+      "control_id": "INPUT-001",
+      "control": "Inbound request body and framing limit",
+      "status": "PASS",
+      "code_targets": ["backend/app/core/request_limits.py", "backend/app/main.py"],
+      "test_targets": ["backend/tests/test_api.py", "backend/tests/test_product_security.py"],
+      "evidence": "ASGI request bodies are bounded by MAX_REQUEST_BODY_BYTES and malformed content length takes an explicit rejection path."
+    },
+    {
+      "control_id": "INPUT-002",
+      "control": "Outbound response byte limits",
+      "status": "PASS",
+      "code_targets": ["backend/app/core/http_limits.py", "backend/app/connectors/feed.py", "backend/app/connectors/github.py", "backend/app/connectors/google_trends.py", "backend/app/services/opportunity_analysis.py"],
+      "test_targets": ["backend/tests/test_security_input_http.py", "backend/tests/test_feed_connector.py", "backend/tests/test_google_trends_connector.py"],
+      "evidence": "Streaming provider responses enforce Content-Length and chunked byte ceilings before parsing JSON/XML or analysis output."
+    },
+    {
+      "control_id": "INPUT-003",
+      "control": "SSRF URL syntax and DNS/IP destination policy",
+      "status": "PASS",
+      "code_targets": ["backend/app/services/webhook_security.py", "backend/app/services/webhook_delivery_queue.py"],
+      "test_targets": ["backend/tests/test_webhook_security.py", "backend/tests/test_security_input_http.py"],
+      "evidence": "Webhook URLs reject credentials, fragments, local/metadata/reserved IPs and unsafe DNS answers; exact allowlists are explicit."
+    },
+    {
+      "control_id": "INPUT-004",
+      "control": "Outbound HTTP timeout and redirect boundary",
+      "status": "PASS",
+      "code_targets": ["backend/app/services/webhook_delivery_queue.py", "backend/app/connectors/feed.py", "backend/app/connectors/google_trends.py", "backend/app/services/enterprise_messaging_adapters.py"],
+      "test_targets": ["backend/tests/test_webhook_delivery_queue.py", "backend/tests/test_feed_connector.py", "backend/tests/test_google_trends_connector.py", "backend/tests/test_enterprise_messaging_adapters.py"],
+      "evidence": "User-configurable delivery and connector clients use bounded timeouts and do not follow redirects; HTTP status failures remain retryable/permanent failures."
+    },
+    {
+      "control_id": "INPUT-005",
+      "control": "XML DTD and external entity rejection",
+      "status": "PASS",
+      "code_targets": ["backend/app/connectors/feed.py", "backend/app/connectors/google_trends.py"],
+      "test_targets": ["backend/tests/test_feed_connector.py", "backend/tests/test_google_trends_connector.py", "backend/tests/test_security_input_http.py"],
+      "evidence": "Feed and Trends XML inputs reject DOCTYPE/ENTITY declarations before ElementTree parsing and reject malformed XML explicitly."
+    },
+    {
+      "control_id": "INPUT-006",
+      "control": "Provider JSON/body validation and error translation",
+      "status": "PASS",
+      "code_targets": ["backend/app/connectors/github.py", "backend/app/services/enterprise_messaging_adapters.py", "backend/app/services/opportunity_analysis.py"],
+      "test_targets": ["backend/tests/test_github_connector.py", "backend/tests/test_enterprise_messaging_adapters.py", "backend/tests/test_opportunity_analysis_provider.py"],
+      "evidence": "Non-object provider JSON, provider error bodies, non-2xx responses and oversized analysis responses are converted into explicit failures."
+    },
+    {
+      "control_id": "INPUT-007",
+      "control": "Output URL and secret sanitization",
+      "status": "PASS",
+      "code_targets": ["backend/app/services/sanitizer.py", "backend/app/services/ingestion.py"],
+      "test_targets": ["backend/tests/test_signal_engine.py", "backend/tests/test_security_input_http.py"],
+      "evidence": "Persisted evidence URLs remove sensitive query parameters and raw payloads are sanitized before storage."
+    },
+    {
+      "control_id": "INPUT-008",
+      "control": "HTTP configuration fail-closed bounds",
+      "status": "PASS",
+      "code_targets": ["backend/app/core/config.py", "backend/app/services/webhook_security.py", "backend/app/services/enterprise_messaging_adapters.py"],
+      "test_targets": ["backend/tests/test_product_security.py", "backend/tests/test_security_input_http.py", "backend/tests/test_enterprise_messaging_adapters.py"],
+      "evidence": "Production settings enforce HTTPS for external analysis/SMTP where required, bound timeouts, reject malformed allowlists and disallow unsafe URL syntax."
+    }
+  ]
+}

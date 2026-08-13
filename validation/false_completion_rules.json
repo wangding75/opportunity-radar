@@ -1,0 +1,21 @@
+{
+  "ruleset_id": "opportunity-radar-false-completion",
+  "ruleset_version": "1.0",
+  "scan_roots": ["backend/app", "backend/tests", "frontend/src"],
+  "forbidden_markers": ["TODO", "FIXME"],
+  "forbidden_test_patterns": ["pytest.mark.skip", "pytest.skip(", "unittest.skip", "assert True"],
+  "forbid_pass_only_exception_handlers": true,
+  "forbid_product_api_constant_success": true,
+  "not_implemented_allowlist": {
+    "backend/app/connectors/base.py": "Abstract SourceConnector contract; concrete connectors implement descriptor and collect.",
+    "backend/app/services/enterprise_messaging_adapters.py": "Abstract provider payload hook; Slack, Feishu and WeCom implement it.",
+    "backend/app/services/opportunity_analysis.py": "Abstract OpportunityAnalyzer contract; heuristic and provider adapters implement it."
+  },
+  "empty_class_allowlist": {
+    "backend/app/services/provider_registry.py:ProviderRegistryError": "Typed exception marker used by provider routing.",
+    "backend/app/services/provider_registry.py:ProviderNotFoundError": "Typed exception marker used by provider routing.",
+    "backend/app/services/provider_registry.py:ProviderUnavailableError": "Typed exception marker used by provider routing.",
+    "backend/app/services/provider_registry.py:ProviderExecutionError": "Typed exception marker used by provider routing."
+  },
+  "report_path": "validation/false_completion_scan.json"
+}

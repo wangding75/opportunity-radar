@@ -1,0 +1,73 @@
+{
+  "review_id": "opportunity-radar-auth-session-csrf-token-review",
+  "review_version": "1.0",
+  "data_policy": "SYNTHETIC_OR_MOCK_ONLY",
+  "real_data_collected": 0,
+  "status": "PASS",
+  "controls": [
+    {
+      "control_id": "AUTH-001",
+      "control": "Production authentication and storage boundary",
+      "status": "PASS",
+      "code_targets": ["backend/app/core/config.py", "backend/app/core/security.py"],
+      "test_targets": ["backend/tests/test_product_security.py"],
+      "evidence": "Production settings require RBAC and PostgreSQL and reject legacy API-key authentication and disabled auth."
+    },
+    {
+      "control_id": "AUTH-002",
+      "control": "Session cookie confidentiality and cross-site policy",
+      "status": "PASS",
+      "code_targets": ["backend/app/api/auth.py", "backend/app/core/config.py"],
+      "test_targets": ["backend/tests/test_product_hardening.py", "backend/tests/test_auth_security_review.py"],
+      "evidence": "Session cookies are HttpOnly, SameSite=Strict, Secure in production, bounded by a configurable TTL and deleted on logout."
+    },
+    {
+      "control_id": "AUTH-003",
+      "control": "CSRF protection for session writes",
+      "status": "PASS",
+      "code_targets": ["backend/app/core/security.py", "backend/app/services/auth.py", "frontend/src/client.ts"],
+      "test_targets": ["backend/tests/test_product_hardening.py", "backend/tests/test_auth_security_review.py"],
+      "evidence": "Session write/admin requests require the persisted CSRF token; the frontend reads only the non-HttpOnly CSRF cookie and sends X-CSRF-Token."
+    },
+    {
+      "control_id": "AUTH-004",
+      "control": "Personal Token hashing, expiry and revocation",
+      "status": "PASS",
+      "code_targets": ["backend/app/services/auth.py", "backend/app/api/auth.py", "backend/app/db/models.py"],
+      "test_targets": ["backend/tests/test_product_hardening.py", "backend/tests/test_auth_security_review.py"],
+      "evidence": "Only SHA-256 token hashes are persisted; expiry, revocation, user disable and password reset invalidate access, and old secrets cannot be reused."
+    },
+    {
+      "control_id": "AUTH-005",
+      "control": "Password verification and login abuse resistance",
+      "status": "PASS",
+      "code_targets": ["backend/app/services/auth.py"],
+      "test_targets": ["backend/tests/test_auth_security_review.py", "backend/tests/test_product_hardening.py"],
+      "evidence": "Passwords use scrypt-v1, unknown users receive dummy verification work, failed credentials increment lockout state, and responses remain generic."
+    },
+    {
+      "control_id": "AUTH-006",
+      "control": "RBAC role and scope enforcement",
+      "status": "PASS",
+      "code_targets": ["backend/app/services/auth.py", "backend/app/core/security.py", "backend/app/api/auth.py"],
+      "test_targets": ["backend/tests/test_product_hardening.py", "backend/tests/test_product_security.py", "backend/tests/test_auth_security_review.py"],
+      "evidence": "Live user roles cap token scopes; ADMIN cannot mutate OWNER, last OWNER protection is enforced, and unauthenticated/under-scoped requests return 401/403."
+    },
+    {
+      "control_id": "AUTH-007",
+      "control": "Frontend credential handling",
+      "status": "PASS",
+      "code_targets": ["frontend/src/client.ts", "backend/app/static/js/client.js", "scripts/validate_frontend_js.py"],
+      "test_targets": ["backend/tests/test_auth_security_review.py"],
+      "evidence": "The browser uses same-origin cookies, never localStorage or legacy API-key headers, and sends CSRF only for non-read methods."
+    },
+    {
+      "control_id": "AUTH-008",
+      "control": "Audit and request correlation on security-sensitive API writes",
+      "status": "PASS",
+      "code_targets": ["backend/app/main.py", "backend/app/core/observability.py", "backend/app/api/operations.py"],
+      "test_targets": ["backend/tests/test_api.py", "backend/tests/test_auth_security_review.py"],
+      "evidence": "API requests receive request/trace IDs and non-read API operations write actor, resource and status to the audit stream."
+    }
+  ]
+}

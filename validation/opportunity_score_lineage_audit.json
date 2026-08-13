@@ -1,0 +1,18 @@
+{
+  "audit_id": "opportunity-radar-opportunity-score-lineage",
+  "contract_version": "opportunity-score-lineage-v1",
+  "status": "PASS",
+  "violations": [],
+  "summary": {
+    "opportunities": 0,
+    "keywords": 0,
+    "keyword_links": 0,
+    "evidence_rows": 0,
+    "score_snapshots": 0,
+    "cluster_versions": 0,
+    "lineage_edges": 0,
+    "lineage_cycles": 0,
+    "real_data_collected": 0,
+    "data_policy": "SYNTHETIC_OR_MOCK_ONLY"
+  }
+}

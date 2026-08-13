@@ -1,0 +1,17 @@
+{
+  "audit_id": "opportunity-radar-keyword-trend-graph",
+  "contract_version": "keyword-trend-graph-v1",
+  "status": "PASS",
+  "violations": [],
+  "summary": {
+    "keywords": 0,
+    "keyword_mentions": 0,
+    "trend_buckets": 0,
+    "graph_relations": 0,
+    "relation_items": 0,
+    "relation_sources": 0,
+    "window_days": 90,
+    "real_data_collected": 0,
+    "data_policy": "SYNTHETIC_OR_MOCK_ONLY"
+  }
+}

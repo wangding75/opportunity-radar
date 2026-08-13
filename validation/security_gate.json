@@ -1,0 +1,26 @@
+{
+  "gate_id": "opportunity-radar-security-gate",
+  "gate_version": "1.0",
+  "status": "PASS",
+  "checks": {
+    "auth_session_csrf_token": true,
+    "input_output_ssrf_xml_http": true,
+    "keys_logs_config_container": true,
+    "dependency_supply_chain": true,
+    "false_completion_regression": true
+  },
+  "summary": {
+    "security_controls": 30,
+    "false_completion_checks": 6,
+    "false_completion_violations": 0,
+    "functional_gaps": 0,
+    "real_data_collected": 0
+  },
+  "artifacts": [
+    "validation/security_review_auth.json",
+    "validation/security_review_input_http.json",
+    "validation/security_review_keys_logs_config_container.json",
+    "validation/security_review_dependency_supply_chain.json",
+    "validation/false_completion_gate.json"
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "ledger_id": "opportunity-radar-false-completion-fixes",
+  "ledger_version": "1.0",
+  "source_ruleset": "validation/false_completion_rules.json",
+  "entries": [
+    {
+      "finding_id": "FCF-001",
+      "detector": "forbidden-marker",
+      "status": "VERIFIED_ABSENT",
+      "scope": "backend/app, backend/tests, frontend/src",
+      "file": "validation/false_completion_rules.json",
+      "resolution": "No TODO or FIXME marker is accepted in the scanned implementation or test roots.",
+      "verification": "validation/false_completion_scan.json",
+      "test_targets": ["backend/tests/test_false_completion.py"]
+    },
+    {
+      "finding_id": "FCF-002",
+      "detector": "skipped-or-trivial-test",
+      "status": "VERIFIED_ABSENT",
+      "scope": "backend/tests",
+      "file": "validation/false_completion_rules.json",
+      "resolution": "Skipped and trivially passing test patterns are rejected by the AST/text scan.",
+      "verification": "validation/false_completion_scan.json",
+      "test_targets": ["backend/tests/test_false_completion.py"]
+    },
+    {
+      "finding_id": "FCF-003",
+      "detector": "fake-success-api-result",
+      "status": "VERIFIED_ABSENT",
+      "scope": "backend/app/api",
+      "file": "scripts/validate_false_completion.py",
+      "resolution": "Product route handlers are checked for constant success dictionaries; none remain.",
+      "verification": "validation/false_completion_scan.json",
+      "test_targets": ["backend/tests/test_false_completion.py", "backend/tests/test_api.py"]
+    },
+    {
+      "finding_id": "FCF-004",
+      "detector": "swallowed-exception",
+      "status": "FIXED",
+      "scope": "backend/app/connectors/feed.py:73",
+      "file": "backend/app/connectors/feed.py",
+      "resolution": "Invalid RFC date parsing now records an explicit fall-through value before the ISO parser; it is not a silent pass.",
+      "verification": "validation/false_completion_scan.json",
+      "test_targets": ["backend/tests/test_feed_connector.py"]
+    },
+    {
+      "finding_id": "FCF-005",
+      "detector": "swallowed-exception",
+      "status": "FIXED",
+      "scope": "backend/app/core/request_limits.py:45",
+      "file": "backend/app/core/request_limits.py",
+      "resolution": "Malformed content length now takes an explicit reject-path state instead of a silent pass.",
+      "verification": "validation/false_completion_scan.json",
+      "test_targets": ["backend/tests/test_product_security.py", "backend/tests/test_api.py"]
+    },
+    {
+      "finding_id": "FCF-006",
+      "detector": "not-implemented-allowlist",
+      "status": "EXPLICIT_CONTRACT",
+      "scope": "backend/app/connectors/base.py",
+      "file": "backend/app/connectors/base.py",
+      "resolution": "Abstract SourceConnector methods define the required concrete connector boundary and are not runtime product paths.",
+      "verification": "validation/false_completion_scan.json",
+      "test_targets": ["backend/tests/test_feed_connector.py", "backend/tests/test_github_connector.py", "backend/tests/test_google_trends_connector.py"]
+    },
+    {
+      "finding_id": "FCF-007",
+      "detector": "not-implemented-allowlist",
+      "status": "EXPLICIT_CONTRACT",
+      "scope": "backend/app/services/enterprise_messaging_adapters.py",
+      "file": "backend/app/services/enterprise_messaging_adapters.py",
+      "resolution": "The shared payload hook is implemented by the Slack, Feishu and WeCom adapters.",
+      "verification": "validation/false_completion_scan.json",
+      "test_targets": ["backend/tests/test_enterprise_messaging_adapters.py"]
+    },
+    {
+      "finding_id": "FCF-008",
+      "detector": "not-implemented-allowlist",
+      "status": "EXPLICIT_CONTRACT",
+      "scope": "backend/app/services/opportunity_analysis.py",
+      "file": "backend/app/services/opportunity_analysis.py",
+      "resolution": "The analyzer interface is implemented by the deterministic heuristic and provider-backed analyzers.",
+      "verification": "validation/false_completion_scan.json",
+      "test_targets": ["backend/tests/test_opportunity_analysis_provider.py", "backend/tests/test_mock_analysis_service.py"]
+    },
+    {
+      "finding_id": "FCF-009",
+      "detector": "empty-class-allowlist",
+      "status": "EXPLICIT_CONTRACT",
+      "scope": "backend/app/services/provider_registry.py:ProviderRegistryError,ProviderNotFoundError,ProviderUnavailableError,ProviderExecutionError",
+      "file": "backend/app/services/provider_registry.py",
+      "resolution": "Empty classes are typed provider-routing exceptions and are raised or translated into durable provider states.",
+      "verification": "validation/false_completion_scan.json",
+      "test_targets": ["backend/tests/test_provider_registry.py", "backend/tests/test_opportunity_analysis_provider.py"]
+    }
+  ]
+}
