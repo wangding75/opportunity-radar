@@ -2,7 +2,7 @@
   "ruleset_id": "opportunity-radar-false-completion",
   "ruleset_version": "1.0",
   "status": "PASS",
-  "scanned_files": 227,
+  "scanned_files": 229,
   "violation_count": 0,
   "allowlisted_count": 8,
   "violations": [],

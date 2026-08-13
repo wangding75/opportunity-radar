@@ -12,7 +12,7 @@ $env:EMAIL_DELIVERY_PROVIDER = "mock"
 try {
     docker compose -p $project @composeFiles up -d postgres migrate api worker-alerts mock-mail
     $ready = Invoke-RestMethod "http://localhost:18080/ready"
-    if ($ready.schema_revision -ne "0026_email_delivery_queue") {
+    if ($ready.schema_revision -ne "0031_login_rate_limits") {
         throw "unexpected schema revision: $($ready.schema_revision)"
     }
     $mockHealth = Invoke-RestMethod "http://localhost:18082/health"

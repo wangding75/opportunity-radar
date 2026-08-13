@@ -19,7 +19,7 @@ from app.core.config import settings
 from app.core.postgres_cli import postgres_cli_connection, postgres_cli_server_args
 
 _DB_NAME = re.compile(r"^[A-Za-z0-9_]+$")
-EXPECTED_SCHEMA_REVISION = "0030_probe_task_leases"
+EXPECTED_SCHEMA_REVISION = "0031_login_rate_limits"
 
 
 def restore_sqlite(backup: Path, database_url: str) -> None:

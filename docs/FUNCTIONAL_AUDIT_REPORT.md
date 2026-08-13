@@ -16,13 +16,12 @@ A static PASS is not functional completion. A row advances only when evidence is
 | Layer | Status | Evidence sources |
 | --- | --- | --- |
 | static_completion_hygiene | `PASS` | `validation/false_completion_scan.json` |
-| runtime_functional_validation | `NOT_CHECKED` | none recorded |
-| real_postgresql_validation | `RUNTIME_VERIFIED` | `validation/postgres_runtime_e2e_evidence.json` |
+| runtime_functional_validation | `TESTED` | `validation/t137_runtime_test_evidence.json` |
+| real_postgresql_validation | `RUNTIME_VERIFIED` | `validation/postgres_runtime_e2e_evidence.json`, `validation/auth_rate_limit_postgres_evidence.json` |
 | external_integration_validation | `NOT_CHECKED` | none recorded |
 | production_readiness | `NOT_READY` | none recorded |
 
 Production readiness reasons:
-- runtime functional evidence is not recorded
 - external integration evidence is not recorded with real data
 
 ## Chain coverage

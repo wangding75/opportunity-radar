@@ -35,7 +35,7 @@ from app.services.probes import _claim_due_task
 
 
 WORKERS = 8
-REQUIRED_REVISION = "0030_probe_task_leases"
+REQUIRED_REVISION = "0031_login_rate_limits"
 
 
 def _migrate(root: Path) -> None:

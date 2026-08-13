@@ -1,0 +1,18 @@
+{
+  "evidence_id": "opportunity-radar-auth-rate-limit-postgres-2026-08-13",
+  "evidence_type": "REAL_POSTGRESQL_AUTH_RATE_LIMIT",
+  "status": "PASS",
+  "postgres_version": "17.10",
+  "migration_revision": "0031_login_rate_limits",
+  "workers": 8,
+  "attempts": 8,
+  "client_ip_digest_only": true,
+  "checks": {
+    "migration_head": true,
+    "shared_counter_visible": true,
+    "throttle_after_concurrent_failures": true,
+    "window_recovery": true
+  },
+  "real_data_collected": 0,
+  "cleanup": "The unique run keys were deleted in the runner finally block."
+}

@@ -20,13 +20,16 @@
       ]
     },
     "runtime_functional_validation": {
-      "status": "NOT_CHECKED",
-      "sources": []
+      "status": "TESTED",
+      "sources": [
+        "validation/t137_runtime_test_evidence.json"
+      ]
     },
     "real_postgresql_validation": {
       "status": "RUNTIME_VERIFIED",
       "sources": [
-        "validation/postgres_runtime_e2e_evidence.json"
+        "validation/postgres_runtime_e2e_evidence.json",
+        "validation/auth_rate_limit_postgres_evidence.json"
       ]
     },
     "external_integration_validation": {
@@ -42,7 +45,6 @@
     "status": "NOT_READY",
     "sources": [],
     "reasons": [
-      "runtime functional evidence is not recorded",
       "external integration evidence is not recorded with real data"
     ]
   },

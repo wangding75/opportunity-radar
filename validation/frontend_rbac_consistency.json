@@ -17,7 +17,7 @@
     "admin_actions_checked": 5,
     "write_actions_checked": 5,
     "permission_matrix_version": "rbac-v1",
-    "node_syntax_check": "PASS",
+    "node_syntax_check": "ENVIRONMENT_BLOCKED",
     "real_data_collected": 0,
     "data_policy": "SYNTHETIC_OR_MOCK_ONLY"
   }

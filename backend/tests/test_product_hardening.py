@@ -145,7 +145,7 @@ def test_postgres_staged_restore_validates_before_target_mutation(monkeypatch, t
     def fake_run(args, **kwargs):
         args = list(args); calls.append(args)
         command = args[-1] if "--command" in args else ""
-        if "version_num" in command: return Result("0030_probe_task_leases\n")
+        if "version_num" in command: return Result("0031_login_rate_limits\n")
         if "information_schema.tables" in command: return Result("4\n")
         return Result("")
     monkeypatch.setattr(restore.subprocess, "run", fake_run)

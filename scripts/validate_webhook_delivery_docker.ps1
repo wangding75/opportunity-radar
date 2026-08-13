@@ -14,7 +14,7 @@ $env:MOCK_WEBHOOK_SECRET = "synthetic-webhook-secret-0123456789"
 try {
     docker compose -p $project @composeFiles up -d postgres migrate api mock-webhook
     $ready = Invoke-RestMethod "http://localhost:18090/ready"
-    if ($ready.schema_revision -ne "0030_probe_task_leases") {
+    if ($ready.schema_revision -ne "0031_login_rate_limits") {
         throw "unexpected schema revision: $($ready.schema_revision)"
     }
     $mockHealth = Invoke-RestMethod "http://localhost:18093/health"

@@ -21,6 +21,7 @@ from app.connectors.registry import build_default_registry
 from app.core.config import settings, validate_runtime_settings
 from app.core.request_limits import RequestBodyLimitMiddleware
 from app.core.security import require_read_auth
+from app.core.request_identity import audit_actor_from_request
 from app.db.models import AuditLog
 from app.db.session import SessionLocal, engine
 from app.core.time import utc_now
@@ -32,8 +33,8 @@ import uuid
 LOGGER = logging.getLogger("opportunity_radar.audit")
 
 APP_VERSION = "0.8.1"
-DB_SCHEMA_REVISION = "0030_probe_task_leases"
-REQUIRED_TABLES = {"alembic_version", "raw_observations", "keywords", "opportunities", "opportunity_keywords", "probe_tasks", "collection_runs", "source_health_states", "opportunity_research", "alert_rules", "alert_events", "source_preferences", "audit_logs", "seed_keywords", "opportunity_cluster_versions", "opportunity_lineage", "keyword_relation_sources", "keyword_relation_items", "alert_evaluation_queue", "email_delivery_queue", "webhook_endpoints", "webhook_delivery_queue", "worker_heartbeats", "users", "user_sessions", "api_tokens", "opportunity_score_snapshots", "daily_digests", "weekly_trend_reports", "keyword_burst_records", "tool_product_entities", "tool_product_entity_evidence", "tool_product_normalization_runs", "tool_product_occurrences", "hiring_surge_records", "cross_source_confirmations", "score_jump_records", "risk_escalation_records"}
+DB_SCHEMA_REVISION = "0031_login_rate_limits"
+REQUIRED_TABLES = {"alembic_version", "raw_observations", "keywords", "opportunities", "opportunity_keywords", "probe_tasks", "collection_runs", "source_health_states", "opportunity_research", "alert_rules", "alert_events", "source_preferences", "audit_logs", "seed_keywords", "opportunity_cluster_versions", "opportunity_lineage", "keyword_relation_sources", "keyword_relation_items", "alert_evaluation_queue", "email_delivery_queue", "webhook_endpoints", "webhook_delivery_queue", "worker_heartbeats", "users", "login_rate_limits", "user_sessions", "api_tokens", "opportunity_score_snapshots", "daily_digests", "weekly_trend_reports", "keyword_burst_records", "tool_product_entities", "tool_product_entity_evidence", "tool_product_normalization_runs", "tool_product_occurrences", "hiring_surge_records", "cross_source_confirmations", "score_jump_records", "risk_escalation_records"}
 
 
 def create_app() -> FastAPI:
@@ -77,7 +78,7 @@ def create_app() -> FastAPI:
         finally:
             if request.method.upper() not in {"GET", "HEAD", "OPTIONS"} and request.url.path.startswith("/api/"):
                 try:
-                    actor = (getattr(request.state, "actor", None) or request.headers.get(settings.audit_actor_header) or "local")[:200]
+                    actor = audit_actor_from_request(request)
                     with SessionLocal() as audit_db:
                         audit_db.add(AuditLog(
                             request_id=request_id,

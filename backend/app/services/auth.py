@@ -7,11 +7,14 @@ import secrets
 from dataclasses import dataclass
 from datetime import timedelta
 
-from sqlalchemy import select
+from sqlalchemy import case, delete, select
+from sqlalchemy.dialects.postgresql import insert as postgres_insert
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.time import utc_now
-from app.db.models import ApiToken, User, UserSession
+from app.db.models import ApiToken, LoginRateLimit, User, UserSession
 from app.services.permissions import (
     ROLE_LEVEL,
     SCOPE_MINIMUM_ROLE,
@@ -126,6 +129,83 @@ def update_user_password(db: Session, user: User, password: str) -> None:
     revoke_user_api_tokens(db, user.id)
 
 
+def _login_rate_limit_keys(client_ip: str, username: str) -> tuple[str, str]:
+    normalized_ip = client_ip.strip().lower()[:128] or "unknown"
+    normalized_username = username.strip().lower()[:120]
+    subject = hashlib.sha256(normalized_username.encode("utf-8")).hexdigest()[:32]
+    source = hashlib.sha256(f"{normalized_ip}|{normalized_username}".encode("utf-8")).hexdigest()[:32]
+    return (
+        f"ip:{hashlib.sha256(normalized_ip.encode('utf-8')).hexdigest()[:32]}",
+        f"subject:{source}:{subject}",
+    )
+
+
+def _prune_login_rate_limits(db: Session, now) -> None:
+    cutoff = now - timedelta(seconds=settings.login_rate_limit_window_seconds)
+    db.execute(delete(LoginRateLimit).where(LoginRateLimit.updated_at <= cutoff))
+
+
+def login_rate_limit_retry_after(db: Session, client_ip: str, username: str, *, now=None) -> int | None:
+    now = now or utc_now()
+    _prune_login_rate_limits(db, now)
+    rows = db.scalars(
+        select(LoginRateLimit).where(LoginRateLimit.key.in_(_login_rate_limit_keys(client_ip, username)))
+    ).all()
+    retry_after: int | None = None
+    for row in rows:
+        if row.blocked_until is not None and row.blocked_until > now:
+            seconds = int((row.blocked_until - now).total_seconds()) + 1
+        elif row.attempt_count >= settings.login_rate_limit_max_attempts:
+            seconds = settings.login_rate_limit_block_seconds
+        else:
+            continue
+        retry_after = max(retry_after or 0, seconds)
+    return retry_after
+
+
+def record_login_failure(db: Session, client_ip: str, username: str, *, now=None) -> None:
+    """Record source failures in shared SQL storage for all API workers.
+
+    The per-account counter remains on ``User``. Source counters are keyed by
+    one-way digests so rate-limit rows do not retain raw usernames or IPs, and
+    stale rows are pruned on the request path plus the worker retention path.
+    """
+    now = now or utc_now()
+    _prune_login_rate_limits(db, now)
+    table = LoginRateLimit.__table__
+    block_until = now + timedelta(seconds=settings.login_rate_limit_block_seconds)
+    initial_block = block_until if settings.login_rate_limit_max_attempts <= 1 else None
+    for key in _login_rate_limit_keys(client_ip, username):
+        values = {
+            "key": key,
+            "window_started_at": now,
+            "attempt_count": 1,
+            "blocked_until": initial_block,
+            "updated_at": now,
+        }
+        statement = postgres_insert(table) if db.get_bind().dialect.name == "postgresql" else sqlite_insert(table)
+        statement = statement.values(**values).on_conflict_do_update(
+            index_elements=[table.c.key],
+            set_={
+                "attempt_count": table.c.attempt_count + 1,
+                "blocked_until": (
+                    block_until
+                    if settings.login_rate_limit_max_attempts <= 1
+                    else case(
+                        (table.c.attempt_count + 1 >= settings.login_rate_limit_max_attempts, block_until),
+                        else_=table.c.blocked_until,
+                    )
+                ),
+                "updated_at": now,
+            },
+        )
+        db.execute(statement)
+
+
+def clear_login_rate_limits(db: Session, client_ip: str, username: str) -> None:
+    db.execute(delete(LoginRateLimit).where(LoginRateLimit.key.in_(_login_rate_limit_keys(client_ip, username))))
+
+
 def authenticate_credentials(db: Session, username: str, password: str) -> User | None:
     now = utc_now()
     stmt = select(User).where(User.username == username.strip().lower())
@@ -148,8 +228,8 @@ def authenticate_credentials(db: Session, username: str, password: str) -> User 
         row.failed_login_count = 0
     if not verify_password(password, row.password_hash):
         row.failed_login_count = int(row.failed_login_count or 0) + 1
-        if row.failed_login_count >= LOGIN_FAILURE_LIMIT:
-            row.locked_until = now + timedelta(minutes=LOGIN_LOCK_MINUTES)
+        if row.failed_login_count >= settings.login_failure_limit:
+            row.locked_until = now + timedelta(minutes=settings.login_lock_minutes)
         row.updated_at = now
         return None
     row.failed_login_count = 0
@@ -322,8 +402,19 @@ def cleanup_auth_records(db: Session, *, retention_days: int = 90, dry_run: bool
     )
     sessions = db.scalar(select(func.count()).select_from(UserSession).where(session_filter)) or 0
     tokens = db.scalar(select(func.count()).select_from(ApiToken).where(token_filter)) or 0
+    rate_cutoff = now - timedelta(seconds=settings.login_rate_limit_window_seconds)
+    login_rate_limits = db.scalar(
+        select(func.count()).select_from(LoginRateLimit).where(LoginRateLimit.updated_at <= rate_cutoff)
+    ) or 0
     if not dry_run:
         db.execute(delete(UserSession).where(session_filter))
         db.execute(delete(ApiToken).where(token_filter))
+        db.execute(delete(LoginRateLimit).where(LoginRateLimit.updated_at <= rate_cutoff))
         db.commit()
-    return {"dry_run": dry_run, "retention_days": retention_days, "expired_sessions": int(sessions), "expired_or_revoked_tokens": int(tokens)}
+    return {
+        "dry_run": dry_run,
+        "retention_days": retention_days,
+        "expired_sessions": int(sessions),
+        "expired_or_revoked_tokens": int(tokens),
+        "expired_login_rate_limits": int(login_rate_limits),
+    }

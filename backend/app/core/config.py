@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ipaddress
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -40,8 +41,17 @@ class Settings:
     csrf_cookie_name: str = os.getenv("CSRF_COOKIE_NAME", "or_csrf").strip() or "or_csrf"
     session_ttl_hours: int = int(os.getenv("SESSION_TTL_HOURS", "24"))
     auth_record_retention_days: int = int(os.getenv("AUTH_RECORD_RETENTION_DAYS", "90"))
+    login_failure_limit: int = int(os.getenv("LOGIN_FAILURE_LIMIT", "5"))
+    login_lock_minutes: int = int(os.getenv("LOGIN_LOCK_MINUTES", "15"))
+    login_rate_limit_window_seconds: int = int(os.getenv("LOGIN_RATE_LIMIT_WINDOW_SECONDS", "60"))
+    login_rate_limit_max_attempts: int = int(os.getenv("LOGIN_RATE_LIMIT_MAX_ATTEMPTS", "10"))
+    login_rate_limit_block_seconds: int = int(os.getenv("LOGIN_RATE_LIMIT_BLOCK_SECONDS", "60"))
     allow_legacy_api_key: bool = os.getenv("ALLOW_LEGACY_API_KEY", "false").strip().lower() in {"1", "true", "yes", "on"}
     audit_actor_header: str = os.getenv("AUDIT_ACTOR_HEADER", "X-Actor").strip() or "X-Actor"
+    audit_trusted_proxy_actor: bool = os.getenv("AUDIT_TRUSTED_PROXY_ACTOR", "false").strip().lower() in {"1", "true", "yes", "on"}
+    trusted_proxy_cidrs: tuple[str, ...] = tuple(
+        item.strip() for item in os.getenv("TRUSTED_PROXY_CIDRS", "").split(",") if item.strip()
+    )
     collection_run_retention_days: int = int(os.getenv("COLLECTION_RUN_RETENTION_DAYS", "180"))
     audit_log_retention_days: int = int(os.getenv("AUDIT_LOG_RETENTION_DAYS", "365"))
     alert_event_retention_days: int = int(os.getenv("ALERT_EVENT_RETENTION_DAYS", "365"))
@@ -93,6 +103,23 @@ def validate_runtime_settings(value: Settings = settings) -> None:
             raise ValueError("ALLOW_LEGACY_API_KEY must be false in production")
         if value.database_url.startswith("sqlite"):
             raise ValueError("production requires PostgreSQL DATABASE_URL")
+    if value.login_failure_limit < 1 or value.login_failure_limit > 100:
+        raise ValueError("LOGIN_FAILURE_LIMIT must be between 1 and 100")
+    if value.login_lock_minutes < 1 or value.login_lock_minutes > 1440:
+        raise ValueError("LOGIN_LOCK_MINUTES must be between 1 and 1440")
+    if value.login_rate_limit_window_seconds < 1 or value.login_rate_limit_window_seconds > 86_400:
+        raise ValueError("LOGIN_RATE_LIMIT_WINDOW_SECONDS must be between 1 and 86400")
+    if value.login_rate_limit_max_attempts < 1 or value.login_rate_limit_max_attempts > 10_000:
+        raise ValueError("LOGIN_RATE_LIMIT_MAX_ATTEMPTS must be between 1 and 10000")
+    if value.login_rate_limit_block_seconds < 1 or value.login_rate_limit_block_seconds > 86_400:
+        raise ValueError("LOGIN_RATE_LIMIT_BLOCK_SECONDS must be between 1 and 86400")
+    for network in value.trusted_proxy_cidrs:
+        try:
+            ipaddress.ip_network(network, strict=False)
+        except ValueError as exc:
+            raise ValueError(f"TRUSTED_PROXY_CIDRS contains an invalid network: {network}") from exc
+    if value.app_env == "production" and value.audit_trusted_proxy_actor and not value.trusted_proxy_cidrs:
+        raise ValueError("AUDIT_TRUSTED_PROXY_ACTOR requires TRUSTED_PROXY_CIDRS in production")
     if value.email_delivery_provider not in {"mock", "mock_http", "smtp"}:
         raise ValueError("EMAIL_DELIVERY_PROVIDER must be mock, mock_http or smtp")
     if value.email_delivery_enabled and not value.email_delivery_recipients:

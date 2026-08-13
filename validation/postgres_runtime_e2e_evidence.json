@@ -4,7 +4,7 @@
   "status": "PASS",
   "database": "opportunity_radar_concurrency",
   "postgres_version": "17.10",
-  "migration_revision": "0030_probe_task_leases",
+  "migration_revision": "0031_login_rate_limits",
   "workers": 8,
   "concurrency_attempts": 19,
   "checks": {

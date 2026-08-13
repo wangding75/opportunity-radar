@@ -13,7 +13,7 @@ def test_functional_audit_report_separates_static_evidence_from_readiness():
     assert report["real_data_collected"] == 0
     assert report["summary"]["static_only_rows"] == 30
     assert all(row["coverage"]["status"] == "STATIC_ONLY" for row in report["rows"])
-    assert report["validation_layers"]["runtime_functional_validation"]["status"] == "NOT_CHECKED"
+    assert report["validation_layers"]["runtime_functional_validation"]["status"] == "TESTED"
     assert report["validation_layers"]["real_postgresql_validation"]["status"] == "RUNTIME_VERIFIED"
     assert report["validation_layers"]["external_integration_validation"]["status"] == "NOT_CHECKED"
     assert report["production_readiness"]["status"] == "NOT_READY"

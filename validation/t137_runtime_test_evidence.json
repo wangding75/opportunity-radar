@@ -1,0 +1,10 @@
+{
+  "evidence_id": "opportunity-radar-t137-runtime-tests-2026-08-13",
+  "evidence_type": "BACKEND_RUNTIME_TEST_SUITE",
+  "status": "PASS",
+  "command": "python -m pytest tests -q",
+  "scope": "backend/tests",
+  "tests_collected": 378,
+  "result": "all collected tests passed",
+  "real_data_collected": 0
+}

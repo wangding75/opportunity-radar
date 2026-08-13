@@ -768,6 +768,16 @@ class User(Base):
     locked_until: Mapped[datetime | None] = mapped_column(DateTime, nullable=True, index=True)
 
 
+class LoginRateLimit(Base):
+    __tablename__ = "login_rate_limits"
+
+    key: Mapped[str] = mapped_column(String(128), primary_key=True)
+    window_started_at: Mapped[datetime] = mapped_column(DateTime)
+    attempt_count: Mapped[int] = mapped_column(Integer, default=0)
+    blocked_until: Mapped[datetime | None] = mapped_column(DateTime, nullable=True, index=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, index=True)
+
+
 class UserSession(Base):
     __tablename__ = "user_sessions"
 

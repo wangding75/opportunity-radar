@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.security import require_admin_auth, require_read_auth, require_write_auth
+from app.core.request_identity import client_ip_from_request
 from app.db.models import ApiToken, User
 from app.db.session import get_db
 from app.domain.schemas import ApiTokenCreate, LoginRequest, UserCreate, UserPatch
@@ -13,9 +14,12 @@ from app.services.auth import (
     Principal,
     VALID_ROLES,
     authenticate_credentials,
+    clear_login_rate_limits,
     create_api_token,
     create_session,
     create_user,
+    login_rate_limit_retry_after,
+    record_login_failure,
     revoke_session,
     update_user_password,
 )
@@ -62,15 +66,33 @@ def auth_config():
 
 
 @router.post("/login")
-def login(payload: LoginRequest, response: Response, db: Session = Depends(get_db)):
+def login(
+    payload: LoginRequest,
+    response: Response,
+    db: Session = Depends(get_db),
+    request: Request = None,
+):
     if settings.auth_mode != "rbac":
         raise HTTPException(status_code=409, detail="session login is available only when AUTH_MODE=rbac")
+    client_ip = client_ip_from_request(request) if request is not None else "direct-test"
+    if request is not None:
+        request.state.login_subject = payload.username
+    retry_after = login_rate_limit_retry_after(db, client_ip, payload.username)
+    if retry_after is not None:
+        db.commit()
+        raise HTTPException(
+            status_code=429,
+            detail="too many login attempts; try again later",
+            headers={"Retry-After": str(retry_after)},
+        )
     user = authenticate_credentials(db, payload.username, payload.password)
     if user is None:
         # Persist failed-login counters / temporary lockout state while preserving a
         # generic response that does not reveal whether the username exists.
+        record_login_failure(db, client_ip, payload.username)
         db.commit()
         raise HTTPException(status_code=401, detail="invalid username or password")
+    clear_login_rate_limits(db, client_ip, payload.username)
     session_token, csrf_token, _session = create_session(db, user, ttl_hours=settings.session_ttl_hours)
     db.commit()
     secure = settings.app_env == "production"

@@ -139,6 +139,8 @@ ALLOW_LEGACY_API_KEY=false
 
 Web 使用 HttpOnly Session Cookie；修改请求需要 CSRF Token。浏览器不保存主 API Key。自动化客户端可由用户签发 Personal API Token，Token 的有效权限始终受当前用户角色上限约束。
 
+登录同时使用账号失败锁定和 PostgreSQL 共享来源限流；`X-Actor` 默认不受客户端信任，审计 actor 由服务端 principal 或稳定匿名身份生成。限流阈值、可信代理 CIDR 与审计代理注入边界见 [`docs/AUTH_RATE_LIMIT_AUDIT_TRUST.md`](docs/AUTH_RATE_LIMIT_AUDIT_TRUST.md)。
+
 ## 数据备份与恢复
 
 SQLite：使用 SQLite Online Backup API，并执行 `PRAGMA integrity_check`。
