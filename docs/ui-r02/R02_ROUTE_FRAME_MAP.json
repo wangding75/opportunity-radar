@@ -1,0 +1,12 @@
+{
+  "appShell": {"fixed": ["SideNav", "TopBar", "GlobalContentArea", "OverlayHost"], "dynamic": ["PageFrame"]},
+  "routes": {
+    "P01":"unauthenticated", "P02":"page", "P03":"page", "P04":"page", "P05":"page",
+    "P06":"list", "P07":"detail", "P08":"page", "P09":"page", "P10":"page", "P11":"graph",
+    "P12":"list", "P13":"detail", "P14":"detail", "P15":"list", "P16":"detail", "P17":"detail",
+    "P18":"list", "P19":"detail", "P20":"list", "P21":"list", "P22":"detail", "P23":"list",
+    "P24":"list", "P25":"list", "P26":"list", "P27":"list", "P28":"page",
+    "P29-A":"settings-child", "P29-B":"settings-child", "P29-C":"settings-child", "P29-D":"settings-child", "P29-E":"settings-child", "P30":"diagnostics"
+  },
+  "settings": {"frame":"SettingsFrame", "navigation":"fixed", "children":["P29-A","P29-B","P29-C","P29-D","P29-E"]}
+}
