@@ -57,3 +57,24 @@ def test_production_api_has_readiness_healthcheck_and_restart_policy():
     assert healthcheck["timeout"] == "5s"
     assert healthcheck["retries"] == 10
     assert healthcheck["start_period"] == "20s"
+
+
+def test_production_https_proxy_contract_keeps_api_internal():
+    production = _compose(ROOT / "docker-compose.yml")
+    api = production["services"]["api"]
+    proxy = production["services"]["proxy"]
+    assert "ports" not in api
+    assert api["expose"] == ["8000"]
+    assert proxy["image"] == "caddy:2.10-alpine"
+    assert proxy["ports"] == ["${HTTP_PORT:-80}:80", "${HTTPS_PORT:-443}:443"]
+    assert proxy["depends_on"]["api"]["condition"] == "service_healthy"
+
+    caddyfile = (ROOT / "Caddyfile").read_text(encoding="utf-8")
+    assert "{$PUBLIC_DOMAIN}" in caddyfile
+    assert "header_up Host" in caddyfile
+    assert "header_up X-Forwarded-Proto" in caddyfile
+    assert "header_up X-Forwarded-For" in caddyfile
+    assert "trusted_proxies" in caddyfile
+    documentation = (ROOT / "docs" / "production-https.md").read_text(encoding="utf-8")
+    for phrase in ("PUBLIC_DOMAIN", "ACME", "localhost", "8000", "443"):
+        assert phrase in documentation

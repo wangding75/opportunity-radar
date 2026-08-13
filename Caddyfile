@@ -1,0 +1,17 @@
+{
+	servers {
+		# Only private container/network ranges are trusted as an upstream proxy.
+		# Public clients cannot supply a trusted forwarded identity directly.
+		trusted_proxies static private_ranges
+		trusted_proxies_strict
+	}
+}
+
+{$PUBLIC_DOMAIN} {
+	encode gzip
+	reverse_proxy api:8000 {
+		header_up Host {http.request.host}
+		header_up X-Forwarded-Proto {http.request.scheme}
+		header_up X-Forwarded-For {http.request.remote.host}
+	}
+}

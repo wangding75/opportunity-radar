@@ -1,5 +1,9 @@
 services:
   api:
+    # Development-only direct API access for local scripts; production has no
+    # host port mapping and is reachable through Caddy only.
+    ports:
+      - "${PORT:-8000}:8000"
     environment:
       EMAIL_DELIVERY_PROVIDER: ${EMAIL_DELIVERY_PROVIDER:-mock}
       MOCK_MAIL_URL: ${MOCK_MAIL_URL:-http://mock-mail:8082}

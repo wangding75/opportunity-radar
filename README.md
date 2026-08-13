@@ -104,6 +104,8 @@ docker compose up -d --build
 
 生产基线 `docker-compose.yml` 只启动 PostgreSQL、迁移、API 和真实 Worker；它不包含 Mock Mail、Webhook、Analysis 或 Enterprise Messaging，也不依赖这些服务的健康状态。生产通知默认使用 `EMAIL_DELIVERY_PROVIDER=smtp`，但 `EMAIL_DELIVERY_ENABLED=false`；启用通知前必须提供真实 SMTP 配置。
 
+生产浏览器入口由 Caddy 提供 HTTPS，`PUBLIC_DOMAIN` 必须设置为指向本机的真实 DNS 域名；证书由 ACME 自动申请。API `8000` 只在 Compose 内部可达，公网只开放 80/443。完整契约和本地 HTTPS 测试见 [`docs/production-https.md`](docs/production-https.md)。
+
 本地联调若需要 Mock 服务，必须显式叠加开发文件：
 
 ```bash
