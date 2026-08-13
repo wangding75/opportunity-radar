@@ -53,7 +53,7 @@ async function renderRoute(route) {
         const activeSession = session;
         if (!activeSession)
             return;
-        const content = await renderScreen(route, activeSession, { onSessionExpired: handleSessionExpired });
+        const content = await renderScreen(route, activeSession, { onSessionExpired: handleSessionExpired, onForbidden: () => navigate("P04") });
         if (sequence !== renderSequence || !session)
             return;
         if (!shell) {

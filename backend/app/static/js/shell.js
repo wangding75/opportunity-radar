@@ -61,6 +61,7 @@ function createSideNav(route, role) {
         }
         const link = document.createElement("a");
         link.className = `r02-nav-link${isActiveNav(route, item.screen) ? " is-active" : ""}`;
+        link.dataset.screen = item.screen;
         link.href = routeFor(item.screen);
         link.setAttribute("aria-current", isActiveNav(route, item.screen) ? "page" : "false");
         link.innerHTML = `<span class="r02-nav-icon" aria-hidden="true">${item.icon}</span><span>${item.label}</span>`;
@@ -97,6 +98,8 @@ function createMainFrame(route, content, userLabel, role, onLogout) {
     topbar.dataset.component = "TopBar";
     topbar.innerHTML = `<div class="r02-topbar-title">${screenLabel(route)}</div><a class="r02-topbar-search" href="${routeFor("P03")}" aria-label="打开全局搜索"><span aria-hidden="true">⌕</span><span>搜索机会、证据、关键词…</span><kbd>/</kbd></a><span class="r02-topbar-spacer"></span><div class="r02-topbar-user"><span class="r02-avatar">${escapeText(userLabel.slice(0, 1).toUpperCase())}</span><span>${escapeText(userLabel)} · ${escapeText(role)}</span>${onLogout ? `<button class="r02-button r02-button-ghost" data-r02-logout type="button">退出</button>` : ""}</div>`;
     main.append(topbar);
+    if (onLogout)
+        topbar.querySelector("[data-r02-logout]")?.addEventListener("click", onLogout);
     const contentArea = document.createElement("div");
     contentArea.className = "r02-content";
     const frame = document.createElement("section");
@@ -115,7 +118,8 @@ export function updateAppShell(shell, route, content) {
     if (title)
         title.textContent = screenLabel(route);
     shell.querySelectorAll(".r02-nav-link").forEach((link) => {
-        const active = link.href.endsWith(routeFor(route));
+        const candidate = link.dataset.screen;
+        const active = candidate ? isActiveNav(route, candidate) : link.href.endsWith(routeFor(route));
         link.classList.toggle("is-active", active);
         link.setAttribute("aria-current", active ? "page" : "false");
     });

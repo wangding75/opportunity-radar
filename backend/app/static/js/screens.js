@@ -1,6 +1,6 @@
 import { api, ApiError } from "./client.js";
 import { routeFor, navigate } from "./router.js";
-import { appendActionRow, badge, button, card, input, linkTo, select, settingsFrame, statePanel, table } from "./ui.js";
+import { appendActionRow, badge, button, card, drawer, input, linkTo, select, settingsFrame, statePanel, table } from "./ui.js";
 export async function renderScreen(route, _session, context) {
     installScreenStyles();
     switch (route.screen) {
@@ -59,8 +59,10 @@ function errorState(error, context, retry) {
         context.onSessionExpired();
         return statePanel("permission", "Your session has expired. Please sign in again.");
     }
-    if (error instanceof ApiError && error.status === 403)
+    if (error instanceof ApiError && error.status === 403) {
+        context.onForbidden?.();
         return statePanel("permission", "Your role does not have access to this screen.");
+    }
     if (error instanceof ApiError && error.status === 429)
         return statePanel("rate-limit", error.message);
     return statePanel("error", error instanceof Error ? error.message : String(error), retry);
@@ -215,14 +217,44 @@ function renderNotFound(route) {
 }
 async function renderObservations(context) {
     const host = content("Observations", "Raw evidence collected from registered sources, with provenance and acquisition metadata.");
-    try {
-        const data = await api("/api/v1/observations?limit=100");
-        const rows = (data.items ?? []).map((row) => [linkTo("P07", text(row.title), { id: row.id }), text(row.source_id), text(row.item_type), badge(text(row.evidence_quality), row.evidence_quality === "A" ? "success" : "neutral"), formatDate(row.observed_at)]);
-        append(host, rows.length ? table(["Observation", "Source", "Type", "Quality", "Observed"], rows) : statePanel("empty", "No observations have been collected yet."));
-    }
-    catch (error) {
-        append(host, errorState(error, context, () => navigate("P06")));
-    }
+    const filters = document.createElement("form");
+    filters.className = "r02-inline-form";
+    const qWrap = input("Content keyword", { placeholder: "title, text, or query" });
+    const sourceWrap = input("Source id", { placeholder: "optional" });
+    const typeWrap = select("Item type", ["", "NEWS", "JOB", "PRODUCT", "REPOSITORY", "TREND"], "");
+    const q = qWrap.querySelector("input");
+    const source = sourceWrap.querySelector("input");
+    const type = typeWrap.querySelector("select");
+    const submit = button("Apply filters", { variant: "primary", type: "submit" });
+    appendActionRow(filters, submit);
+    filters.prepend(qWrap, sourceWrap, typeWrap);
+    const results = document.createElement("div");
+    const load = async (offset) => {
+        results.replaceChildren(statePanel("loading", "Loading observations…"));
+        const params = new URLSearchParams({ limit: "50", offset: String(offset) });
+        if (q?.value.trim())
+            params.set("q", q.value.trim());
+        if (source?.value.trim())
+            params.set("source_id", source.value.trim());
+        if (type?.value)
+            params.set("item_type", type.value);
+        try {
+            const data = await api(`/api/v1/observations?${params.toString()}`);
+            const rows = (data.items ?? []).map((row) => [linkTo("P07", text(row.title), { id: row.id, q: q?.value ?? "" }), text(row.source_id), text(row.item_type), badge(text(row.evidence_quality), row.evidence_quality === "A" ? "success" : "neutral"), formatDate(row.observed_at)]);
+            const body = rows.length ? table(["Observation", "Source", "Type", "Quality", "Observed"], rows) : statePanel("empty", q?.value ? "No observations match the current filters." : "No observations have been collected yet.");
+            results.replaceChildren(body);
+            const pager = document.createElement("div");
+            pager.className = "r02-pagination";
+            pager.append(button("Previous", { disabled: offset <= 0, onClick: () => void load(Math.max(0, offset - 50)) }), document.createTextNode(`Offset ${offset}`), button("Next", { disabled: !data.has_more, onClick: () => void load(offset + 50) }));
+            results.append(pager);
+        }
+        catch (error) {
+            results.replaceChildren(errorState(error, context, () => void load(offset)));
+        }
+    };
+    filters.addEventListener("submit", (event) => { event.preventDefault(); void load(0); });
+    append(host, filters, results);
+    await load(0);
     return host;
 }
 async function renderObservationDetail(route, context) {
@@ -236,7 +268,7 @@ async function renderObservationDetail(route, context) {
         const data = await api("/api/v1/observations?limit=500");
         const row = (data.items ?? []).find((item) => String(item.id) === id);
         if (!row) {
-            append(host, statePanel("empty", "Observation not found in the current read model."));
+            append(host, objectNotFound("Observation", id));
             return host;
         }
         const details = document.createElement("dl");
@@ -323,20 +355,24 @@ async function renderTrend(route, context) {
     }
     try {
         const data = await api(`/api/v1/keywords/${encodeURIComponent(keywordId)}/trend`);
-        append(host, card(`Trend for keyword ${keywordId}`, table(["Metric", "Value"], Object.entries(data ?? {}).map(([key, value]) => [key, typeof value === "object" ? JSON.stringify(value) : text(value)]))));
+        const summary = card(`Trend for ${text(data.keyword, keywordId)}`, table(["Window", "Observations", "Growth"], [["7d", text(data.windows?.["7d"]), formatGrowth(data.growth?.["7d"])], ["30d", text(data.windows?.["30d"]), formatGrowth(data.growth?.["30d"])], ["90d", text(data.windows?.["90d"]), "—"]]));
+        const points = (data.points ?? []).map((row) => [text(row.day), text(row.observations), text(row.sources)]);
+        append(host, summary, card("Daily points", points.length ? table(["Day", "Observations", "Sources"], points) : statePanel("empty", "No daily trend points are available.")));
     }
     catch (error) {
         append(host, errorState(error, context));
     }
     return host;
 }
+function formatGrowth(value) { const n = Number(value); return Number.isFinite(n) ? `${n >= 0 ? "+" : ""}${(n * 100).toFixed(1)}%` : "—"; }
 async function renderGraph(context) {
-    const host = content("Keyword graph", "Related keyword edges returned by the graph service.");
+    const host = content("Keyword graph", "Related keyword edges returned by the graph service. Select a node to inspect its live relationships.");
     try {
         const data = await api("/api/v1/keyword-graph?limit=200&since_days=90");
         const nodes = data.nodes ?? [];
         const edges = data.edges ?? [];
-        append(host, card("Graph summary", table(["Metric", "Count"], [["Nodes", text(nodes.length)], ["Edges", text(edges.length)]])), edges.length ? table(["From", "To", "Weight", "Last seen"], edges.slice(0, 100).map((row) => [text(row.keyword_a ?? row.source), text(row.keyword_b ?? row.target), number(row.weight, 1), formatDate(row.last_seen_at)])) : statePanel("empty", "No keyword relationships are available."));
+        const nodeRows = nodes.map((row) => { const inspect = button("Inspect", { variant: "ghost", onClick: () => { const related = edges.filter((edge) => String(edge.source) === String(row.id) || String(edge.target) === String(row.id)); const body = table(["Connected node", "Weight", "Last seen"], related.map((edge) => [text(String(edge.source) === String(row.id) ? edge.target : edge.source), number(edge.weight, 1), formatDate(edge.last_seen_at)])); host.append(drawer(`Node: ${text(row.keyword)}`, body)); } }); return [text(row.keyword), text(row.id), inspect]; });
+        append(host, card("Graph summary", table(["Metric", "Count"], [["Nodes", text(nodes.length)], ["Edges", text(edges.length)]])), nodeRows.length ? table(["Keyword node", "Id", "Detail"], nodeRows) : statePanel("empty", "No keyword relationships are available."));
     }
     catch (error) {
         append(host, errorState(error, context));
@@ -345,14 +381,33 @@ async function renderGraph(context) {
 }
 async function renderOpportunities(context) {
     const host = content("Opportunities", "Ranked opportunity clusters with evidence counts, stage, and analysis state.");
-    try {
-        const data = await api("/api/v1/opportunities/page?limit=100");
-        const rows = (data.items ?? []).map((row) => [linkTo("P13", text(row.title), { id: row.id }), badge(text(row.stage), row.stage === "COMMERCIALIZING" ? "success" : "info"), number(row.score, 1), number(row.risk_score, 1), text(row.evidence_count), text(row.research?.status ?? "NEW")]);
-        append(host, rows.length ? table(["Opportunity", "Stage", "Score", "Risk", "Evidence", "Research"], rows) : statePanel("empty", "No active opportunities are available."));
+    const filters = document.createElement("form");
+    filters.className = "r02-inline-form";
+    const qWrap = input("Search", { placeholder: "title or summary" });
+    const stageWrap = select("Stage", ["", "DISCOVERY", "EARLY_GROWTH", "PRODUCTIZING", "COMMERCIALIZING", "DORMANT"], "");
+    const q = qWrap.querySelector("input");
+    const stage = stageWrap.querySelector("select");
+    const submit = button("Apply filters", { variant: "primary", type: "submit" });
+    appendActionRow(filters, submit);
+    filters.prepend(qWrap, stageWrap);
+    const results = document.createElement("div");
+    const load = async (offset) => { results.replaceChildren(statePanel("loading", "Loading opportunities…")); const params = new URLSearchParams({ limit: "50", offset: String(offset), include_dormant: stage?.value === "DORMANT" ? "true" : "false" }); if (q?.value.trim())
+        params.set("q", q.value.trim()); if (stage?.value && stage.value !== "DORMANT")
+        params.set("stage", stage.value); try {
+        const data = await api(`/api/v1/opportunities?${params.toString()}`);
+        const rows = (data ?? []).map((row) => [linkTo("P13", text(row.title), { id: row.id, q: q?.value ?? "" }), badge(text(row.stage), row.stage === "COMMERCIALIZING" ? "success" : "info"), number(row.score, 1), number(row.risk_score, 1), text(row.evidence_count), text(row.research?.status ?? "NEW"), badge(text(row.analysis_status), row.analysis_status === "READY" ? "success" : "warning")]);
+        results.replaceChildren(rows.length ? table(["Opportunity", "Stage", "Score", "Risk", "Evidence", "Research", "Analysis"], rows) : statePanel("empty", q?.value ? "No opportunities match the current filters." : "No active opportunities are available."));
+        const pager = document.createElement("div");
+        pager.className = "r02-pagination";
+        pager.append(button("Previous", { disabled: offset <= 0, onClick: () => void load(Math.max(0, offset - 50)) }), document.createTextNode(`Offset ${offset}`), button("Next", { disabled: data.length < 50, onClick: () => void load(offset + 50) }));
+        results.append(pager);
     }
     catch (error) {
-        append(host, errorState(error, context, () => navigate("P12")));
-    }
+        results.replaceChildren(errorState(error, context, () => void load(offset)));
+    } };
+    filters.addEventListener("submit", (event) => { event.preventDefault(); void load(0); });
+    append(host, filters, results);
+    await load(0);
     return host;
 }
 async function renderOpportunityDetail(route, context, mode) {
@@ -395,7 +450,7 @@ async function renderOpportunityDetail(route, context, mode) {
         append(host, summary, actions, mode === "analysis" ? card("Analysis", detailList(Object.entries(data.analysis ?? {}).filter(([key]) => !["citations", "conflict"].includes(key)).map(([key, value]) => [key, typeof value === "object" ? JSON.stringify(value) : text(value)]))) : card("Analysis summary", detailList([["Summary", data.analysis?.summary], ["Target user", data.analysis?.target_user], ["Business model", data.analysis?.business_model], ["Monetization", data.analysis?.monetization], ["Risk notes", data.analysis?.risk_notes]])), card("Related keywords", table(["Keyword", "Role", "Weight"], (data.keywords ?? []).map((row) => [text(row.keyword), text(row.role), number(row.weight, 1)]))), card("Evidence", evidenceRows.length ? table(["Type", "Source", "Title", "Quality", "Observed", "URL"], evidenceRows) : statePanel("empty", "No evidence citations are available.")), researchForm);
     }
     catch (error) {
-        append(host, errorState(error, context));
+        append(host, error instanceof ApiError && error.status === 404 ? objectNotFound("Opportunity", id) : errorState(error, context));
     }
     return host;
 }
@@ -406,6 +461,7 @@ function detailList(entries) { const dl = document.createElement("dl"); dl.class
     dd.textContent = text(value);
     dl.append(dt, dd);
 } return dl; }
+function objectNotFound(kind, id) { const panel = document.createElement("div"); panel.className = "r02-object-not-found"; const heading = document.createElement("h2"); heading.textContent = `${kind} not found`; const copy = document.createElement("p"); copy.textContent = `No live ${kind.toLowerCase()} record exists for id ${id}.`; const actions = document.createElement("div"); appendActionRow(actions, button("Go to dashboard", { variant: "primary", onClick: () => navigate("P02") }), button("Back", { onClick: () => history.back() })); panel.append(heading, copy, actions); return panel; }
 function externalLink(url) { const link = document.createElement("a"); link.href = url; link.target = "_blank"; link.rel = "noreferrer"; link.textContent = "Open"; return link; }
 async function renderResearch(context) {
     const host = content("Research workflow", "Research records are currently represented by the opportunity research state API.");

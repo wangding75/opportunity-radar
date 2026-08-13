@@ -50,7 +50,7 @@ async function renderRoute(route: RouteState): Promise<void> {
     }
     const activeSession = session;
     if (!activeSession) return;
-    const content = await renderScreen(route, activeSession, {onSessionExpired: handleSessionExpired});
+    const content = await renderScreen(route, activeSession, {onSessionExpired: handleSessionExpired, onForbidden: () => navigate("P04")});
     if (sequence !== renderSequence || !session) return;
     if (!shell) {
       shell = createAppShell(route.screen, content, activeSession.label, activeSession.role, handleLogout);
