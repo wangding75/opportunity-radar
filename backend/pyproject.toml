@@ -2,3 +2,4 @@
 pythonpath = ["."]
 testpaths = ["tests"]
 addopts = "-q"
+markers = ["postgres_integration: tests requiring a real PostgreSQL database"]

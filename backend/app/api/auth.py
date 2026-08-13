@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
@@ -22,6 +22,24 @@ from app.services.auth import (
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 admin_router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
+
+_OWNER_INVARIANT_LOCK_KEY = 131139
+
+
+def _lock_owner_invariant(db: Session) -> None:
+    """Serialize enabled-OWNER reductions across PostgreSQL workers.
+
+    PostgreSQL transaction-level advisory locks are held until this request's
+    transaction commits or rolls back, so separate API processes cannot both
+    pass the final-owner check based on the same stale count. SQLite keeps the
+    local development path compatible; its single-writer behavior is not used
+    as the production safety guarantee.
+    """
+    if db.get_bind().dialect.name == "postgresql":
+        db.execute(
+            text("SELECT pg_advisory_xact_lock(:lock_key)"),
+            {"lock_key": _OWNER_INVARIANT_LOCK_KEY},
+        )
 
 
 def _user_payload(user: User) -> dict:
@@ -185,7 +203,13 @@ def admin_patch_user(
     principal: Principal | None = Depends(require_admin_auth),
     db: Session = Depends(get_db),
 ):
-    row = db.get(User, user_id)
+    # Take the cross-worker lock before reading any user or OWNER state. The
+    # row is deliberately loaded after the lock so the decision uses a fresh
+    # view of the database after any concurrent OWNER mutation commits.
+    _lock_owner_invariant(db)
+    row = db.execute(
+        select(User).where(User.id == user_id).with_for_update()
+    ).scalar_one_or_none()
     if row is None:
         raise HTTPException(status_code=404, detail="user not found")
     actor_is_owner = bool(principal and principal.role == "OWNER")
