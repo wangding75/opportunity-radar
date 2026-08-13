@@ -9,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 from pathlib import Path
 from threading import Barrier
+from urllib.parse import urlsplit
 from uuid import uuid4
 
 from alembic import command
@@ -186,6 +187,11 @@ def main() -> int:
 
     root = Path(__file__).resolve().parents[1]
     prefix = f"pg-e2e-{uuid4().hex}"
+    expected_database = urlsplit(database_url).path.lstrip("/")
+    if not expected_database:
+        report["error"] = "DATABASE_URL must include a target database name"
+        print(json.dumps(report, sort_keys=True))
+        return 1
     engine = create_engine(database_url, future=True, pool_pre_ping=True, pool_size=WORKERS, max_overflow=WORKERS)
     factory = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
     try:
@@ -194,9 +200,16 @@ def main() -> int:
             postgres_version = db.execute(text("SELECT current_setting('server_version')")).scalar_one()
             revision = db.execute(text("SELECT version_num FROM alembic_version")).scalar_one_or_none()
             database_name = db.execute(text("SELECT current_database()")).scalar_one()
-        report.update({"postgres_version": postgres_version, "migration_revision": revision, "database": database_name})
+        report.update(
+            {
+                "postgres_version": postgres_version,
+                "migration_revision": revision,
+                "database": database_name,
+                "expected_database": expected_database,
+            }
+        )
         report["checks"]["fresh_migration"] = revision == REQUIRED_REVISION
-        report["checks"]["application_connection"] = database_name == "opportunity_radar_concurrency"
+        report["checks"]["application_connection"] = database_name == expected_database
 
         owner_ids, task_id, event_id = _create_fixture(factory, prefix)
 
@@ -242,7 +255,7 @@ def main() -> int:
         engine.dispose()
         with factory() as db:
             recovered_database = db.execute(text("SELECT current_database()")).scalar_one()
-        report["checks"]["connection_recovery"] = recovered_database == "opportunity_radar_concurrency"
+        report["checks"]["connection_recovery"] = recovered_database == expected_database
     except Exception as exc:
         report["error"] = f"{type(exc).__name__}: {exc}"
     finally:
