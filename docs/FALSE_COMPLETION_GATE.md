@@ -8,11 +8,15 @@ for the T117 review. It reruns and cross-checks:
 3. feature-to-code/API/UI/Worker/test traceability;
 4. the functional zero-gap scanner;
 5. the generated functional audit report; and
-6. the SYNTHETIC/MOCK-only data policy with zero live data collected.
+6. the SYNTHETIC/MOCK-only data policy with zero live data collected; and
+7. the reverse-coverage findings for important unregistered implementation targets.
 
 The gate emits `validation/false_completion_gate.json` and fails if any check
-is false. Product validation invokes the same command, and the regression test
-executes it as a normal test path:
+is false. Its PASS means that the audit artifacts are internally consistent and
+do not claim runtime completion; the generated functional report separately
+publishes `STATIC_ONLY`, `RUNTIME_VERIFIED` and `EXTERNAL_VERIFIED` evidence
+statuses and a production-readiness decision. Product validation invokes the
+same command, and the regression test executes it as a normal test path:
 
 ```text
 python scripts/validate_false_completion_gate.py

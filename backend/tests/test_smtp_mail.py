@@ -136,7 +136,16 @@ def test_smtp_configuration_boundaries_and_production_tls_fail_closed():
     with pytest.raises(ValueError, match="authentication"):
         SMTPConfig(host="smtp.example.com", from_address="alerts@example.com")
 
-    missing_host = replace(settings, email_delivery_provider="smtp", smtp_host=None, smtp_from_address="alerts@example.com", smtp_username="u", smtp_password="p")
+    missing_host = replace(
+        settings,
+        email_delivery_enabled=True,
+        email_delivery_provider="smtp",
+        email_delivery_recipients=("recipient@example.com",),
+        smtp_host=None,
+        smtp_from_address="alerts@example.com",
+        smtp_username="u",
+        smtp_password="p",
+    )
     with pytest.raises(ValueError, match="SMTP_HOST"):
         validate_runtime_settings(missing_host)
     plaintext_production = replace(

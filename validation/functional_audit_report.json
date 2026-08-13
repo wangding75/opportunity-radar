@@ -1,19 +1,61 @@
 {
   "report_id": "opportunity-radar-functional-audit",
-  "report_version": "1.0",
+  "report_version": "2.0",
   "report_status": "PASS",
+  "report_status_meaning": "evidence/report-integrity status; it is not a claim that every capability is production-ready",
   "generated_from": {
     "matrix": "validation/functional_matrix.json",
     "traceability": "validation/functional_traceability.json",
-    "gap_scanner": "scripts/scan_functional_matrix_gaps.py"
+    "gap_scanner": "scripts/scan_functional_matrix_gaps.py",
+    "evidence": "validation/functional_validation_evidence.json",
+    "false_completion_scan": "validation/false_completion_scan.json"
   },
   "data_policy": "SYNTHETIC_OR_MOCK_ONLY",
   "real_data_collected": 0,
+  "validation_layers": {
+    "static_completion_hygiene": {
+      "status": "PASS",
+      "sources": [
+        "validation/false_completion_scan.json"
+      ]
+    },
+    "runtime_functional_validation": {
+      "status": "NOT_CHECKED",
+      "sources": []
+    },
+    "real_postgresql_validation": {
+      "status": "RUNTIME_VERIFIED",
+      "sources": [
+        "validation/postgres_runtime_e2e_evidence.json"
+      ]
+    },
+    "external_integration_validation": {
+      "status": "NOT_CHECKED",
+      "sources": []
+    },
+    "production_readiness": {
+      "status": "NOT_READY",
+      "sources": []
+    }
+  },
+  "production_readiness": {
+    "status": "NOT_READY",
+    "sources": [],
+    "reasons": [
+      "runtime functional evidence is not recorded",
+      "external integration evidence is not recorded with real data"
+    ]
+  },
   "summary": {
     "matrix_rows": 30,
     "traceability_entries": 30,
     "areas": 10,
     "gap_count": 0,
+    "reverse_unregistered_count": 5,
+    "coverage_status_counts": {
+      "STATIC_ONLY": 30
+    },
+    "static_only_rows": 30,
     "link_counts": {
       "code": 30,
       "api": 27,
@@ -27,11 +69,47 @@
       "SYNTHETIC": 23
     }
   },
+  "reverse_coverage": {
+    "api_modules": [
+      {
+        "kind": "api_module",
+        "target": "backend/app/api/scoring.py",
+        "reason": "important implementation target is not referenced by any functional matrix traceability entry"
+      }
+    ],
+    "connectors": [
+      {
+        "kind": "connector",
+        "target": "backend/app/connectors/instrumented_app.py",
+        "reason": "important implementation target is not referenced by any functional matrix traceability entry"
+      }
+    ],
+    "core_services": [
+      {
+        "kind": "core_service",
+        "target": "backend/app/services/dashboard.py",
+        "reason": "important implementation target is not referenced by any functional matrix traceability entry"
+      },
+      {
+        "kind": "core_service",
+        "target": "backend/app/services/digest.py",
+        "reason": "important implementation target is not referenced by any functional matrix traceability entry"
+      },
+      {
+        "kind": "core_service",
+        "target": "backend/app/services/digest_persistence.py",
+        "reason": "important implementation target is not referenced by any functional matrix traceability entry"
+      }
+    ],
+    "workers": []
+  },
   "area_summary": [
     {
       "area": "Alert",
       "rows": 7,
-      "complete_rows": 7,
+      "status_counts": {
+        "STATIC_ONLY": 7
+      },
       "data_classes": {
         "MOCK": 1,
         "SYNTHETIC": 6
@@ -40,7 +118,9 @@
     {
       "area": "Delivery",
       "rows": 4,
-      "complete_rows": 4,
+      "status_counts": {
+        "STATIC_ONLY": 4
+      },
       "data_classes": {
         "MOCK": 2,
         "SYNTHETIC": 2
@@ -49,7 +129,9 @@
     {
       "area": "Enterprise",
       "rows": 4,
-      "complete_rows": 4,
+      "status_counts": {
+        "STATIC_ONLY": 4
+      },
       "data_classes": {
         "MOCK": 2,
         "SYNTHETIC": 2
@@ -58,7 +140,9 @@
     {
       "area": "Graph",
       "rows": 1,
-      "complete_rows": 1,
+      "status_counts": {
+        "STATIC_ONLY": 1
+      },
       "data_classes": {
         "SYNTHETIC": 1
       }
@@ -66,7 +150,9 @@
     {
       "area": "Keyword",
       "rows": 2,
-      "complete_rows": 2,
+      "status_counts": {
+        "STATIC_ONLY": 2
+      },
       "data_classes": {
         "SYNTHETIC": 2
       }
@@ -74,7 +160,9 @@
     {
       "area": "Observation",
       "rows": 3,
-      "complete_rows": 3,
+      "status_counts": {
+        "STATIC_ONLY": 3
+      },
       "data_classes": {
         "MOCK": 1,
         "SYNTHETIC": 2
@@ -83,7 +171,9 @@
     {
       "area": "Operations",
       "rows": 3,
-      "complete_rows": 3,
+      "status_counts": {
+        "STATIC_ONLY": 3
+      },
       "data_classes": {
         "SYNTHETIC": 3
       }
@@ -91,7 +181,9 @@
     {
       "area": "Opportunity",
       "rows": 3,
-      "complete_rows": 3,
+      "status_counts": {
+        "STATIC_ONLY": 3
+      },
       "data_classes": {
         "MOCK": 1,
         "SYNTHETIC": 2
@@ -100,7 +192,9 @@
     {
       "area": "Security",
       "rows": 2,
-      "complete_rows": 2,
+      "status_counts": {
+        "STATIC_ONLY": 2
+      },
       "data_classes": {
         "SYNTHETIC": 2
       }
@@ -108,7 +202,9 @@
     {
       "area": "Trend",
       "rows": 1,
-      "complete_rows": 1,
+      "status_counts": {
+        "STATIC_ONLY": 1
+      },
       "data_classes": {
         "SYNTHETIC": 1
       }
@@ -225,8 +321,11 @@
         "docs/ARCHITECTURE.md"
       ],
       "evidence": "Synthetic connector execution persists bounded raw observations; the observation list exposes the persisted evidence and collection state.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -270,8 +369,11 @@
         "docs/DATA_SOURCES.md"
       ],
       "evidence": "Provider responses are bounded at connector boundaries and normalized into the common observation contract; connector tests use MOCK responses.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -314,8 +416,11 @@
         "docs/OPERATIONS.md"
       ],
       "evidence": "Probe outcomes update source health, retry and circuit state; operations UI and health API expose the resulting state.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -358,8 +463,11 @@
         "docs/ARCHITECTURE.md"
       ],
       "evidence": "Synthetic title/text input is normalized, alias-aware and materialized as keyword mentions used by the opportunity workflow.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -401,8 +509,11 @@
         "docs/PRODUCT_REQUIREMENTS.md"
       ],
       "evidence": "Quality decisions retain bounded evidence linkage and reject low-quality synthetic mentions before they influence derived results.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -445,8 +556,11 @@
         "docs/WEEKLY_TREND_PERSISTENCE.md"
       ],
       "evidence": "Time-bounded synthetic mentions aggregate into a versioned weekly report, persist idempotently and render in the dashboard/export path.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -489,8 +603,11 @@
         "docs/PRODUCT_REQUIREMENTS.md"
       ],
       "evidence": "Bounded graph relations form deterministic opportunity clusters; cluster generations and lineage are retained in database models.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -533,8 +650,11 @@
         "docs/ARCHITECTURE.md"
       ],
       "evidence": "Synthetic normalized signals produce a versioned score snapshot and visible evidence breakdown without replacing human-owned research state.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -580,8 +700,11 @@
         "docs/EVIDENCE_CITATION_CONTRACT.md"
       ],
       "evidence": "The durable analysis queue claims and retries MOCK provider work; completed or degraded analysis is returned with citation bindings.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -621,8 +744,11 @@
         "docs/PRODUCT_REQUIREMENTS.md"
       ],
       "evidence": "Research status, priority, tags, notes and starred state round-trip through the API and opportunity detail UI.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -665,8 +791,11 @@
         "docs/PRODUCT_REQUIREMENTS.md"
       ],
       "evidence": "Rule evaluation creates lifecycle events and only permitted NEW-to-ACKNOWLEDGED/DISMISSED/RESOLVED transitions are accepted.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -708,8 +837,11 @@
         "docs/HIGH_SIGNAL_ALERT_ACCEPTANCE.md"
       ],
       "evidence": "Eligibility requires the configured score, risk and evidence gates; duplicate and suppressed synthetic events remain auditable.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -755,8 +887,11 @@
         "docs/KEYWORD_BURST_ALERT_EVIDENCE.md"
       ],
       "evidence": "Bounded daily synthetic series are evaluated with deterministic baseline/anomaly rules; replay returns the same evidence and decision.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -802,8 +937,11 @@
         "docs/TOOL_PRODUCT_ALERTS.md"
       ],
       "evidence": "Multi-source synthetic occurrences normalize to stable tool/product entities and emit first-seen alerts with duplicate suppression.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -849,8 +987,11 @@
         "docs/HIRING_SURGE_DETECTOR.md"
       ],
       "evidence": "The hiring detector consumes only bounded MOCK job observations in acceptance tests and preserves no-evidence versus surge states.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -894,8 +1035,11 @@
         "docs/CROSS_SOURCE_ALERTS.md"
       ],
       "evidence": "Confirmation requires independent synthetic evidence endpoints and suppresses events that do not meet the configured independence threshold.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -945,8 +1089,11 @@
         "docs/RISK_ESCALATION_RECORDS.md"
       ],
       "evidence": "Versioned synthetic score/risk snapshots produce explainable jump/escalation records with duplicate keys and replayable evidence.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -990,8 +1137,11 @@
         "docs/EMAIL_DELIVERY_QUEUE.md"
       ],
       "evidence": "Alert email records are durably queued, claimed with leases, retried by policy and sent through the MOCK or SMTP adapter without false success.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "N/A (explicit)",
@@ -1037,8 +1187,11 @@
         "docs/WEBHOOK_ENDPOINTS.md"
       ],
       "evidence": "Webhook records are durably queued, leased, retried and terminally classified through the versioned endpoint and event contract.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "N/A (explicit)",
@@ -1078,8 +1231,11 @@
         "docs/WEBHOOK_ENDPOINTS.md"
       ],
       "evidence": "MOCK endpoint checks enforce scheme, DNS/IP policy, redirect refusal, timeout bounds and signatures before network delivery.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "N/A (explicit)",
@@ -1120,8 +1276,11 @@
         "docs/WEBHOOK_DELIVERY_QUEUE.md"
       ],
       "evidence": "The isolated MOCK receiver verifies signatures, captures receipts and rejects duplicate event IDs for Docker acceptance.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "N/A (explicit)",
@@ -1159,8 +1318,11 @@
         "docs/ENTERPRISE_MESSAGING_CONTRACT.md"
       ],
       "evidence": "The typed provider-neutral request/result contract carries version, idempotency, retryability and failure semantics for synthetic delivery flows.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "N/A (explicit)",
         "ui": "N/A (explicit)",
@@ -1201,8 +1363,11 @@
         "docs/ENTERPRISE_MESSAGING_DOCKER.md"
       ],
       "evidence": "The isolated MOCK service records sent messages, enforces idempotency and exposes deterministic failure modes for Docker acceptance.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "N/A (explicit)",
@@ -1241,8 +1406,11 @@
         "docs/ENTERPRISE_MESSAGING_CONTRACT.md"
       ],
       "evidence": "Adapter tests exercise provider payload boundaries with MOCK HTTP responses and preserve retryable versus permanent provider failures.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "N/A (explicit)",
         "ui": "N/A (explicit)",
@@ -1282,8 +1450,11 @@
         "docs/ENTERPRISE_MESSAGING_CONTRACT.md"
       ],
       "evidence": "Versioned templates and priority routes produce deterministic success, degraded fallback and deferred retry outcomes without fabricating provider success.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "N/A (explicit)",
         "ui": "N/A (explicit)",
@@ -1328,8 +1499,11 @@
         "docs/OPERATIONS.md"
       ],
       "evidence": "Synthetic authenticated requests exercise RBAC, CSRF, token and admin boundaries; denied requests return the contract status instead of partial success.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -1371,8 +1545,11 @@
         "docs/ARCHITECTURE.md"
       ],
       "evidence": "API requests carry request/trace correlation into audit records and structured logs; the operations view exposes the audit stream.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -1414,8 +1591,11 @@
         "docs/OPERATIONS.md"
       ],
       "evidence": "Worker iterations emit heartbeat and metrics state through independent health updates, including idle, error and stale classifications.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -1459,8 +1639,11 @@
         "docs/DATA_SOURCES.md"
       ],
       "evidence": "Due synthetic probe tasks are planned, claimed and completed with next-run scheduling and retry state visible in operations.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",
@@ -1506,8 +1689,11 @@
         "docs/ARCHITECTURE.md"
       ],
       "evidence": "Synthetic database lifecycle checks cover schema/migration alignment, backup/restore utilities, retention protection and hardening guards.",
+      "evidence_sources": [
+        "validation/false_completion_scan.json"
+      ],
       "coverage": {
-        "status": "COMPLETE",
+        "status": "STATIC_ONLY",
         "code": "LINKED",
         "api": "LINKED",
         "ui": "LINKED",

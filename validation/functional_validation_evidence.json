@@ -1,0 +1,32 @@
+{
+  "evidence_schema_version": "1.0",
+  "evidence_policy": "Only recorded, inspectable evidence can advance a row beyond STATIC_ONLY.",
+  "real_data_collected": 0,
+  "layers": {
+    "static_completion_hygiene": {
+      "status": "PASS",
+      "sources": [
+        "validation/false_completion_scan.json"
+      ]
+    },
+    "runtime_functional_validation": {
+      "status": "NOT_CHECKED",
+      "sources": []
+    },
+    "real_postgresql_validation": {
+      "status": "RUNTIME_VERIFIED",
+      "sources": [
+        "validation/postgres_runtime_e2e_evidence.json"
+      ]
+    },
+    "external_integration_validation": {
+      "status": "NOT_CHECKED",
+      "sources": []
+    },
+    "production_readiness": {
+      "status": "NOT_READY",
+      "sources": []
+    }
+  },
+  "rows": {}
+}

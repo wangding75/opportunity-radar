@@ -7,8 +7,9 @@ reruns and requires PASS for:
 - input/output, SSRF, XML and HTTP boundaries (8);
 - keys, logs, configuration and container controls (8);
 - dependency and supply-chain controls (6); and
-- the T117 false-completion regression gate (6 checks, zero violations and
-  zero functional gaps).
+- the T117 false-completion regression gate (7 checks, zero violations and
+  zero declared functional-chain gaps; reverse-coverage findings remain
+  explicit review output).
 
 The gate writes `validation/security_gate.json`, uses only SYNTHETIC/MOCK
 validation data, and is invoked by `scripts/validate_product.sh`:

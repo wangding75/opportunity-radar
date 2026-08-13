@@ -9,3 +9,11 @@ def test_functional_matrix_gap_scan_has_no_unexplained_chain_gaps():
     result = scan_gaps()
     assert result["gap_count"] == 0
     assert result["matrix_rows"] == result["traceability_entries"]
+    assert result["reverse_unregistered_count"] == sum(
+        len(findings) for findings in result["reverse_coverage"].values()
+    )
+    assert any(
+        finding["target"] == "backend/app/api/scoring.py"
+        for finding in result["reverse_unregistered"]
+    )
+    assert all(finding["reason"] for finding in result["reverse_unregistered"])

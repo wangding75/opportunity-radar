@@ -14,10 +14,17 @@ The exceptions are named by trace ID in the scanner so a future N/A cannot hide
 an accidental missing link. The scan uses only repository paths and the
 SYNTHETIC/MOCK matrix; it does not contact providers or collect live data.
 
+The scan also performs reverse coverage over important API modules, connectors,
+core services and workers. Those unregistered targets are reported as review
+findings even when the declared matrix chain has zero gaps; they are not
+silently treated as covered.
+
 Run it with:
 
 ```text
 python scripts/scan_functional_matrix_gaps.py
 ```
 
-The product validation script and regression tests require a zero-gap result.
+The product validation script and regression tests require zero declared chain
+gaps. They also require the reverse-coverage findings to be present in the
+functional audit report.

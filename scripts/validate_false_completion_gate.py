@@ -28,8 +28,21 @@ def run_gate() -> dict:
         "itemized_fix_ledger": ledger["scan_violations"] == 0,
         "functional_traceability": traceability["entries"] == traceability["matrix_rows"],
         "functional_gap_scan": gaps["gap_count"] == 0,
-        "functional_audit_report": audit["report_status"] == "PASS" and audit["summary"]["gap_count"] == 0,
-        "safe_data_policy": audit["data_policy"] == "SYNTHETIC_OR_MOCK_ONLY" and audit["real_data_collected"] == 0,
+        "functional_audit_report": (
+            audit["report_status"] == "PASS"
+            and audit["summary"]["gap_count"] == 0
+            and audit["summary"]["static_only_rows"] == audit["summary"]["matrix_rows"]
+            and audit["production_readiness"]["status"] == "NOT_READY"
+        ),
+        "safe_data_policy": (
+            audit["data_policy"] == "SYNTHETIC_OR_MOCK_ONLY"
+            and audit["real_data_collected"] == 0
+            and audit["validation_layers"]["external_integration_validation"]["status"] == "NOT_CHECKED"
+        ),
+        "reverse_coverage_reported": (
+            audit["summary"]["reverse_unregistered_count"] == gaps["reverse_unregistered_count"]
+            and all("reason" in finding and "target" in finding for finding in gaps["reverse_unregistered"])
+        ),
     }
     if not all(checks.values()):
         raise ValueError(f"false-completion gate failed: {checks}")
@@ -45,7 +58,9 @@ def run_gate() -> dict:
             "traceability_entries": traceability["entries"],
             "functional_rows": gaps["matrix_rows"],
             "functional_gaps": gaps["gap_count"],
+            "reverse_unregistered": gaps["reverse_unregistered_count"],
             "real_data_collected": audit["real_data_collected"],
+            "production_readiness": audit["production_readiness"]["status"],
         },
         "artifacts": [
             "validation/false_completion_rules.json",

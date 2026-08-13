@@ -11,7 +11,7 @@
   },
   "summary": {
     "security_controls": 30,
-    "false_completion_checks": 6,
+    "false_completion_checks": 7,
     "false_completion_violations": 0,
     "functional_gaps": 0,
     "real_data_collected": 0

@@ -17,9 +17,9 @@
       "finding_id": "FCF-002",
       "detector": "skipped-or-trivial-test",
       "status": "VERIFIED_ABSENT",
-      "scope": "backend/tests",
+      "scope": "backend/tests (unit and static false-completion scan)",
       "file": "validation/false_completion_rules.json",
-      "resolution": "Skipped and trivially passing test patterns are rejected by the AST/text scan.",
+      "resolution": "Skipped and trivially passing patterns are rejected in the normal unit-test tree; PostgreSQL-only integration tests live in a separately invoked integration-test tree and require a real database URL.",
       "verification": "validation/false_completion_scan.json",
       "test_targets": ["backend/tests/test_false_completion.py"]
     },

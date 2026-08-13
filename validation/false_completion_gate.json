@@ -8,16 +8,19 @@
     "functional_traceability": true,
     "functional_gap_scan": true,
     "functional_audit_report": true,
-    "safe_data_policy": true
+    "safe_data_policy": true,
+    "reverse_coverage_reported": true
   },
   "summary": {
-    "scanned_files": 226,
+    "scanned_files": 227,
     "scan_violations": 0,
     "ledger_items": 9,
     "traceability_entries": 30,
     "functional_rows": 30,
     "functional_gaps": 0,
-    "real_data_collected": 0
+    "reverse_unregistered": 5,
+    "real_data_collected": 0,
+    "production_readiness": "NOT_READY"
   },
   "artifacts": [
     "validation/false_completion_rules.json",

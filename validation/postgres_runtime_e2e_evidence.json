@@ -1,0 +1,39 @@
+{
+  "evidence_id": "opportunity-radar-postgres-runtime-e2e-2026-08-13",
+  "evidence_type": "REAL_POSTGRESQL_RUNTIME",
+  "status": "PASS",
+  "database": "opportunity_radar_concurrency",
+  "postgres_version": "17.10",
+  "migration_revision": "0030_probe_task_leases",
+  "workers": 8,
+  "concurrency_attempts": 19,
+  "checks": {
+    "fresh_migration": true,
+    "application_connection": true,
+    "owner_invariant": true,
+    "exclusive_task_claim": true,
+    "queue_idempotency": true,
+    "connection_recovery": true
+  },
+  "owner_concurrency": {
+    "workers": 3,
+    "results": [
+      "committed",
+      "committed",
+      "http-409"
+    ],
+    "enabled_owners": 1
+  },
+  "task_claim_concurrency": {
+    "workers": 8,
+    "claimed": 1
+  },
+  "queue_idempotency": {
+    "workers": 8,
+    "rows": 1,
+    "created": 1,
+    "duplicates": 7
+  },
+  "real_data_collected": 0,
+  "cleanup": "All run-prefixed users, probe tasks, alert rules/events and email queue rows were removed in the runner finally block."
+}
