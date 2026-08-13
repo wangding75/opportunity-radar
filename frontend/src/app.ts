@@ -1,4 +1,6 @@
 import { parseRoute, type RouteState } from "./router.js";
+import { createAppShell, renderFramePlaceholder } from "./shell.js";
+import { installR02Theme } from "./theme.js";
 
 const SCREEN_LABELS: Record<string, string> = {
   P01: "登录", P02: "Dashboard", P03: "全局搜索", P04: "无权限", P05: "未找到", P06: "Observation",
@@ -11,17 +13,24 @@ const SCREEN_LABELS: Record<string, string> = {
 };
 
 export function renderApp(root: HTMLElement): void {
+  installR02Theme();
   const render = (): void => {
     const route = parseRoute();
-    root.replaceChildren(renderSkeleton(route));
+    root.replaceChildren(route.screen === "P01" ? renderLoginPlaceholder() : createAppShell(route.screen, renderSkeleton(route)));
   };
   window.addEventListener("hashchange", render);
   render();
 }
 
 function renderSkeleton(route: RouteState): HTMLElement {
-  const wrapper = document.createElement("main");
+  const wrapper = renderFramePlaceholder(route.screen);
   wrapper.dataset.screen = route.screen;
-  wrapper.innerHTML = `<section aria-labelledby="skeleton-title"><p>R02 route skeleton</p><h1 id="skeleton-title">${SCREEN_LABELS[route.screen] ?? route.screen}</h1><p>AppShell and shared frame foundation are scheduled for T142/T143.</p></section>`;
+  return wrapper;
+}
+
+function renderLoginPlaceholder(): HTMLElement {
+  const wrapper = document.createElement("main");
+  wrapper.className = "r02-login";
+  wrapper.innerHTML = `<section class="r02-login-card r02-skeleton" aria-labelledby="login-title"><div><span class="r02-brand-mark">R</span><h1 id="login-title">Opportunity Radar</h1><p>Unauthenticated entry frame reserved for T144.</p></div></section>`;
   return wrapper;
 }
