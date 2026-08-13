@@ -1,0 +1,228 @@
+name: Opportunity Radar CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.13"
+  NODE_VERSION: "22"
+
+jobs:
+  static:
+    name: Static quality gates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.lock
+
+      - name: Install Python test dependencies
+        run: python -m pip install --disable-pip-version-check -r backend/requirements-dev.lock
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Compile Python
+        run: python -m compileall -q backend/app backend/tests backend/integration_tests scripts
+
+      - name: Build and typecheck frontend
+        run: npm --prefix frontend run build
+
+      - name: Validate compiled frontend security contract
+        run: python scripts/validate_frontend_js.py
+
+      - name: Validate false-completion and functional audit gates
+        run: |
+          python scripts/validate_functional_matrix.py
+          python scripts/validate_traceability.py
+          python scripts/scan_functional_matrix_gaps.py
+          python scripts/generate_functional_audit_report.py
+          python scripts/validate_false_completion.py
+          python scripts/validate_false_completion_gate.py
+          python scripts/validate_security_gate.py
+          python scripts/validate_rbac_permission_matrix.py
+          python scripts/generate_api_permission_inventory.py
+          python scripts/validate_api_permission_inventory.py
+
+      - name: Validate production compose contract
+        env:
+          POSTGRES_PASSWORD: ci-ephemeral-password-not-a-secret
+        run: docker compose -f docker-compose.yml config --quiet
+
+  unit:
+    name: Backend unit tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.lock
+
+      - name: Install Python test dependencies
+        run: python -m pip install --disable-pip-version-check -r backend/requirements-dev.lock
+
+      - name: Run backend tests
+        working-directory: backend
+        env:
+          APP_ENV: test
+          AUTH_MODE: disabled
+        run: python -m pytest tests -q
+
+      - name: Build frontend
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Run frontend build
+        working-directory: frontend
+        run: npm ci && npm run build
+
+  postgres-integration:
+    name: PostgreSQL integration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: opportunity_radar_ci
+          POSTGRES_USER: opportunity_radar
+          POSTGRES_PASSWORD: ci-ephemeral-password-not-a-secret
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U opportunity_radar -d opportunity_radar_ci"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.lock
+
+      - name: Install Python test dependencies
+        run: python -m pip install --disable-pip-version-check -r backend/requirements-dev.lock
+
+      - name: Apply fresh Alembic migration
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql+psycopg://opportunity_radar:ci-ephemeral-password-not-a-secret@127.0.0.1:5432/opportunity_radar_ci
+          PYTHONPATH: .
+        run: python -m alembic upgrade head
+
+      - name: Run T131 PostgreSQL owner concurrency tests
+        working-directory: backend
+        env:
+          APP_ENV: test
+          AUTH_MODE: disabled
+          DATABASE_URL: postgresql+psycopg://opportunity_radar:ci-ephemeral-password-not-a-secret@127.0.0.1:5432/opportunity_radar_ci
+          OPPORTUNITY_RADAR_TEST_DATABASE_URL: postgresql+psycopg://opportunity_radar:ci-ephemeral-password-not-a-secret@127.0.0.1:5432/opportunity_radar_ci
+          PYTHONPATH: .
+        run: python -m pytest ../backend/integration_tests/test_owner_concurrency_postgres.py -q
+
+      - name: Run T135 PostgreSQL runtime E2E
+        env:
+          APP_ENV: test
+          AUTH_MODE: disabled
+          DATABASE_URL: postgresql+psycopg://opportunity_radar:ci-ephemeral-password-not-a-secret@127.0.0.1:5432/opportunity_radar_ci
+          PYTHONPATH: backend
+        run: python scripts/validate_postgres_runtime_e2e.py
+
+      - name: Run T137 PostgreSQL shared login throttling E2E
+        env:
+          APP_ENV: test
+          AUTH_MODE: rbac
+          DATABASE_URL: postgresql+psycopg://opportunity_radar:ci-ephemeral-password-not-a-secret@127.0.0.1:5432/opportunity_radar_ci
+          LOGIN_RATE_LIMIT_WINDOW_SECONDS: "30"
+          LOGIN_RATE_LIMIT_MAX_ATTEMPTS: "4"
+          LOGIN_RATE_LIMIT_BLOCK_SECONDS: "20"
+          PYTHONPATH: backend
+        run: python scripts/validate_auth_rate_limit_postgres.py
+
+  production-smoke:
+    name: Production compose smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build production images
+        env:
+          POSTGRES_PASSWORD: ci-ephemeral-password-not-a-secret
+        run: docker compose -f docker-compose.yml build api migrate
+
+      - name: Start PostgreSQL, migration and API
+        env:
+          POSTGRES_PASSWORD: ci-ephemeral-password-not-a-secret
+        run: docker compose -f docker-compose.yml up -d postgres migrate api
+
+      - name: Wait for API container health
+        env:
+          POSTGRES_PASSWORD: ci-ephemeral-password-not-a-secret
+        run: |
+          set -euo pipefail
+          attempt=1
+          while [ "$attempt" -le 30 ]; do
+            container_id="$(docker compose -f docker-compose.yml ps -q api)"
+            status="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$container_id")"
+            if [ "$status" = "healthy" ]; then
+              exit 0
+            fi
+            if [ "$status" = "unhealthy" ] || [ "$status" = "exited" ]; then
+              docker compose -f docker-compose.yml logs api
+              exit 1
+            fi
+            sleep 2
+            attempt=$((attempt + 1))
+          done
+          docker compose -f docker-compose.yml logs api
+          exit 1
+
+      - name: Smoke API health and readiness inside production network
+        env:
+          POSTGRES_PASSWORD: ci-ephemeral-password-not-a-secret
+        run: |
+          docker compose -f docker-compose.yml exec -T api python -c "import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:8000/health').status == 200; assert urllib.request.urlopen('http://127.0.0.1:8000/ready').status == 200"
+
+      - name: Tear down production smoke
+        if: always()
+        env:
+          POSTGRES_PASSWORD: ci-ephemeral-password-not-a-secret
+        run: docker compose -f docker-compose.yml down -v --remove-orphans
