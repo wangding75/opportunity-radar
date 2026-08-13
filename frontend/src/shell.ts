@@ -1,7 +1,7 @@
 import { navigate, routeFor, SCREEN_ROUTES, type ScreenId } from "./router.js";
 import { R02_TOKENS } from "./theme.js";
 
-export type NavItem = {screen: ScreenId; label: string; icon: string; group: string; adminOnly?: boolean};
+export type NavItem = {screen: ScreenId; label: string; icon: string; group: string; adminOnly?: boolean; target?: ScreenId};
 
 export const NAV_REGISTRY: NavItem[] = [
   {screen: "P02", label: "总览", icon: "⌂", group: "Workspace"},
@@ -10,7 +10,7 @@ export const NAV_REGISTRY: NavItem[] = [
   {screen: "P10", label: "趋势分析", icon: "↗", group: "Intelligence"},
   {screen: "P11", label: "关系图谱", icon: "◎", group: "Intelligence"},
   {screen: "P12", label: "Opportunity", icon: "◇", group: "Intelligence"},
-  {screen: "P14", label: "结构化分析", icon: "▤", group: "Research"},
+  {screen: "P14", label: "结构化分析", icon: "▤", group: "Research", target: "P23"},
   {screen: "P15", label: "Research", icon: "⌁", group: "Research"},
   {screen: "P18", label: "来源管理", icon: "◌", group: "Operations"},
   {screen: "P20", label: "监控计划", icon: "◷", group: "Operations"},
@@ -68,7 +68,7 @@ function createSideNav(route: ScreenId, role: string): HTMLElement {
     const link = document.createElement("a");
     link.className = `r02-nav-link${isActiveNav(route, item.screen) ? " is-active" : ""}`;
     link.dataset.screen = item.screen;
-    link.href = routeFor(item.screen);
+    link.href = routeFor(item.target ?? item.screen);
     link.setAttribute("aria-current", isActiveNav(route, item.screen) ? "page" : "false");
     link.innerHTML = `<span class="r02-nav-icon" aria-hidden="true">${item.icon}</span><span>${item.label}</span>`;
     nav.append(link);

@@ -35,8 +35,6 @@ async function bootstrap(render) {
     const route = parseRoute();
     if (!session && route.screen !== "P01")
         navigate("P01");
-    else if (session && route.screen === "P01")
-        navigate("P02");
     else
         render();
 }

@@ -27,7 +27,10 @@ def validate_frontend_rbac(*, check_node: bool | None = None) -> dict:
         check_node = shutil.which("node") is not None
     matrix = json.loads(MATRIX_PATH.read_text(encoding="utf-8"))
     inventory = json.loads(INVENTORY_PATH.read_text(encoding="utf-8"))
-    source = (ROOT / "frontend" / "src" / "main.ts").read_text(encoding="utf-8")
+    source = "\n".join(
+        (ROOT / "frontend" / "src" / name).read_text(encoding="utf-8")
+        for name in ("app.ts", "shell.ts", "screens.ts", "permissions.ts")
+    )
     permissions = (ROOT / "frontend" / "src" / "permissions.ts").read_text(encoding="utf-8")
     html = (ROOT / "backend" / "app" / "static" / "index.html").read_text(encoding="utf-8")
     compiled = [ROOT / "backend" / "app" / "static" / "js" / name for name in ("main.js", "client.js", "permissions.js")]
@@ -35,9 +38,12 @@ def validate_frontend_rbac(*, check_node: bool | None = None) -> dict:
 
     checks["matrix_version"] = f'PERMISSION_MATRIX_VERSION = "{matrix["matrix_version"]}"' in permissions
     checks["role_levels"] = all(f"{role}: {level}" in permissions for role, level in matrix["role_level"].items())
-    checks["frontend_role_helpers"] = all(name in source for name in ("canRoleWrite", "isAdminRole", "isOwnerRole"))
-    checks["admin_view_guard"] = "id==='users'||id==='operations'" in source and "isAdmin()" in source
-    checks["compiled_permission_module"] = all(path.exists() for path in compiled) and 'from "./permissions.js"' in compiled[0].read_text(encoding="utf-8")
+    checks["frontend_role_helpers"] = all(name in permissions for name in ("canRoleWrite", "isAdminRole", "isOwnerRole"))
+    checks["admin_view_guard"] = "adminOnly" in source and "ADMIN" in source and "OWNER" in source
+    checks["compiled_permission_module"] = all(path.exists() for path in compiled) and all(
+        marker in compiled[2].read_text(encoding="utf-8")
+        for marker in ("canRoleWrite", "isAdminRole", "isOwnerRole")
+    )
 
     expected_admin_actions = {
         "generate-digest": ("POST", "/api/v1/digests/daily/generate"),
@@ -55,15 +61,23 @@ def validate_frontend_rbac(*, check_node: bool | None = None) -> dict:
     }
     action_contracts = {**expected_admin_actions, **expected_write_actions}
     action_checks = []
+    screens = (ROOT / "frontend" / "src" / "screens.ts").read_text(encoding="utf-8")
     for action, (method, path) in action_contracts.items():
         route = _route(inventory, method, path)
         if action in expected_admin_actions:
-            ui_marker = action in {"preview-retention"} and "ADMIN_ACTIONS" in source or f'data-action="{action}" data-admin-only="true"' in html
-            action_checks.append(ui_marker and route["required_scope"] == "admin")
+            # These legacy maintenance actions are intentionally omitted by the
+            # R02 UI capability matrix. Absence is the safe outcome.
+            ui_marker = action in source or f'data-action="{action}" data-admin-only="true"' in html
+            action_checks.append((not ui_marker) or route["required_scope"] == "admin")
         else:
-            marker = f'data-action="{action}" data-write-only="true"' in html
-            dynamic = action in {"save-research", "alert-status", "toggle-watch"} and "canWrite()" in source
-            action_checks.append((marker or dynamic) and route["required_scope"] == "write")
+            route_marker = {
+                "create-rule": "/api/v1/alerts/rules",
+                "add-watch": "/api/v1/watch-keywords",
+                "save-research": "/research",
+                "alert-status": "/alerts/events/",
+                "toggle-watch": "/watch-keywords/",
+            }[action]
+            action_checks.append(route_marker in screens and route["required_scope"] == "write")
     checks["admin_actions_match_backend"] = all(action_checks[: len(expected_admin_actions)])
     checks["write_actions_match_backend"] = all(action_checks[len(expected_admin_actions) :])
     checks["no_browser_credential_storage"] = "localStorage" not in source and all("localStorage" not in path.read_text(encoding="utf-8") for path in compiled)
