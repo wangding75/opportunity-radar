@@ -22,7 +22,7 @@ export async function renderScreen(route: RouteState, session: AuthSession, cont
     case "P11": return renderGraph(route, context);
     case "P12": return renderOpportunities(context);
     case "P13": return renderOpportunityDetail(route, context, "detail");
-    case "P14": return route.params.get("id") ? renderOpportunityDetail(route, context, "analysis") : renderStructuredAnalysisList(route, context);
+    case "P14": return route.params.get("id") ? renderStructuredAnalysisDetail(route, context) : renderStructuredAnalysisList(route, context);
     case "P15": return renderResearch(route, context);
     case "P16": return renderResearchTaskDetail(route, context);
     case "P17": return route.params.get("id") ? renderResearchResultDetail(route, context) : renderResearchResultList(route, context);
@@ -1382,6 +1382,48 @@ function renderResearchTaskActivity(data: Row, id: string): HTMLElement {
   const events: Array<[unknown, string, string]> = []; if (data.research?.updated_at) events.push([data.research.updated_at, "研究状态更新时间", "来自 opportunity.research.updated_at 的真实字段。"]); if (data.analysis?.last_attempt_at) events.push([data.analysis.last_attempt_at, "分析最近尝试时间", "来自 opportunity.analysis.last_attempt_at 的真实字段。"]); if (data.analysis?.analyzed_at) events.push([data.analysis.analyzed_at, "分析时间", "来自 opportunity.analysis.analyzed_at 的真实字段。"]); const timeline = document.createElement("div"); timeline.className = "r04-result-timeline"; timeline.append(events.length ? table(["时间", "字段", "已确认内容"], events.map(([when, label, detail]) => [formatDate(when), badge(label, "info"), detail])) : statePanel("empty", "机会详情未返回可展示的研究或分析时间字段。")); const host = document.createElement("div"); host.className = "r04-research-task-activity"; host.append(detailSectionWithBody("可确认的系统时间字段", timeline), capabilityUnavailableNotice("后端没有 ResearchTask 活动事件、操作人或证据处理轨迹资源；此处不拼装任务时间线。", "任务活动记录暂不可用"), linkTo("P13", "返回关联机会", {id})); return host;
 }
 
+async function renderStructuredAnalysisDetail(route: RouteState, context: ScreenContext): Promise<HTMLElement> {
+  const id = route.params.get("id"); const host = document.createElement("div"); host.className = "r04-structured-analysis-detail";
+  if (!id) { host.append(objectNotFound("结构化分析", "缺失")); return host; }
+  try {
+    const data = await api(`/api/v1/opportunities/${encodeURIComponent(id)}?evidence_limit=100`); const requestedTab = route.params.get("tab") ?? "conclusion"; const activeTab = ["conclusion", "evidence", "process"].includes(requestedTab) ? requestedTab : "conclusion";
+    const header = document.createElement("header"); header.className = "r04-research-result-header";
+    const breadcrumb = document.createElement("nav"); breadcrumb.className = "r04-result-breadcrumb"; breadcrumb.append(linkTo("P14", "研究"), document.createTextNode(" / "), linkTo("P14", "结构化分析"), document.createTextNode(" / "), document.createTextNode(`机会 ${id}`));
+    const title = document.createElement("h1"); title.textContent = text(data.title, `机会 ${id}`);
+    const meta = document.createElement("div"); meta.className = "r04-result-meta"; meta.append(badge(analysisLabel(data.analysis?.status), analysisTone(data.analysis?.status)), document.createTextNode(` · 提供方 ${text(data.analysis?.provider, "未返回")} · `), linkTo("P13", "关联机会", {id}), document.createTextNode(` · 证据返回覆盖 ${resultEvidenceCoverage(data)} · 分析时间 ${formatDate(data.analysis?.analyzed_at)}`));
+    const actions = document.createElement("div"); actions.className = "r04-result-actions"; const copy = button("复制链接", {onClick: () => { void navigator.clipboard?.writeText(window.location.href).then(() => { copy.textContent = "链接已复制"; }); }}); actions.append(copy);
+    const heading = document.createElement("div"); heading.className = "r04-result-heading-row"; const headingCopy = document.createElement("div"); headingCopy.append(title, meta); heading.append(headingCopy, actions); header.append(breadcrumb, heading);
+    host.append(header, readOnlyNotice("本页展示已有结构化分析结果，不提供生成、重新生成或编辑结论；分析内容来自机会详情接口。", "结构化分析只读"), structuredAnalysisTabs(id, activeTab), renderStructuredAnalysisTab(data, id, activeTab));
+  } catch (error) { host.append(errorState(error, context, () => void renderStructuredAnalysisDetail(route, context))); }
+  return host;
+}
+
+function structuredAnalysisTabs(id: string, active: string): HTMLElement {
+  const nav = document.createElement("nav"); nav.className = "r04-result-tabs"; nav.setAttribute("aria-label", "结构化分析详情导航"); for (const [tab, label] of [["conclusion", "分析结论"], ["evidence", "证据矩阵"], ["process", "处理轨迹"]]) { const link = linkTo("P14", label, {id, tab}); link.className = active === tab ? "is-active" : ""; link.setAttribute("aria-current", active === tab ? "page" : "false"); nav.append(link); } return nav;
+}
+
+function renderStructuredAnalysisTab(data: Row, id: string, active: string): HTMLElement {
+  if (active === "evidence") return renderStructuredAnalysisEvidence(data, id);
+  if (active === "process") return renderStructuredAnalysisProcess(data, id);
+  return renderStructuredAnalysisConclusion(data, id);
+}
+
+function renderStructuredAnalysisConclusion(data: Row, id: string): HTMLElement {
+  const layout = document.createElement("div"); layout.className = "r04-result-tab-layout"; const main = document.createElement("main"); main.className = "r04-result-tab-main"; const side = document.createElement("aside"); side.className = "r04-result-tab-side";
+  main.append(detailSectionWithBody("核心判断", data.analysis?.summary ? paragraph(text(data.analysis.summary)) : statePanel("empty", "机会详情未返回分析摘要。")));
+  const evidence = (data.evidence ?? []) as Row[]; const supporting = evidence.filter((row: Row) => Number(row.weight ?? 0) >= 0).slice(0, 6); const opposing = evidence.filter((row: Row) => Number(row.weight ?? 0) < 0).slice(0, 6);
+  main.append(detailSectionWithBody("支持证据", supporting.length ? table(["证据", "摘要", "来源", "质量"], supporting.map((row: Row) => [linkTo("P13", text(row.evidence_id ?? row.id), {id, tab: "evidence", evidence_id: text(row.evidence_id ?? row.id)}), text(row.title, "未返回标题"), text(row.source, "未返回来源"), qualityLabel(row.quality)])) : statePanel("empty", "当前分析没有返回支持证据。")), detailSectionWithBody("反向证据", opposing.length ? table(["证据", "摘要", "来源", "质量"], opposing.map((row: Row) => [linkTo("P13", text(row.evidence_id ?? row.id), {id, tab: "evidence", evidence_id: text(row.evidence_id ?? row.id)}), text(row.title, "未返回标题"), text(row.source, "未返回来源"), qualityLabel(row.quality)])) : statePanel("empty", "当前分析没有返回反向证据。")));
+  side.append(detailSectionWithBody("关联机会", detailList([["机会", text(data.title, `机会 ${id}`)], ["机会 ID", id], ["阶段", stageLabel(data.stage)], ["评分", number(data.score, 1)]])), detailSectionWithBody("分析字段", detailList([["目标用户", data.analysis?.target_user], ["商业模式", data.analysis?.business_model], ["变现方式", data.analysis?.monetization], ["风险说明", data.analysis?.risk_notes]])), linkTo("P13", "查看机会详情", {id}), linkTo("P17", "查看已有研究结果快照", {id})); layout.append(main, side); return layout;
+}
+
+function renderStructuredAnalysisEvidence(data: Row, id: string): HTMLElement {
+  const host = renderResearchResultEvidence(data, id); const side = host.querySelector<HTMLElement>(".r04-result-tab-side"); if (side) { side.append(capabilityUnavailableNotice("后端没有结构化分析维度、结论编号或独立矩阵资源；此处按真实 evidence.weight、quality、type 和 citation ID 展示可回溯证据。", "证据矩阵字段范围")); } return host;
+}
+
+function renderStructuredAnalysisProcess(data: Row, id: string): HTMLElement {
+  const fields = detailList([["分析状态", analysisLabel(data.analysis?.status)], ["分析提供方", data.analysis?.provider], ["分析时间", formatDate(data.analysis?.analyzed_at)], ["最近尝试", formatDate(data.analysis?.last_attempt_at)], ["下一次重试", formatDate(data.analysis?.next_retry_at)], ["分析错误", text(data.analysis?.error, "未返回")], ["引用契约版本", data.analysis?.citation_contract_version]]); const host = document.createElement("div"); host.className = "r04-structured-process"; host.append(detailSectionWithBody("已确认的分析处理字段", fields), capabilityUnavailableNotice("后端没有 StructuredAnalysis 处理轨迹、版本链、阶段耗时或 run ID；不从 HTML mock 拼装输入、预处理、分组或结论生成步骤。", "处理轨迹暂不可用")); const links = document.createElement("div"); links.className = "r04-task-related-links"; links.append(linkTo("P16", "查看研究任务", {id}), linkTo("P17", "查看研究结果", {id}), linkTo("P21", "查看运行记录")); host.append(links); return host;
+}
+
 function analysisTone(value: unknown): "neutral" | "success" | "warning" | "danger" | "info" {
   return ({READY: "success", PENDING: "info", DEGRADED: "warning", FAILED: "danger"} as Record<string, "neutral" | "success" | "warning" | "danger" | "info">)[String(value)] ?? "neutral";
 }
@@ -1592,7 +1634,7 @@ function installScreenStyles(): void {
     .r04-research-inspector-actions { display: grid; gap: 8px; }
     .r04-research-inspector-actions a { color: var(--or-primary-dark); font-size: 13px; text-decoration: none; }
     .r04-research-inspector-actions a:hover { text-decoration: underline; }
-    .r04-research-result-detail, .r04-research-task-detail { display: grid; gap: 18px; min-width: 0; }
+    .r04-research-result-detail, .r04-research-task-detail, .r04-structured-analysis-detail { display: grid; gap: 18px; min-width: 0; }
     .r04-research-result-header { display: grid; gap: 12px; }
     .r04-result-breadcrumb { display: flex; flex-wrap: wrap; gap: 6px; color: var(--or-text-muted); font-size: 12px; }
     .r04-result-breadcrumb a, .r04-result-meta a, .r04-result-tab-side > a, .r04-result-activity-layout > a { color: var(--or-primary-dark); text-decoration: none; }
@@ -1624,6 +1666,7 @@ function installScreenStyles(): void {
     .r04-result-evidence-results a:hover { text-decoration: underline; }
     .r04-result-activity-layout { max-width: 1000px; }
     .r04-research-task-activity { display: grid; gap: 20px; max-width: 1000px; }
+    .r04-structured-process { display: grid; gap: 20px; max-width: 1000px; }
     .r04-task-related-links { display: flex; flex-wrap: wrap; gap: 14px; }
     .r04-task-related-links a { color: var(--or-primary-dark); font-size: 13px; text-decoration: none; }
     .r04-task-related-links a:hover { text-decoration: underline; }

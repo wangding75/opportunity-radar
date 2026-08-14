@@ -12,3 +12,4 @@ T010,关键词、趋势与关系图谱,PASS,RECORDED_IN_TASK_RECEIPT,PASS,2026-0
 T011,研究三类列表入口,PASS,RECORDED_IN_TASK_RECEIPT,PASS,2026-08-14T18:05:00+08:00,2026-08-14T18:20:00+08:00,U024-U026 已读取；P14/P15/P17 建立正式列表入口并使用真实机会 analysis_* 与 OpportunityResearch；ResearchTask/ResearchResult/StructuredAnalysis 独立资源缺口按只读降级；更新 GAP-016
 T012,研究结果详情四个 Tab,PASS,RECORDED_IN_TASK_RECEIPT,PASS,2026-08-14T18:20:00+08:00,2026-08-14T18:24:00+08:00,U027-U030 已读取；P17 动态详情提供结论、证据、方法、活动记录四个 Tab；证据接机会详情 evidence binding；方法/活动未暴露字段明确降级；更新 GAP-016
 T013,研究任务详情四个 Tab,PASS,RECORDED_IN_TASK_RECEIPT,PASS,2026-08-14T18:24:00+08:00,2026-08-14T18:27:00+08:00,U031-U034 已读取；P16 动态详情提供任务简报、证据、发现、活动记录四个只读 Tab；研究状态接 OpportunityResearch；任务实体/负责人/任务事件未暴露；更新 GAP-003 与 GAP-016
+T014,结构化分析详情三个 Tab,PASS,RECORDED_IN_TASK_RECEIPT,PASS,2026-08-14T18:27:00+08:00,2026-08-14T18:29:00+08:00,U035-U037 已读取；P14 动态详情提供分析结论、证据矩阵、处理轨迹三个 Tab；证据接真实 evidence binding；分析维度与处理阶段未暴露，按只读降级；更新 GAP-016
