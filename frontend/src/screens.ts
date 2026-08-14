@@ -640,7 +640,69 @@ function goBackOr(fallback: ScreenId): void {
   else navigate(fallback);
 }
 
+async function renderIntelligenceList(context: ScreenContext): Promise<HTMLElement> {
+  const host = document.createElement("div"); host.className = "r04-intelligence-list";
+  host.append(readOnlyNotice("关联关系由当前后端结果展示，本页不提供人工修改。 observations API 未返回机会关联或处理状态字段，因此不拼装这些筛选项。", "情报关联只读"));
+  const heading = document.createElement("div"); heading.className = "r04-intelligence-heading";
+  const headingText = document.createElement("div"); const title = document.createElement("h1"); title.textContent = "最新情报"; const subtitle = document.createElement("p"); subtitle.textContent = "查看系统采集并入库的最新信号与观察"; headingText.append(title, subtitle);
+  const refresh = document.createElement("button"); refresh.type = "button"; refresh.className = "r04-intelligence-refresh"; refresh.textContent = "↻ 刷新列表"; refresh.addEventListener("click", () => window.location.reload()); heading.append(headingText, refresh); host.append(heading);
+  const filters = document.createElement("form"); filters.className = "r04-intelligence-filters";
+  const q = document.createElement("input"); q.type = "search"; q.name = "q"; q.placeholder = "搜索关键词或标题"; q.setAttribute("aria-label", "搜索关键词或标题");
+  const source = document.createElement("input"); source.name = "source_id"; source.placeholder = "来源 ID"; source.setAttribute("aria-label", "来源 ID");
+  const type = document.createElement("select"); type.setAttribute("aria-label", "情报类型"); addOption(type, "", "类型：全部"); for (const value of ["NEWS", "JOB", "PRODUCT", "REPOSITORY", "TREND"]) addOption(type, value, observationTypeLabel(value));
+  const quality = document.createElement("select"); quality.setAttribute("aria-label", "证据质量"); addOption(quality, "", "质量：全部"); for (const value of ["A", "B", "C"]) addOption(quality, value, `质量：${qualityLabel(value)}`);
+  const submit = document.createElement("button"); submit.type = "submit"; submit.className = "r04-intelligence-submit"; submit.textContent = "筛选";
+  filters.append(q, source, type, quality, submit); host.append(filters);
+  const results = document.createElement("div"); results.className = "r04-intelligence-results"; host.append(results);
+  const load = async (offset: number): Promise<void> => {
+    results.replaceChildren(statePanel("loading", "正在读取最新情报…"));
+    const params = new URLSearchParams({limit: "50", offset: String(offset)}); if (q.value.trim()) params.set("q", q.value.trim()); if (source.value.trim()) params.set("source_id", source.value.trim()); if (type.value) params.set("item_type", type.value);
+    try {
+      const data = await api(`/api/v1/observations?${params.toString()}`); const items = (data.items ?? []).filter((row: Row) => !quality.value || String(row.evidence_quality) === quality.value);
+      const rows = items.map((row: Row) => [formatDate(row.observed_at), linkTo("P07", text(row.title), {id: row.id, q: q.value, source_id: source.value}), text(row.source_id), observationTypeLabel(row.item_type), badge(qualityLabel(row.evidence_quality), row.evidence_quality === "A" ? "success" : row.evidence_quality === "B" ? "info" : "neutral"), badge("已采集", "neutral")]);
+      results.replaceChildren(rows.length ? table(["时间 / 数据新鲜度", "情报摘要", "来源", "类型", "质量", "处理状态"], rows) : statePanel("empty", q.value ? "没有匹配当前筛选条件的情报。" : "当前没有已采集的情报记录。"));
+      const pager = document.createElement("div"); pager.className = "r04-intelligence-pager"; const previous = document.createElement("button"); previous.type = "button"; previous.textContent = "上一页"; previous.disabled = offset <= 0; previous.addEventListener("click", () => void load(Math.max(0, offset - 50))); const pageText = document.createElement("span"); pageText.textContent = `显示 ${offset + (items.length ? 1 : 0)} - ${offset + items.length} 条，共 ${text(data.total, "未知")} 条记录`; const next = document.createElement("button"); next.type = "button"; next.textContent = "下一页"; next.disabled = !data.has_more; next.addEventListener("click", () => void load(offset + 50)); pager.append(previous, pageText, next); results.append(pager);
+    } catch (error) { results.replaceChildren(errorState(error, context, () => void load(offset))); }
+  };
+  filters.addEventListener("submit", (event) => { event.preventDefault(); void load(0); }); await load(0); return host;
+}
+
+async function renderIntelligenceSummary(route: RouteState, context: ScreenContext): Promise<HTMLElement> {
+  const id = route.params.get("id"); const host = document.createElement("div"); host.className = "r04-intelligence-detail";
+  if (!id) { host.append(statePanel("error", "情报 ID 缺失。")); return host; }
+  try {
+    const params = new URLSearchParams({limit: "500"}); if (route.params.get("q")) params.set("q", route.params.get("q")!); if (route.params.get("source_id")) params.set("source_id", route.params.get("source_id")!);
+    const data = await api(`/api/v1/observations?${params.toString()}`); const row = (data.items ?? []).find((item: Row) => String(item.id) === id);
+    if (!row) { host.append(objectNotFound("情报", id)); return host; }
+    const activeTab = route.params.get("tab") ?? "summary";
+    const header = document.createElement("header"); header.className = "r04-intelligence-entity";
+    const crumb = document.createElement("div"); crumb.className = "r04-entity-crumb"; crumb.append(linkTo("P06", "情报"), document.createTextNode(" / "), document.createTextNode("最新情报"), document.createTextNode(" / "), document.createTextNode(id));
+    const title = document.createElement("h1"); title.textContent = `“${text(row.title, "未命名情报")}”`;
+    const meta = document.createElement("p"); meta.className = "r04-intelligence-meta"; meta.textContent = `来源：${text(row.source_id)} · 采集时间：${formatDate(row.observed_at)} · 质量：${qualityLabel(row.evidence_quality)} · 类型：${observationTypeLabel(row.item_type)}`;
+    const tabs = document.createElement("nav"); tabs.className = "r04-intelligence-tabs"; for (const [tab, label] of [["summary", "摘要"], ["raw", "原始证据"], ["relations", "关系"], ["process", "处理过程"]] as Array<[string, string]>) { const link = linkTo("P07", label, {id, tab, q: route.params.get("q") ?? "", source_id: route.params.get("source_id") ?? ""}); link.className = activeTab === tab ? "is-active" : ""; link.setAttribute("aria-current", activeTab === tab ? "page" : "false"); tabs.append(link); }
+    header.append(crumb, title, badge("已采集记录", "neutral"), meta, tabs);
+    const body = document.createElement("div"); body.className = "r04-intelligence-detail-grid";
+    if (activeTab !== "summary") { body.append(capabilityUnavailableNotice("当前后端只为情报列表提供观察记录；独立原始证据、关系和处理轨迹资源尚未暴露。本页不从 mock 文案拼装详情。", "该详情 Tab 暂不可用")); }
+    else {
+      const main = document.createElement("main"); main.className = "r04-intelligence-detail-main";
+      const summary = document.createElement("p"); summary.className = "r04-intelligence-summary-copy"; summary.textContent = text(row.text, "该情报未提供正文摘要。"); main.append(detailSectionWithBody("归一化摘要", summary));
+      const evidence = document.createElement("div"); evidence.className = "r04-intelligence-evidence"; const quote = document.createElement("blockquote"); quote.textContent = text(row.text, "暂无可展示的原始文本。"); const sourceLink = row.source_url ? externalLink(text(row.source_url)) : linkTo("P18", "查看数据源列表"); sourceLink.textContent = row.source_url ? "打开原始来源" : "查看数据源列表"; evidence.append(quote, sourceLink); main.append(detailSectionWithBody("证据出处", evidence));
+      body.append(main);
+      const side = document.createElement("aside"); side.className = "r04-intelligence-detail-side";
+      side.append(detailSectionWithBody("来源信息", detailList([["来源 ID", row.source_id], ["采集方式", row.acquisition_method], ["来源 URL", row.source_url ? "已提供" : "未提供"], ["采集时间", formatDate(row.observed_at)]])));
+      side.append(capabilityUnavailableNotice("观察记录没有返回关联机会 ID；关联对象资源尚未暴露，因此不显示固定机会链接。", "关联机会暂不可用"));
+      side.append(detailSectionWithBody("产生该情报的运行", capabilityUnavailableNotice("观察记录没有返回 collection run ID；可从运行记录列表查看真实运行摘要。", "运行关联暂不可用")), linkTo("P21", "查看运行记录")); body.append(side);
+    }
+    const copy = document.createElement("button"); copy.type = "button"; copy.className = "r04-intelligence-copy"; copy.textContent = "复制当前链接"; copy.addEventListener("click", () => { void navigator.clipboard?.writeText(window.location.href).then(() => { copy.textContent = "链接已复制"; }); });
+    host.append(header, copy, body);
+  } catch (error) { host.append(errorState(error, context, () => void renderIntelligenceSummary(route, context))); }
+  return host;
+}
+
+function observationTypeLabel(value: unknown): string { return ({NEWS: "新闻", JOB: "职位", PRODUCT: "产品", REPOSITORY: "代码仓库", TREND: "趋势"} as Record<string, string>)[String(value)] ?? text(value, "未分类"); }
+
 async function renderObservations(context: ScreenContext): Promise<HTMLElement> {
+  return renderIntelligenceList(context);
   const host = content("Observations", "Raw evidence collected from registered sources, with provenance and acquisition metadata.");
   const filters = document.createElement("form"); filters.className = "r02-inline-form";
   const qWrap = input("Content keyword", {placeholder: "title, text, or query"});
@@ -665,6 +727,7 @@ async function renderObservations(context: ScreenContext): Promise<HTMLElement> 
 }
 
 async function renderObservationDetail(route: RouteState, context: ScreenContext): Promise<HTMLElement> {
+  return renderIntelligenceSummary(route, context);
   const id = route.params.get("id");
   const host = content("Observation detail", "A source observation with its evidence text and provenance.");
   if (!id) { append(host, statePanel("error", "Observation id is missing.")); return host; }
@@ -674,7 +737,7 @@ async function renderObservationDetail(route: RouteState, context: ScreenContext
     if (route.params.get("source_id")) detailParams.set("source_id", route.params.get("source_id")!);
     const data = await api(`/api/v1/observations?${detailParams.toString()}`);
     const row = (data.items ?? []).find((item: Row) => String(item.id) === id);
-    if (!row) { append(host, objectNotFound("Observation", id)); return host; }
+    if (!row) { append(host, objectNotFound("Observation", id ?? "")); return host; }
     const details = document.createElement("dl"); details.className = "r02-detail-grid";
     for (const [label, value] of [["Title", row.title], ["Source", row.source_id], ["Type", row.item_type], ["Query", row.query], ["Quality", row.evidence_quality], ["Acquisition", row.acquisition_method], ["Observed", formatDate(row.observed_at)]]) { const dt = document.createElement("dt"); dt.textContent = label; const dd = document.createElement("dd"); dd.textContent = text(value); details.append(dt, dd); }
     const evidence = card("Evidence text", document.createElement("p")); evidence.querySelector("p")!.textContent = text(row.text);
@@ -895,7 +958,7 @@ function detailSection(title: HTMLElement, body: HTMLElement): HTMLElement { con
 function detailSectionWithBody(titleValue: string, body: HTMLElement): HTMLElement { const title = document.createElement("h2"); title.textContent = titleValue; return detailSection(title, body); }
 function sourceList(rows: Row[]): HTMLElement { const list = document.createElement("div"); list.className = "r04-source-list"; for (const row of rows.slice(0, 5)) { const item = document.createElement("div"); item.className = "r04-source-item"; let title: HTMLElement; if (row.url) { const link = externalLink(text(row.url)); link.textContent = text(row.title, "打开来源"); title = link; } else { const span = document.createElement("span"); span.textContent = text(row.title, "未命名来源"); title = span; } const meta = document.createElement("small"); meta.textContent = `${text(row.source)} · ${formatDate(row.observed_at)}`; item.append(title, meta); list.append(item); } return list.childElementCount ? list : statePanel("empty", "暂无关键来源。"); }
 function detailList(entries: Array<[string, unknown]>): HTMLElement { const dl = document.createElement("dl"); dl.className = "r02-detail-grid"; for (const [key, value] of entries) { const dt = document.createElement("dt"); dt.textContent = key; const dd = document.createElement("dd"); dd.textContent = text(value); dl.append(dt, dd); } return dl; }
-function objectNotFound(kind: string, id: string): HTMLElement { const panel = document.createElement("div"); panel.className = "r02-object-not-found"; const heading = document.createElement("h2"); heading.textContent = `${kind} not found`; const copy = document.createElement("p"); copy.textContent = `No live ${kind.toLowerCase()} record exists for id ${id}.`; const actions = document.createElement("div"); appendActionRow(actions, button("Go to dashboard", {variant: "primary", onClick: () => navigate("P02")}), button("Back", {onClick: () => history.back()})); panel.append(heading, copy, actions); return panel; }
+function objectNotFound(kind: string, id: string): HTMLElement { const panel = document.createElement("div"); panel.className = "r02-object-not-found"; const heading = document.createElement("h2"); heading.textContent = `${kind}不存在`; const copy = document.createElement("p"); copy.textContent = `未找到 ID 为 ${id} 的真实${kind}记录。`; const actions = document.createElement("div"); appendActionRow(actions, button("返回工作台", {variant: "primary", onClick: () => navigate("P02")}), button("返回上一页", {onClick: () => history.back()})); panel.append(heading, copy, actions); return panel; }
 function externalLink(url: string): HTMLAnchorElement { const link = document.createElement("a"); link.href = url; link.target = "_blank"; link.rel = "noreferrer"; link.textContent = "Open"; return link; }
 
 async function renderResearch(context: ScreenContext): Promise<HTMLElement> {
@@ -1034,6 +1097,37 @@ function installScreenStyles(): void {
     .r04-evidence-filter input:focus, .r04-evidence-filter select:focus { border-color: var(--or-primary); outline: 0; }
     .r04-evidence-results { min-width: 0; overflow: hidden; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
     .r04-evidence-results > .r02-table-wrap { border: 0; border-radius: 0; }
+    .r04-intelligence-list, .r04-intelligence-detail { display: grid; gap: 18px; min-width: 0; }
+    .r04-intelligence-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .r04-intelligence-heading h1 { margin: 0; font-size: 24px; line-height: 1.25; }
+    .r04-intelligence-heading p { margin: 6px 0 0; color: var(--or-text-muted); font-size: 13px; }
+    .r04-intelligence-refresh, .r04-intelligence-copy { min-height: 36px; padding: 8px 12px; border: 1px solid var(--or-outline-strong); border-radius: 6px; background: var(--or-surface); color: var(--or-text); cursor: pointer; }
+    .r04-intelligence-refresh:hover, .r04-intelligence-copy:hover { border-color: var(--or-primary); color: var(--or-primary-dark); }
+    .r04-intelligence-filters { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-intelligence-filters input, .r04-intelligence-filters select { min-height: 36px; border: 1px solid var(--or-outline-strong); border-radius: 6px; padding: 7px 10px; background: var(--or-surface); color: var(--or-text); }
+    .r04-intelligence-filters input[type=search] { flex: 1 1 200px; min-width: 180px; }
+    .r04-intelligence-filters input[name=source_id] { width: 130px; }
+    .r04-intelligence-submit { min-height: 36px; padding: 7px 12px; border: 1px solid var(--or-primary); border-radius: 6px; background: var(--or-primary); color: #fff; font-weight: 700; }
+    .r04-intelligence-results { min-width: 0; overflow: hidden; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-intelligence-results > .r02-table-wrap { border: 0; border-radius: 0; }
+    .r04-intelligence-pager { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--or-outline); color: var(--or-text-muted); font-size: 12px; }
+    .r04-intelligence-pager button { min-height: 32px; padding: 6px 10px; border: 1px solid var(--or-outline-strong); border-radius: 5px; background: var(--or-surface); color: var(--or-text); }
+    .r04-intelligence-pager button:disabled { cursor: not-allowed; opacity: .45; }
+    .r04-intelligence-entity { display: grid; gap: 12px; padding: 20px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-intelligence-entity h1 { max-width: 1000px; margin: 0; font-size: 24px; line-height: 1.35; }
+    .r04-intelligence-meta { margin: 0; color: var(--or-text-muted); font-size: 12px; }
+    .r04-intelligence-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px -20px -20px; padding: 0 20px; border-top: 1px solid var(--or-outline); }
+    .r04-intelligence-tabs a { padding: 11px 14px; border-bottom: 2px solid transparent; color: var(--or-text-muted); font-size: 13px; text-decoration: none; }
+    .r04-intelligence-tabs a.is-active { border-bottom-color: var(--or-primary); color: var(--or-primary-dark); font-weight: 700; }
+    .r04-intelligence-detail-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 20px; align-items: start; }
+    .r04-intelligence-detail-main, .r04-intelligence-detail-side { display: grid; gap: 20px; min-width: 0; }
+    .r04-intelligence-summary-copy { margin: 0; line-height: 1.8; white-space: pre-wrap; }
+    .r04-intelligence-evidence { display: grid; gap: 12px; }
+    .r04-intelligence-evidence blockquote { margin: 0; padding: 14px; border-left: 2px solid var(--or-primary); border-radius: 0 6px 6px 0; background: var(--or-surface-muted); color: var(--or-text); line-height: 1.7; white-space: pre-wrap; }
+    .r04-intelligence-evidence a, .r04-intelligence-detail-side > a { color: var(--or-primary-dark); font-size: 13px; text-decoration: none; }
+    .r04-intelligence-evidence a:hover, .r04-intelligence-detail-side > a:hover { text-decoration: underline; }
+    @media (max-width: 900px) { .r04-intelligence-detail-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .r04-intelligence-heading { flex-direction: column; } .r04-intelligence-filters input[name=source_id] { width: auto; flex: 1 1 120px; } }
     @media (max-width: 900px) { .r04-detail-grid-r04 { grid-template-columns: 1fr; } }
     @media (max-width: 640px) { .r04-entity-header h1 { font-size: 22px; } .r04-opportunity-filters input[type=search] { min-width: 140px; } }
     .r04-workbench { display: grid; gap: 20px; min-width: 0; }
