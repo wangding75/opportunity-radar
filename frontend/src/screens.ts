@@ -1,6 +1,6 @@
 import { api, ApiError } from "./client.js";
 import { routeFor, navigate, type RouteState, type ScreenId } from "./router.js";
-import { appendActionRow, badge, button, capabilityUnavailableNotice, card, drawer, input, linkTo, modal, select, settingsFrame, statePanel, table, tabs } from "./ui.js";
+import { appendActionRow, badge, button, capabilityUnavailableNotice, card, drawer, input, linkTo, modal, readOnlyNotice, select, settingsFrame, statePanel, table, tabs } from "./ui.js";
 
 export type AuthSession = {label: string; role: string};
 export type ScreenContext = {onSessionExpired: () => void; onForbidden?: () => void};
@@ -740,15 +740,78 @@ async function renderGraph(context: ScreenContext): Promise<HTMLElement> {
 }
 
 async function renderOpportunities(context: ScreenContext): Promise<HTMLElement> {
-  const host = content("Opportunities", "Ranked opportunity clusters with evidence counts, stage, and analysis state.");
-  const filters = document.createElement("form"); filters.className = "r02-inline-form"; const qWrap = input("Search", {placeholder: "title or summary"}); const stageWrap = select("Stage", ["", "DISCOVERY", "EARLY_GROWTH", "PRODUCTIZING", "COMMERCIALIZING", "DORMANT"], ""); const q = qWrap.querySelector<HTMLInputElement>("input"); const stage = stageWrap.querySelector<HTMLSelectElement>("select"); const submit = button("Apply filters", {variant: "primary", type: "submit"}); appendActionRow(filters, submit); filters.prepend(qWrap, stageWrap);
-  const results = document.createElement("div");
-  const load = async (offset: number): Promise<void> => { results.replaceChildren(statePanel("loading", "Loading opportunities…")); const params = new URLSearchParams({limit: "50", offset: String(offset), include_dormant: stage?.value === "DORMANT" ? "true" : "false"}); if (q?.value.trim()) params.set("q", q.value.trim()); if (stage?.value && stage.value !== "DORMANT") params.set("stage", stage.value); try { const data = await api(`/api/v1/opportunities?${params.toString()}`); const rows = (data ?? []).map((row: Row) => [linkTo("P13", text(row.title), {id: row.id, q: q?.value ?? ""}), badge(text(row.stage), row.stage === "COMMERCIALIZING" ? "success" : "info"), number(row.score, 1), number(row.risk_score, 1), text(row.evidence_count), text(row.research?.status ?? "NEW"), badge(text(row.analysis_status), row.analysis_status === "READY" ? "success" : "warning")]); results.replaceChildren(rows.length ? table(["Opportunity", "Stage", "Score", "Risk", "Evidence", "Research", "Analysis"], rows) : statePanel("empty", q?.value ? "No opportunities match the current filters." : "No active opportunities are available.")); const pager = document.createElement("div"); pager.className = "r02-pagination"; pager.append(button("Previous", {disabled: offset <= 0, onClick: () => void load(Math.max(0, offset - 50))}), document.createTextNode(`Offset ${offset}`), button("Next", {disabled: data.length < 50, onClick: () => void load(offset + 50)})); results.append(pager); } catch (error) { results.replaceChildren(errorState(error, context, () => void load(offset))); } };
-  filters.addEventListener("submit", (event) => { event.preventDefault(); void load(0); }); append(host, filters, results); await load(0); return host;
+  const host = document.createElement("div"); host.className = "r04-opportunity-list";
+  const heading = document.createElement("div"); heading.className = "r04-opportunity-heading";
+  const title = document.createElement("h1"); title.textContent = "机会";
+  const subtitle = document.createElement("p"); subtitle.textContent = "按价值、证据与时效性查看系统识别出的机会";
+  heading.append(title, subtitle); host.append(heading);
+  const filters = document.createElement("form"); filters.className = "r04-opportunity-filters";
+  const query = document.createElement("input"); query.type = "search"; query.name = "q"; query.placeholder = "搜索机会"; query.setAttribute("aria-label", "搜索机会");
+  const stage = document.createElement("select"); stage.setAttribute("aria-label", "机会阶段"); addOption(stage, "", "阶段：所有"); addOption(stage, "DISCOVERY", "发现"); addOption(stage, "EARLY_GROWTH", "早期增长"); addOption(stage, "PRODUCTIZING", "产品化"); addOption(stage, "COMMERCIALIZING", "商业化"); addOption(stage, "DORMANT", "休眠");
+  const minScore = document.createElement("select"); minScore.setAttribute("aria-label", "最低评分"); addOption(minScore, "0", "评分：所有"); addOption(minScore, "70", "70 分以上"); addOption(minScore, "90", "90 分以上");
+  const research = document.createElement("select"); research.setAttribute("aria-label", "研究状态"); addOption(research, "", "研究：所有"); addOption(research, "NEW", "未处理"); addOption(research, "TRIAGED", "已分诊"); addOption(research, "TRACKING", "跟踪中"); addOption(research, "DONE", "已完成"); addOption(research, "DISMISSED", "已忽略");
+  const starred = document.createElement("label"); starred.className = "r04-opportunity-checkbox"; const starredInput = document.createElement("input"); starredInput.type = "checkbox"; starredInput.name = "starred"; starred.append(starredInput, document.createTextNode("仅重点"));
+  const submit = document.createElement("button"); submit.type = "submit"; submit.className = "r04-opportunity-submit"; submit.textContent = "筛选";
+  const clear = document.createElement("button"); clear.type = "button"; clear.className = "r04-opportunity-clear"; clear.textContent = "清除";
+  filters.append(query, stage, minScore, research, starred, submit, clear);
+  const scopeNotice = readOnlyNotice("阶段写入接口未向用户安全暴露；列表中的阶段和研究状态均来自真实后端，只读展示。", "机会列表读取与权限说明");
+  const results = document.createElement("div"); results.className = "r04-opportunity-results";
+  let cursorStack: string[] = [];
+  const load = async (cursor?: string): Promise<void> => {
+    results.replaceChildren(statePanel("loading", "正在读取机会…"));
+    const params = new URLSearchParams({limit: "50", include_dormant: stage.value === "DORMANT" ? "true" : "false"});
+    if (cursor) params.set("cursor", cursor); if (query.value.trim()) params.set("q", query.value.trim()); if (stage.value && stage.value !== "DORMANT") params.set("stage", stage.value); if (minScore.value !== "0") params.set("min_score", minScore.value); if (research.value) params.set("research_status", research.value); if (starredInput.checked) params.set("starred", "true");
+    try {
+      const data = await api(`/api/v1/opportunities/page?${params.toString()}`);
+      const rows = (data.items ?? []).map((row: Row) => [linkTo("P13", text(row.title), {id: row.id}), text(row.opportunity_key ?? row.id), scoreBadge(row.score), number(row.risk_score, 1), stageLabel(row.stage), text(row.evidence_count, "0"), badge(researchLabel(row.research?.status), row.research?.status === "TRACKING" || row.research?.status === "DONE" ? "success" : "neutral"), formatDate(row.last_seen_at)]);
+      results.replaceChildren(rows.length ? table(["机会", "ID", "评分", "风险", "阶段", "证据数", "研究状态", "更新时间"], rows) : statePanel("empty", query.value ? "没有匹配当前筛选条件的机会。" : "当前没有可显示的机会。"));
+      const pager = document.createElement("div"); pager.className = "r04-opportunity-pager";
+      const previous = document.createElement("button"); previous.type = "button"; previous.textContent = "上一页"; previous.disabled = !cursorStack.length; previous.addEventListener("click", () => { const previousCursor = cursorStack.pop(); void load(previousCursor); });
+      const pageText = document.createElement("span"); pageText.textContent = `${rows.length} 条记录${data.has_more ? " · 还有更多" : ""}`;
+      const next = document.createElement("button"); next.type = "button"; next.textContent = "下一页"; next.disabled = !data.next_cursor; next.addEventListener("click", () => { if (data.next_cursor) { cursorStack.push(cursor ?? ""); void load(data.next_cursor); } });
+      pager.append(previous, pageText, next); results.append(pager);
+    } catch (error) { results.replaceChildren(errorState(error, context, () => void load(cursor))); }
+  };
+  filters.addEventListener("submit", (event) => { event.preventDefault(); cursorStack = []; void load(); });
+  clear.addEventListener("click", () => { filters.reset(); cursorStack = []; void load(); });
+  host.append(filters, scopeNotice, results); await load(); return host;
+}
+
+async function renderOpportunityOverview(route: RouteState, context: ScreenContext, id: string): Promise<HTMLElement> {
+  const host = document.createElement("div"); host.className = "r04-opportunity-detail";
+  try {
+    const data = await api(`/api/v1/opportunities/${encodeURIComponent(id)}`);
+    const header = document.createElement("header"); header.className = "r04-entity-header";
+    const crumb = document.createElement("div"); crumb.className = "r04-entity-crumb"; crumb.append(linkTo("P12", "机会"), document.createTextNode(" / "), document.createTextNode(text(data.opportunity_key ?? id)));
+    const title = document.createElement("h1"); title.textContent = text(data.title, "未命名机会");
+    const chips = document.createElement("div"); chips.className = "r04-entity-chips"; chips.append(scoreBadge(data.score), badge(`阶段：${stageLabel(data.stage)}`, "info"), badge(`风险：${number(data.risk_score, 1)}`, "neutral"), badge(`研究：${researchLabel(data.research?.status)}`, "neutral"));
+    const dates = document.createElement("p"); dates.className = "r04-entity-dates"; dates.textContent = `首次发现：${formatDate(data.first_seen_at)} · 最近更新：${formatDate(data.last_seen_at)}`;
+    header.append(crumb, title, chips, dates);
+    const tabs = document.createElement("nav"); tabs.className = "r04-entity-tabs"; tabs.setAttribute("aria-label", "机会详情导航");
+    const activeTab = route.params.get("tab") ?? "overview";
+    for (const [tab, label] of [["overview", "概览"], ["evidence", "证据"], ["analysis", "分析与研究"], ["history", "历史"]] as Array<[string, string]>) { const link = linkTo("P13", label, {id, tab}); link.className = activeTab === tab ? "is-active" : ""; link.setAttribute("aria-current", activeTab === tab ? "page" : "false"); tabs.append(link); }
+    const grid = document.createElement("div"); grid.className = "r04-detail-grid-r04";
+    const main = document.createElement("main"); main.className = "r04-detail-main";
+    const summary = document.createElement("p"); summary.className = "r04-detail-summary-copy"; summary.textContent = text(data.analysis?.summary, "当前后端尚未返回可展示的机会摘要。");
+    main.append(detailSectionWithBody("机会摘要", summary));
+    const scoreRows = Object.entries(data.scores ?? {}).map(([key, value]) => [scoreLabel(key), number(value, 1)]);
+    main.append(detailSectionWithBody("评分构成", scoreRows.length ? table(["维度", "分值"], scoreRows) : statePanel("empty", "暂无评分构成数据。")));
+    const keywordRows = (data.keywords ?? []).map((row: Row) => [linkTo("P10", text(row.keyword), {keyword_id: row.id}), text(row.role), number(row.weight, 1)]);
+    main.append(detailSectionWithBody("关联关键词", keywordRows.length ? table(["关键词", "角色", "权重"], keywordRows) : statePanel("empty", "暂无关联关键词。")));
+    const side = document.createElement("aside"); side.className = "r04-detail-side";
+    side.append(detailSectionWithBody("关键来源", sourceList(data.evidence ?? [])));
+    side.append(detailSectionWithBody("已有研究", detailList([["状态", researchLabel(data.research?.status)], ["优先级", data.research?.priority], ["更新时间", formatDate(data.research?.updated_at)]])));
+    side.append(capabilityUnavailableNotice("后端未暴露机会生命周期历史接口；这里只读展示首次发现和最近更新时间，不拼装虚假的变更时间线。", "历史记录暂不可用"));
+    grid.append(main, side);
+    host.append(readOnlyNotice("当前后端未开放安全的机会阶段状态变更接口，本页状态仅供查看。", "机会状态只读"), header, tabs, grid);
+  } catch (error) { host.append(error instanceof ApiError && error.status === 404 ? objectNotFound("机会", id) : errorState(error, context)); }
+  return host;
 }
 
 async function renderOpportunityDetail(route: RouteState, context: ScreenContext, mode: "detail" | "analysis" | "research" | "result"): Promise<HTMLElement> {
   const id = route.params.get("id");
+  if (!id) { const missing = document.createElement("div"); missing.className = "r04-opportunity-detail"; missing.append(statePanel("error", "机会 ID 缺失。")); return missing; }
+  if (mode === "detail") return renderOpportunityOverview(route, context, id);
   const title = mode === "analysis" ? "Structured analysis" : mode === "research" ? "Research workflow" : mode === "result" ? "Research result" : "Opportunity detail";
   const host = content(title, "Live opportunity detail, score breakdown, evidence citations, and research state.");
   if (!id) { append(host, statePanel("error", "Opportunity id is missing.")); return host; }
@@ -757,7 +820,7 @@ async function renderOpportunityDetail(route: RouteState, context: ScreenContext
     const summary = document.createElement("div"); summary.className = "r02-detail-summary";
     append(summary, card("Opportunity", detailList([["Title", data.title], ["Stage", data.stage], ["Score", number(data.score, 1)], ["Risk", number(data.risk_score, 1)], ["Analysis", data.analysis?.status], ["Research", data.research?.status]])), card("Scores", detailList(Object.entries(data.scores ?? {}).map(([key, value]) => [key, number(value, 1)]))));
     const actions = document.createElement("div");
-    if (mode === "detail" || mode === "research" || mode === "result") appendActionRow(actions, button("Open analysis", {onClick: () => navigate("P14", {id})}), button("Open research", {onClick: () => navigate("P16", {id})}), button("Open research result", {onClick: () => navigate("P17", {id})}));
+    if (mode === "research" || mode === "result") appendActionRow(actions, button("Open analysis", {onClick: () => navigate("P14", {id})}), button("Open research", {onClick: () => navigate("P16", {id})}), button("Open research result", {onClick: () => navigate("P17", {id})}));
     if (mode !== "analysis") appendActionRow(actions, button("Back to opportunities", {onClick: () => navigate("P12")}));
     const researchForm = document.createElement("form"); researchForm.className = "r02-inline-form";
     const statusWrap = select("Research status", ["NEW", "TRIAGED", "TRACKING", "DONE", "DISMISSED"], text(data.research?.status, "NEW")); const priorityWrap = input("Priority", {type: "number", value: text(data.research?.priority, "0")}); const notesWrap = input("Notes", {value: text(data.research?.notes, "")});
@@ -770,6 +833,13 @@ async function renderOpportunityDetail(route: RouteState, context: ScreenContext
   return host;
 }
 
+function addOption(selectEl: HTMLSelectElement, value: string, label: string): void { const option = document.createElement("option"); option.value = value; option.textContent = label; selectEl.append(option); }
+function scoreBadge(value: unknown): HTMLElement { return badge(`评分 ${number(value, 1)}`, Number(value) >= 80 ? "success" : Number(value) >= 60 ? "info" : "neutral"); }
+function researchLabel(value: unknown): string { return ({NEW: "未处理", TRIAGED: "已分诊", TRACKING: "跟踪中", DONE: "已完成", DISMISSED: "已忽略"} as Record<string, string>)[String(value)] ?? text(value, "未处理"); }
+function scoreLabel(value: string): string { return ({demand: "需求", supply: "供给", execution: "执行", cross_source: "跨来源", saturation: "饱和度"} as Record<string, string>)[value] ?? value; }
+function detailSection(title: HTMLElement, body: HTMLElement): HTMLElement { const section = document.createElement("section"); section.className = "r04-detail-section"; section.append(title, body); return section; }
+function detailSectionWithBody(titleValue: string, body: HTMLElement): HTMLElement { const title = document.createElement("h2"); title.textContent = titleValue; return detailSection(title, body); }
+function sourceList(rows: Row[]): HTMLElement { const list = document.createElement("div"); list.className = "r04-source-list"; for (const row of rows.slice(0, 5)) { const item = document.createElement("div"); item.className = "r04-source-item"; let title: HTMLElement; if (row.url) { const link = externalLink(text(row.url)); link.textContent = text(row.title, "打开来源"); title = link; } else { const span = document.createElement("span"); span.textContent = text(row.title, "未命名来源"); title = span; } const meta = document.createElement("small"); meta.textContent = `${text(row.source)} · ${formatDate(row.observed_at)}`; item.append(title, meta); list.append(item); } return list.childElementCount ? list : statePanel("empty", "暂无关键来源。"); }
 function detailList(entries: Array<[string, unknown]>): HTMLElement { const dl = document.createElement("dl"); dl.className = "r02-detail-grid"; for (const [key, value] of entries) { const dt = document.createElement("dt"); dt.textContent = key; const dd = document.createElement("dd"); dd.textContent = text(value); dl.append(dt, dd); } return dl; }
 function objectNotFound(kind: string, id: string): HTMLElement { const panel = document.createElement("div"); panel.className = "r02-object-not-found"; const heading = document.createElement("h2"); heading.textContent = `${kind} not found`; const copy = document.createElement("p"); copy.textContent = `No live ${kind.toLowerCase()} record exists for id ${id}.`; const actions = document.createElement("div"); appendActionRow(actions, button("Go to dashboard", {variant: "primary", onClick: () => navigate("P02")}), button("Back", {onClick: () => history.back()})); panel.append(heading, copy, actions); return panel; }
 function externalLink(url: string): HTMLAnchorElement { const link = document.createElement("a"); link.href = url; link.target = "_blank"; link.rel = "noreferrer"; link.textContent = "Open"; return link; }
@@ -862,6 +932,49 @@ async function renderDiagnostics(context: ScreenContext): Promise<HTMLElement> {
 function installScreenStyles(): void {
   if (document.getElementById("r02-screen-styles")) return;
   const style = document.createElement("style"); style.id = "r02-screen-styles"; style.textContent = `
+    .r04-opportunity-list, .r04-opportunity-detail { display: grid; gap: 18px; min-width: 0; }
+    .r04-opportunity-heading { display: grid; gap: 5px; }
+    .r04-opportunity-heading h1 { margin: 0; font-size: 24px; line-height: 1.25; }
+    .r04-opportunity-heading p { margin: 0; color: var(--or-text-muted); font-size: 13px; }
+    .r04-opportunity-filters { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px; overflow-x: auto; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-opportunity-filters input[type=search], .r04-opportunity-filters select { min-height: 36px; border: 1px solid var(--or-outline-strong); border-radius: 6px; padding: 7px 10px; background: var(--or-surface); color: var(--or-text); }
+    .r04-opportunity-filters input[type=search] { flex: 1 1 180px; min-width: 180px; }
+    .r04-opportunity-filters select { flex: 0 0 auto; max-width: 155px; }
+    .r04-opportunity-filters input:focus, .r04-opportunity-filters select:focus { border-color: var(--or-primary); outline: 0; }
+    .r04-opportunity-checkbox { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 8px; color: var(--or-text-muted); font-size: 12px; white-space: nowrap; }
+    .r04-opportunity-submit, .r04-opportunity-clear { min-height: 36px; padding: 7px 12px; border-radius: 6px; cursor: pointer; }
+    .r04-opportunity-submit { border: 1px solid var(--or-primary); background: var(--or-primary); color: #fff; font-weight: 700; }
+    .r04-opportunity-clear { border: 1px solid var(--or-outline-strong); background: var(--or-surface); color: var(--or-text-muted); }
+    .r04-opportunity-results { min-width: 0; overflow: hidden; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-opportunity-results > .r02-table-wrap { border: 0; border-radius: 0; }
+    .r04-opportunity-pager { display: flex; justify-content: flex-end; align-items: center; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--or-outline); color: var(--or-text-muted); font-size: 12px; }
+    .r04-opportunity-pager button { min-height: 32px; padding: 6px 10px; border: 1px solid var(--or-outline-strong); border-radius: 5px; background: var(--or-surface); color: var(--or-text); }
+    .r04-opportunity-pager button:disabled { cursor: not-allowed; opacity: .45; }
+    .r04-entity-header { display: grid; gap: 12px; }
+    .r04-entity-crumb { display: flex; gap: 6px; color: var(--or-text-muted); font-size: 12px; }
+    .r04-entity-crumb a { color: var(--or-primary-dark); text-decoration: none; }
+    .r04-entity-header h1 { max-width: 900px; margin: 0; color: var(--or-text); font-size: 28px; line-height: 1.25; }
+    .r04-entity-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .r04-entity-dates { margin: 0; color: var(--or-text-muted); font-size: 12px; }
+    .r04-entity-tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--or-outline); }
+    .r04-entity-tabs a { padding: 10px 14px; border-bottom: 2px solid transparent; color: var(--or-text-muted); font-size: 13px; text-decoration: none; }
+    .r04-entity-tabs a:hover { color: var(--or-text); background: var(--or-surface-muted); }
+    .r04-entity-tabs a.is-active { border-bottom-color: var(--or-primary); color: var(--or-primary-dark); font-weight: 700; }
+    .r04-detail-grid-r04 { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 28px; align-items: start; }
+    .r04-detail-main, .r04-detail-side { display: grid; gap: 24px; min-width: 0; }
+    .r04-detail-section { display: grid; gap: 12px; min-width: 0; }
+    .r04-detail-section h2 { margin: 0; color: var(--or-text); font-size: 18px; }
+    .r04-detail-summary-copy { margin: 0; padding-left: 16px; border-left: 2px solid var(--or-primary); color: var(--or-text); line-height: 1.8; white-space: pre-wrap; }
+    .r04-detail-section > .r02-table-wrap { border-radius: 6px; }
+    .r04-source-list { display: grid; gap: 12px; }
+    .r04-source-item { display: grid; gap: 4px; padding: 10px 0; border-bottom: 1px solid var(--or-outline); }
+    .r04-source-item:last-child { border-bottom: 0; }
+    .r04-source-item a { color: var(--or-primary-dark); text-decoration: none; }
+    .r04-source-item a:hover { text-decoration: underline; }
+    .r04-source-item span { color: var(--or-text); }
+    .r04-source-item small { color: var(--or-text-muted); font-size: 11px; }
+    @media (max-width: 900px) { .r04-detail-grid-r04 { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .r04-entity-header h1 { font-size: 22px; } .r04-opportunity-filters input[type=search] { min-width: 140px; } }
     .r04-workbench { display: grid; gap: 20px; min-width: 0; }
     .r04-workbench-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
     .r04-workbench-heading h1 { margin: 0; font-size: 24px; line-height: 1.25; }
