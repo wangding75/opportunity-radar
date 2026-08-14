@@ -16,10 +16,10 @@ export async function renderScreen(route: RouteState, session: AuthSession, cont
     case "P26A": return renderLoginHelp();
     case "P06": return renderObservations(context);
     case "P07": return renderObservationDetail(route, context);
-    case "P08": return renderKeywords(context);
-    case "P09": return renderWatchKeywords(context);
+    case "P08": return renderKeywords(route, context);
+    case "P09": return renderWatchKeywords(route, context);
     case "P10": return renderTrend(route, context);
-    case "P11": return renderGraph(context);
+    case "P11": return renderGraph(route, context);
     case "P12": return renderOpportunities(context);
     case "P13": return renderOpportunityDetail(route, context, "detail");
     case "P14": return renderOpportunityDetail(route, context, "analysis");
@@ -828,60 +828,180 @@ async function renderObservationDetail(route: RouteState, context: ScreenContext
   return host;
 }
 
-async function renderKeywords(context: ScreenContext): Promise<HTMLElement> {
-  const host = content("Keyword discovery", "Ranked keywords derived from observed evidence.");
+async function renderKeywords(route: RouteState, context: ScreenContext): Promise<HTMLElement> {
+  const host = document.createElement("div"); host.className = "r04-keyword-page";
+  const heading = r04PageHeading("关键词发现", "识别新出现的术语、概念与语义变化", "刷新关键词");
+  host.append(readOnlyNotice("关键词统计来自真实关键词与观察接口；当前页面不直接修改关键词，关注关系请进入关注关键词。", "关键词发现只读"), heading);
+  const filter = document.createElement("form"); filter.className = "r04-keyword-filter";
+  const query = document.createElement("input"); query.type = "search"; query.placeholder = "关键词搜索…"; query.setAttribute("aria-label", "关键词搜索");
+  const windowSelect = document.createElement("select"); addOption(windowSelect, "0", "时间范围：全部"); addOption(windowSelect, "30", "最近 30 天"); addOption(windowSelect, "90", "最近 90 天");
+  const sourceSelect = document.createElement("select"); addOption(sourceSelect, "0", "来源多样性：全部"); addOption(sourceSelect, "3", "来源数 ≥ 3"); addOption(sourceSelect, "5", "来源数 ≥ 5");
+  const scoreSelect = document.createElement("select"); addOption(scoreSelect, "0", "最低信号强度：全部"); addOption(scoreSelect, "50", "最低信号强度：50+"); addOption(scoreSelect, "80", "最低信号强度：80+");
+  const submit = document.createElement("button"); submit.type = "submit"; submit.textContent = "筛选"; submit.className = "r04-keyword-submit";
+  filter.append(query, windowSelect, sourceSelect, scoreSelect, submit);
+  const layout = document.createElement("div"); layout.className = "r04-keyword-layout";
+  const results = document.createElement("section"); results.className = "r04-keyword-results";
+  const inspector = document.createElement("aside"); inspector.className = "r04-keyword-inspector";
+  layout.append(results, inspector); host.append(filter, layout);
   try {
-    const rows = await api("/api/v1/keywords?limit=500");
-    const tableRows = (rows ?? []).map((row: Row) => [linkTo("P10", text(row.keyword), {keyword_id: row.id}), badge(text(row.status), row.status === "TRENDING" ? "success" : "neutral"), number(row.score, 1), text(row.observation_count), text(row.source_count), formatDate(row.last_seen_at)]);
-    append(host, tableRows.length ? table(["Keyword", "Status", "Score", "Observations", "Sources", "Last seen"], tableRows) : statePanel("empty", "No keywords have been derived yet."));
-  } catch (error) { append(host, errorState(error, context, () => navigate("P08"))); }
+    const [keywordResult, watchResult] = await Promise.allSettled([api("/api/v1/keywords?limit=500"), api("/api/v1/watch-keywords")]);
+    if (keywordResult.status === "rejected") throw keywordResult.reason;
+    const rows = Array.isArray(keywordResult.value) ? keywordResult.value as Row[] : [];
+    const watchRows = watchResult.status === "fulfilled" && Array.isArray(watchResult.value) ? watchResult.value as Row[] : [];
+    const watched = new Set(watchRows.filter((row: Row) => row.enabled).map((row: Row) => String(row.canonical ?? row.keyword).toLowerCase()));
+    let selectedId = route.params.get("keyword_id") ?? (rows[0] ? String(rows[0].id) : "");
+    const draw = async (): Promise<void> => {
+      const filtered = rows.filter((row: Row) => {
+        const matchesQuery = !query.value.trim() || `${row.keyword ?? ""} ${row.canonical ?? ""}`.toLowerCase().includes(query.value.trim().toLowerCase());
+        const matchesWindow = !Number(windowSelect.value) || keywordWithinDays(row.last_seen_at, Number(windowSelect.value));
+        const matchesSource = Number(row.source_count ?? 0) >= Number(sourceSelect.value);
+        const matchesScore = Number(row.score ?? 0) >= Number(scoreSelect.value);
+        return matchesQuery && matchesWindow && matchesSource && matchesScore;
+      });
+      const pageRows = filtered.slice(0, 50);
+      const tableRows = pageRows.map((row: Row) => {
+        const key = String(row.canonical ?? row.keyword ?? "").toLowerCase();
+        return [linkTo("P08", text(row.keyword, "未命名关键词"), {keyword_id: row.id}), watched.has(key) ? badge("已关注", "success") : badge("未关注", "neutral"), scoreBadge(row.score), text(row.source_count, "0"), text(row.observation_count, "0"), formatDate(row.first_seen_at), formatDate(row.last_seen_at)];
+      });
+      const pager = document.createElement("div"); pager.className = "r04-keyword-pager"; pager.textContent = `显示 1-${pageRows.length} 条，共 ${filtered.length} 个真实关键词${filtered.length > 50 ? "（仅显示前 50 条）" : ""}`;
+      results.replaceChildren(table(["关键词", "关注状态", "信号强度", "来源数", "证据数", "首次出现", "最近采集"], tableRows), pager);
+      if (!tableRows.length) results.replaceChildren(statePanel("empty", query.value ? "没有匹配当前筛选条件的关键词。" : "当前没有可展示的关键词。"));
+      const selected = rows.find((row: Row) => String(row.id) === selectedId) ?? pageRows[0];
+      if (selected) { selectedId = String(selected.id); inspector.replaceChildren(await renderKeywordInspector(selected, watched.has(String(selected.canonical ?? selected.keyword).toLowerCase()), context)); }
+      else inspector.replaceChildren(statePanel("ready", "选择真实关键词后查看趋势摘要与证据入口。"));
+    };
+    if (watchResult.status === "rejected") host.append(capabilityUnavailableNotice("关注状态读取暂时不可用，关键词统计仍来自真实接口。", "关注状态部分不可用"));
+    filter.addEventListener("submit", (event) => { event.preventDefault(); void draw(); });
+    await draw();
+  } catch (error) { layout.replaceChildren(errorState(error, context, () => navigate("P08"))); }
   return host;
 }
 
-async function renderWatchKeywords(context: ScreenContext): Promise<HTMLElement> {
-  const host = content("Watch keywords", "Manage the seed keywords used by the existing probe planner.");
-  const form = document.createElement("form"); form.className = "r02-inline-form";
-  const keywordWrap = input("Keyword", {placeholder: "at least 2 characters"}); const notesWrap = input("Notes", {placeholder: "optional"});
-  const keyword = keywordWrap.querySelector<HTMLInputElement>("input"); const notes = notesWrap.querySelector<HTMLInputElement>("input");
-  const submit = button("Add watch keyword", {variant: "primary", type: "submit"}); appendActionRow(form, submit); form.prepend(keywordWrap, notesWrap);
-  const list = document.createElement("div");
-  form.addEventListener("submit", async (event) => { event.preventDefault(); submit.disabled = true; try { await api("/api/v1/watch-keywords", {method: "POST", body: JSON.stringify({keyword: keyword?.value ?? "", notes: notes?.value ?? "", priority: 3})}); form.reset(); await loadWatchKeywords(list, context); } catch (error) { list.replaceChildren(errorState(error, context)); } finally { submit.disabled = false; } });
-  append(host, form, list); await loadWatchKeywords(list, context); return host;
+async function renderKeywordInspector(row: Row, watched: boolean, context: ScreenContext): Promise<HTMLElement> {
+  const host = document.createElement("div"); host.className = "r04-keyword-inspector-inner";
+  const title = document.createElement("h2"); title.textContent = text(row.keyword, "未命名关键词");
+  const meta = document.createElement("p"); meta.textContent = `关键词 ID：${text(row.id)} · 最近采集：${formatDate(row.last_seen_at)}`;
+  host.append(title, watched ? badge("已关注", "success") : badge("未关注", "neutral"), meta, detailList([["信号强度", number(row.score, 1)], ["证据数", text(row.observation_count, "0")], ["来源数", text(row.source_count, "0")], ["关键词状态", keywordStatusLabel(row.status)]]));
+  const trend = document.createElement("section"); trend.className = "r04-keyword-inspector-section"; trend.append(Object.assign(document.createElement("h3"), {textContent: "趋势摘要"}), statePanel("loading", "正在读取趋势…"));
+  const evidence = document.createElement("section"); evidence.className = "r04-keyword-inspector-section"; evidence.append(Object.assign(document.createElement("h3"), {textContent: "关键词检索结果"}), statePanel("loading", "正在读取真实情报…"));
+  const settled = await Promise.allSettled([api(`/api/v1/keywords/${encodeURIComponent(String(row.id))}/trend`), api(`/api/v1/observations?q=${encodeURIComponent(String(row.keyword ?? ""))}&limit=3`)]);
+  const trendResult = settled[0]; const evidenceResult = settled[1];
+  trend.replaceChildren(document.createElement("h3")); (trend.querySelector("h3") as HTMLElement).textContent = "趋势摘要";
+  if (trendResult.status === "fulfilled") { trend.append(renderMiniTrend(trendResult.value.points ?? []), linkTo("P10", "查看趋势分析", {keyword_id: row.id})); } else trend.append(statePanel("error", "趋势暂时不可用。"));
+  evidence.replaceChildren(document.createElement("h3")); (evidence.querySelector("h3") as HTMLElement).textContent = "关键词检索结果";
+  if (evidenceResult.status === "fulfilled") {
+    const items = (evidenceResult.value.items ?? []) as Row[];
+    const list = document.createElement("div"); list.className = "r04-keyword-evidence-list";
+    for (const item of items) { const link = linkTo("P07", text(item.title, "未命名情报"), {id: item.id, q: row.keyword}); const line = document.createElement("div"); line.append(link, document.createTextNode(`${text(item.source_id)} · ${formatDate(item.observed_at)}`)); list.append(line); }
+    evidence.append(items.length ? list : statePanel("empty", "没有找到包含该关键词的情报记录。"), linkTo("P06", "查看全部情报", {q: row.keyword}));
+  } else evidence.append(statePanel("error", "情报检索暂时不可用。"));
+  const related = document.createElement("section"); related.className = "r04-keyword-inspector-section"; const relatedTitle = document.createElement("h3"); relatedTitle.textContent = "相关词与关联机会"; related.append(relatedTitle, linkTo("P11", "查看真实关系图谱", {keyword_id: row.id}), capabilityUnavailableNotice("关键词列表接口没有返回关联机会 ID，侧栏不显示固定机会对象。", "关联机会暂不可用"), linkTo("P12", "查看机会列表"));
+  host.append(trend, evidence, related); return host;
 }
 
-async function loadWatchKeywords(list: HTMLElement, context: ScreenContext): Promise<void> {
-  try {
-    const rows = await api("/api/v1/watch-keywords");
-    const tableRows = (rows ?? []).map((row: Row) => { const toggle = button(row.enabled ? "Disable" : "Enable", {variant: "ghost", onClick: async () => { toggle.disabled = true; try { await api(`/api/v1/watch-keywords/${row.id}`, {method: "PATCH", body: JSON.stringify({enabled: !row.enabled})}); await loadWatchKeywords(list, context); } catch (error) { list.replaceChildren(errorState(error, context)); } }}); return [text(row.keyword), row.enabled ? badge("Enabled", "success") : badge("Disabled", "neutral"), text(row.priority), text(row.notes), toggle]; });
-    list.replaceChildren(tableRows.length ? table(["Keyword", "State", "Priority", "Notes", "Action"], tableRows) : statePanel("empty", "No watch keywords configured."));
-  } catch (error) { list.replaceChildren(errorState(error, context)); }
+async function renderWatchKeywords(route: RouteState, context: ScreenContext): Promise<HTMLElement> {
+  const host = document.createElement("div"); host.className = "r04-watch-keyword-page";
+  host.append(r04PageHeading("关注关键词", "查看已关注关键词的信号变化、证据与关联机会", ""));
+  host.append(readOnlyNotice("新增、启用和停用会调用真实 watch-keywords 接口；若当前账号没有写权限，接口错误会直接显示，不会伪造成功。", "关注关系按真实接口执行"));
+  const form = document.createElement("form"); form.className = "r04-watch-add-form";
+  const keyword = document.createElement("input"); keyword.name = "keyword"; keyword.required = true; keyword.minLength = 2; keyword.placeholder = "新增关键词（至少 2 个字符）";
+  const notes = document.createElement("input"); notes.name = "notes"; notes.placeholder = "备注（可选）";
+  const submit = document.createElement("button"); submit.type = "submit"; submit.className = "r04-keyword-submit"; submit.textContent = "添加关注"; form.append(keyword, notes, submit);
+  const filters = document.createElement("form"); filters.className = "r04-watch-filters";
+  const search = document.createElement("input"); search.type = "search"; search.placeholder = "搜索已关注关键词…";
+  const status = document.createElement("select"); addOption(status, "", "状态：全部"); addOption(status, "true", "状态：已启用"); addOption(status, "false", "状态：已停用"); filters.append(search, status);
+  const layout = document.createElement("div"); layout.className = "r04-watch-layout"; const results = document.createElement("section"); results.className = "r04-watch-results"; const inspector = document.createElement("aside"); inspector.className = "r04-watch-inspector"; layout.append(results, inspector); host.append(form, filters, layout);
+  let rows: Row[] = []; let keywordStats: Row[] = [];
+  const draw = async (): Promise<void> => {
+    const filtered = rows.filter((row: Row) => (!search.value.trim() || String(row.keyword).toLowerCase().includes(search.value.trim().toLowerCase())) && (!status.value || String(Boolean(row.enabled)) === status.value));
+    const tableRows = filtered.map((row: Row) => {
+      const stats = keywordStats.find((item: Row) => String(item.canonical ?? item.keyword).toLowerCase() === String(row.canonical ?? row.keyword).toLowerCase());
+      const toggle = button(row.enabled ? "停用" : "启用", {onClick: async () => { toggle.disabled = true; try { await api(`/api/v1/watch-keywords/${row.id}`, {method: "PATCH", body: JSON.stringify({enabled: !row.enabled})}); await load(); } catch (error) { results.replaceChildren(errorState(error, context)); } finally { toggle.disabled = false; } }});
+      return [linkTo("P09", text(row.keyword, "未命名关键词"), {keyword_id: row.id}), row.enabled ? badge("已启用", "success") : badge("已停用", "neutral"), scoreBadge(stats?.score), text(stats?.observation_count, "未知"), text(row.priority, "未设置"), text(row.notes, ""), toggle];
+    });
+    const pager = document.createElement("div"); pager.className = "r04-keyword-pager"; pager.textContent = `共 ${filtered.length} 条关注记录`;
+    results.replaceChildren(table(["关键词", "关注状态", "信号强度", "证据数", "优先级", "备注", "操作"], tableRows), pager);
+    if (!tableRows.length) results.replaceChildren(statePanel("empty", "当前没有匹配的关注关键词。"));
+    const selected = rows.find((row: Row) => String(row.id) === route.params.get("keyword_id")) ?? filtered[0];
+    inspector.replaceChildren(selected ? await renderWatchKeywordInspector(selected, keywordStats, context) : statePanel("ready", "选择真实关注关键词后查看趋势与证据。"));
+  };
+  const load = async (): Promise<void> => { results.replaceChildren(statePanel("loading", "正在读取关注关键词…")); try { const settled = await Promise.allSettled([api("/api/v1/watch-keywords"), api("/api/v1/keywords?limit=500")]); if (settled[0].status === "rejected") throw settled[0].reason; rows = Array.isArray(settled[0].value) ? settled[0].value as Row[] : []; keywordStats = settled[1].status === "fulfilled" && Array.isArray(settled[1].value) ? settled[1].value as Row[] : []; await draw(); } catch (error) { results.replaceChildren(errorState(error, context, () => void load())); inspector.replaceChildren(); } };
+  form.addEventListener("submit", async (event) => { event.preventDefault(); submit.disabled = true; try { await api("/api/v1/watch-keywords", {method: "POST", body: JSON.stringify({keyword: keyword.value.trim(), notes: notes.value.trim(), priority: 3})}); form.reset(); await load(); } catch (error) { results.replaceChildren(errorState(error, context)); } finally { submit.disabled = false; } });
+  filters.addEventListener("input", () => void draw()); filters.addEventListener("change", () => void draw()); await load(); return host;
+}
+
+async function renderWatchKeywordInspector(row: Row, keywordStats: Row[], context: ScreenContext): Promise<HTMLElement> {
+  const host = document.createElement("div"); host.className = "r04-watch-inspector-inner"; const stats = keywordStats.find((item: Row) => String(item.canonical ?? item.keyword).toLowerCase() === String(row.canonical ?? row.keyword).toLowerCase());
+  const title = document.createElement("h2"); title.textContent = text(row.keyword, "未命名关键词"); const meta = document.createElement("p"); meta.textContent = `关注记录 ID：${text(row.id)} · 更新：${formatDate(row.updated_at)}`;
+  host.append(title, row.enabled ? badge("已启用", "success") : badge("已停用", "neutral"), meta, detailList([["优先级", row.priority], ["备注", row.notes], ["信号强度", stats?.score], ["证据数", stats?.observation_count], ["来源数", stats?.source_count]]));
+  const trend = document.createElement("section"); trend.className = "r04-watch-inspector-section"; const trendTitle = document.createElement("h3"); trendTitle.textContent = "7 天信号趋势"; trend.append(trendTitle, statePanel("loading", "正在读取趋势…"));
+  const evidence = document.createElement("section"); evidence.className = "r04-watch-inspector-section"; const evidenceTitle = document.createElement("h3"); evidenceTitle.textContent = "关键词证据"; evidence.append(evidenceTitle, statePanel("loading", "正在读取情报…"));
+  const settled = await Promise.allSettled([stats ? api(`/api/v1/keywords/${encodeURIComponent(String(stats.id))}/trend`) : Promise.reject(new Error("keyword statistics unavailable")), api(`/api/v1/observations?q=${encodeURIComponent(String(row.keyword ?? ""))}&limit=3`)]);
+  trend.replaceChildren(trendTitle); if (settled[0].status === "fulfilled") trend.append(renderMiniTrend(settled[0].value.points ?? []), stats ? linkTo("P10", "查看趋势分析", {keyword_id: stats.id}) : statePanel("partial", "该关注词尚未匹配到关键词统计记录。")); else trend.append(statePanel("partial", "当前关注记录没有可展示的趋势数据。"));
+  evidence.replaceChildren(evidenceTitle); if (settled[1].status === "fulfilled") { const items = (settled[1].value.items ?? []) as Row[]; evidence.append(items.length ? table(["情报", "来源", "采集时间"], items.map((item: Row) => [linkTo("P07", text(item.title, "未命名情报"), {id: item.id, q: row.keyword}), text(item.source_id), formatDate(item.observed_at)])) : statePanel("empty", "没有找到关键词检索结果。"), linkTo("P06", "查看全部情报", {q: row.keyword})); } else evidence.append(statePanel("error", "情报检索暂时不可用。"));
+  host.append(trend, evidence, stats ? linkTo("P11", "查看真实关系图谱", {keyword_id: stats.id}) : linkTo("P08", "回到关键词发现"), capabilityUnavailableNotice("当前后端没有按关注关键词返回固定关联机会或运行队列对象，因此不展示 HTML 中的示例 ID。", "关联机会与运行状态暂不可用")); return host;
 }
 
 async function renderTrend(route: RouteState, context: ScreenContext): Promise<HTMLElement> {
-  const keywordId = route.params.get("keyword_id");
-  const host = content("Keyword trend", "Trend summaries are read from the persisted keyword trend service.");
-  if (!keywordId) { append(host, statePanel("ready", "Choose a keyword from discovery to inspect its trend."), linkTo("P08", "Browse keyword discovery")); return host; }
+  const host = document.createElement("div"); host.className = "r04-trend-page"; host.append(r04PageHeading("趋势分析", "分析关键词的时间变化与关键拐点", ""));
   try {
-    const data = await api(`/api/v1/keywords/${encodeURIComponent(keywordId)}/trend`);
-    const summary = card(`Trend for ${text(data.keyword, keywordId)}`, table(["Window", "Observations", "Growth"], [["7d", text(data.windows?.["7d"]), formatGrowth(data.growth?.["7d"])], ["30d", text(data.windows?.["30d"]), formatGrowth(data.growth?.["30d"])], ["90d", text(data.windows?.["90d"]), "—"]]));
-    const points = (data.points ?? []).map((row: Row) => [text(row.day), text(row.observations), text(row.sources)]);
-    append(host, summary, card("Daily points", points.length ? table(["Day", "Observations", "Sources"], points) : statePanel("empty", "No daily trend points are available.")));
-  }
-  catch (error) { append(host, errorState(error, context)); }
+    const keywords = await api("/api/v1/keywords?limit=500"); const rows = Array.isArray(keywords) ? keywords as Row[] : []; if (!rows.length) { host.append(statePanel("empty", "当前没有可分析的关键词。")); return host; }
+    const selectedId = route.params.get("keyword_id") ?? String(rows[0].id); const selected = rows.find((row: Row) => String(row.id) === selectedId) ?? rows[0];
+    const controls = document.createElement("form"); controls.className = "r04-trend-controls"; const target = document.createElement("select"); rows.forEach((row: Row) => addOption(target, String(row.id), text(row.keyword, `关键词 ${row.id}`))); target.value = String(selected.id); const range = document.createElement("select"); addOption(range, "90", "时间范围：近 90 天"); addOption(range, "30", "时间范围：近 30 天"); addOption(range, "7", "时间范围：近 7 天"); range.value = route.params.get("since_days") ?? "90"; const apply = document.createElement("button"); apply.type = "submit"; apply.className = "r04-keyword-submit"; apply.textContent = "更新分析"; controls.append(document.createTextNode("分析对象"), target, document.createTextNode("时间范围"), range, apply); controls.addEventListener("submit", (event) => { event.preventDefault(); navigate("P10", {keyword_id: target.value, since_days: range.value}); }); host.append(controls);
+    const data = await api(`/api/v1/keywords/${encodeURIComponent(String(selected.id))}/trend`); const allPoints = (data.points ?? []) as Row[]; const sinceDays = Number(range.value); const points = allPoints.filter((row: Row) => keywordWithinDays(row.day, sinceDays));
+    const layout = document.createElement("div"); layout.className = "r04-trend-layout"; const main = document.createElement("main"); main.className = "r04-trend-main"; const side = document.createElement("aside"); side.className = "r04-trend-side";
+    main.append(detailSectionWithBody("信号强度趋势", renderTrendChart(points)), detailSectionWithBody("关键时间点", renderTrendPointsTable(points)), capabilityUnavailableNotice("趋势接口只返回按日观察数和来源数，没有返回事件类型、影响等级或人工研判，因此不从 mock 补齐“关键拐点”语义。", "事件研判字段暂不可用"));
+    const selectedWindow = sinceDays === 7 ? "7d" : sinceDays === 30 ? "30d" : "90d"; const sourcePeak = points.reduce((max: number, row: Row) => Math.max(max, Number(row.sources ?? 0)), 0); side.append(detailSectionWithBody("趋势研判概览", detailList([["关键词", data.keyword], ["当前窗口", `近 ${sinceDays} 天`], ["窗口增长", formatGrowth(data.growth?.[selectedWindow === "7d" ? "7d" : "30d"])], ["窗口观察数", data.windows?.[selectedWindow]], ["单日最高来源数", sourcePeak]])));
+    const evidence = document.createElement("div"); evidence.append(statePanel("loading", "正在读取核心情报…")); side.append(detailSectionWithBody("核心证据", evidence));
+    const opportunities = capabilityUnavailableNotice("趋势接口没有返回关联机会 ID，不能展示固定机会卡片。", "关联机会暂不可用"); side.append(opportunities, linkTo("P12", "查看机会列表"), linkTo("P11", "打开真实关系图谱", {keyword_id: selected.id, since_days: range.value})); layout.append(main, side); host.append(layout);
+    try { const evidenceData = await api(`/api/v1/observations?q=${encodeURIComponent(String(data.keyword ?? selected.keyword ?? ""))}&limit=3`); const items = (evidenceData.items ?? []) as Row[]; evidence.replaceChildren(items.length ? table(["情报", "来源", "采集时间"], items.map((row: Row) => [linkTo("P07", text(row.title, "未命名情报"), {id: row.id, q: data.keyword}), text(row.source_id), formatDate(row.observed_at)])) : statePanel("empty", "没有找到与该关键词匹配的情报。"), linkTo("P06", "查看全部情报", {q: data.keyword})); } catch (error) { evidence.replaceChildren(errorState(error, context)); }
+  } catch (error) { host.append(errorState(error, context, () => navigate("P10"))); }
   return host;
 }
 
-function formatGrowth(value: unknown): string { const n = Number(value); return Number.isFinite(n) ? `${n >= 0 ? "+" : ""}${(n * 100).toFixed(1)}%` : "—"; }
+function formatGrowth(value: unknown): string { const n = Number(value); return Number.isFinite(n) ? `${n >= 0 ? "+" : ""}${(n * 100).toFixed(1)}%` : "未提供"; }
 
-async function renderGraph(context: ScreenContext): Promise<HTMLElement> {
-  const host = content("Keyword graph", "Related keyword edges returned by the graph service. Select a node to inspect its live relationships.");
+function renderTrendChart(points: Row[]): HTMLElement {
+  if (!points.length) return statePanel("empty", "当前没有按日趋势点。");
+  const wrapper = document.createElement("div"); wrapper.className = "r04-trend-chart-wrap";
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); svg.classList.add("r04-trend-chart"); svg.setAttribute("viewBox", "0 0 760 280"); svg.setAttribute("role", "img"); svg.setAttribute("aria-label", "真实关键词按日观察数趋势");
+  const max = Math.max(1, ...points.map((row: Row) => Number(row.observations ?? 0))); const left = 42; const right = 740; const top = 24; const bottom = 235; const width = Math.max(1, points.length - 1);
+  for (let i = 0; i < 5; i++) { const y = top + ((bottom - top) * i) / 4; const line = document.createElementNS("http://www.w3.org/2000/svg", "line"); line.setAttribute("x1", String(left)); line.setAttribute("x2", String(right)); line.setAttribute("y1", String(y)); line.setAttribute("y2", String(y)); line.setAttribute("class", "r04-trend-grid-line"); svg.append(line); const label = document.createElementNS("http://www.w3.org/2000/svg", "text"); label.setAttribute("x", "4"); label.setAttribute("y", String(y + 4)); label.textContent = String(Math.round(max * (4 - i) / 4)); label.classList.add("r04-trend-axis-label"); svg.append(label); }
+  const pointsPath = points.map((row: Row, index: number) => { const x = left + ((right - left) * index) / width; const y = bottom - ((bottom - top) * Number(row.observations ?? 0)) / max; return `${index ? "L" : "M"} ${x.toFixed(1)} ${y.toFixed(1)}`; }).join(" "); const path = document.createElementNS("http://www.w3.org/2000/svg", "path"); path.setAttribute("d", pointsPath); path.classList.add("r04-trend-line"); svg.append(path);
+  for (const index of [0, Math.floor(points.length / 2), points.length - 1]) { const row = points[index]; if (!row) continue; const x = left + ((right - left) * index) / width; const y = bottom - ((bottom - top) * Number(row.observations ?? 0)) / max; const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle"); circle.setAttribute("cx", String(x)); circle.setAttribute("cy", String(y)); circle.setAttribute("r", "4"); circle.classList.add("r04-trend-point"); svg.append(circle); const label = document.createElementNS("http://www.w3.org/2000/svg", "text"); label.setAttribute("x", String(x)); label.setAttribute("y", "262"); label.setAttribute("text-anchor", index === 0 ? "start" : index === points.length - 1 ? "end" : "middle"); label.textContent = text(row.day); label.classList.add("r04-trend-axis-label"); svg.append(label); }
+  wrapper.append(svg); return wrapper;
+}
+
+function renderTrendPointsTable(points: Row[]): HTMLElement {
+  if (!points.length) return statePanel("empty", "当前没有按日趋势点。"); const recent = points.slice(-12); return table(["日期", "观察数", "来源数", "较前一日变化"], recent.map((row: Row, index: number) => { const previous = index > 0 ? recent[index - 1] : undefined; const delta = previous ? Number(row.observations ?? 0) - Number(previous.observations ?? 0) : undefined; return [text(row.day), text(row.observations, "0"), text(row.sources, "0"), delta === undefined ? "—" : `${delta >= 0 ? "+" : ""}${delta}`]; }));
+}
+
+async function renderGraph(route: RouteState, context: ScreenContext): Promise<HTMLElement> {
+  const host = document.createElement("div"); host.className = "r04-graph-page"; host.append(r04PageHeading("关系图谱", "探索关键词之间的真实证据关系", ""), readOnlyNotice("图谱节点和边来自 keyword-graph 接口；当前只展示关键词关系，不虚构实体、来源或关联机会边。", "关系图谱只读"));
   try {
-    const data = await api("/api/v1/keyword-graph?limit=200&since_days=90"); const nodes = data.nodes ?? []; const edges = data.edges ?? [];
-    const nodeRows = nodes.map((row: Row) => { const inspect = button("Inspect", {variant: "ghost", onClick: () => { const related = edges.filter((edge: Row) => String(edge.source) === String(row.id) || String(edge.target) === String(row.id)); const body = table(["Connected node", "Weight", "Last seen"], related.map((edge: Row) => [text(String(edge.source) === String(row.id) ? edge.target : edge.source), number(edge.weight, 1), formatDate(edge.last_seen_at)])); host.append(drawer(`Node: ${text(row.keyword)}`, body)); }}); return [text(row.keyword), text(row.id), inspect]; });
-    append(host, card("Graph summary", table(["Metric", "Count"], [["Nodes", text(nodes.length)], ["Edges", text(edges.length)]])), nodeRows.length ? table(["Keyword node", "Id", "Detail"], nodeRows) : statePanel("empty", "No keyword relationships are available."));
-  } catch (error) { append(host, errorState(error, context)); }
+    const keywords = await api("/api/v1/keywords?limit=500"); const rows = Array.isArray(keywords) ? keywords as Row[] : []; if (!rows.length) { host.append(statePanel("empty", "当前没有可用于构建图谱的关键词。")); return host; }
+    const selectedId = route.params.get("keyword_id") ?? String(rows[0].id); const selected = rows.find((row: Row) => String(row.id) === selectedId) ?? rows[0]; const controls = document.createElement("form"); controls.className = "r04-graph-controls"; const target = document.createElement("select"); rows.forEach((row: Row) => addOption(target, String(row.id), text(row.keyword, `关键词 ${row.id}`))); target.value = String(selected.id); const sinceDays = document.createElement("select"); addOption(sinceDays, "30", "时间范围：过去 30 天"); addOption(sinceDays, "90", "时间范围：过去 90 天"); addOption(sinceDays, "365", "时间范围：过去 1 年"); sinceDays.value = route.params.get("since_days") ?? "90"; const apply = document.createElement("button"); apply.type = "submit"; apply.className = "r04-keyword-submit"; apply.textContent = "更新图谱"; controls.append(document.createTextNode("中心节点"), target, document.createTextNode("时间范围"), sinceDays, apply); controls.addEventListener("submit", (event) => { event.preventDefault(); navigate("P11", {keyword_id: target.value, since_days: sinceDays.value}); }); host.append(controls);
+    const data = await api(`/api/v1/keyword-graph?keyword_id=${encodeURIComponent(String(selected.id))}&limit=200&since_days=${encodeURIComponent(sinceDays.value)}`); const nodes = (data.nodes ?? []) as Row[]; if (!nodes.some((row: Row) => String(row.id) === String(selected.id))) nodes.unshift({id: selected.id, keyword: selected.keyword}); const edges = (data.edges ?? []) as Row[];
+    const layout = document.createElement("div"); layout.className = "r04-graph-layout"; const canvas = document.createElement("section"); canvas.className = "r04-graph-canvas"; canvas.append(renderKeywordGraphSvg(nodes, edges, String(selected.id)), detailSectionWithBody("图谱说明", capabilityUnavailableNotice("当前接口没有探索深度或最低关联强度参数；页面仅使用真实 keyword_id、limit 和 since_days 查询。", "部分图谱筛选暂不可用"))); const side = document.createElement("aside"); side.className = "r04-graph-inspector";
+    const relatedEdges = edges.filter((edge: Row) => String(edge.source) === String(selected.id) || String(edge.target) === String(selected.id)); const relatedRows = relatedEdges.map((edge: Row) => { const otherId = String(edge.source) === String(selected.id) ? edge.target : edge.source; const other = nodes.find((row: Row) => String(row.id) === String(otherId)); return [text(other?.keyword, `关键词 ${otherId}`), text(edge.type, "未提供"), number(edge.weight, 1), text(edge.cooccurrences, "0"), text(edge.sources, "0"), formatDate(edge.last_seen_at)]; });
+    side.append(detailSectionWithBody("核心关联关键词", relatedRows.length ? table(["关键词", "关系类型", "权重", "共现", "来源数", "最近出现"], relatedRows) : statePanel("empty", "当前时间范围没有真实关系边。")), linkTo("P10", "查看该关键词趋势", {keyword_id: selected.id, since_days: sinceDays.value}), linkTo("P08", "回到关键词发现", {keyword_id: selected.id}));
+    const evidence = document.createElement("div"); evidence.append(statePanel("loading", "正在读取关键词证据…")); side.append(detailSectionWithBody("关键词证据摘录", evidence)); side.append(capabilityUnavailableNotice("keyword-graph 接口没有返回机会关联或实体/来源节点，相关对象入口不在此伪造。", "机会与实体关系暂不可用"), linkTo("P12", "查看机会列表")); layout.append(canvas, side); host.append(layout);
+    try { const evidenceData = await api(`/api/v1/observations?q=${encodeURIComponent(String(selected.keyword ?? ""))}&limit=2`); const items = (evidenceData.items ?? []) as Row[]; evidence.replaceChildren(items.length ? table(["情报", "来源", "采集时间"], items.map((row: Row) => [linkTo("P07", text(row.title, "未命名情报"), {id: row.id, q: selected.keyword}), text(row.source_id), formatDate(row.observed_at)])) : statePanel("empty", "没有找到该关键词的真实情报记录。"), linkTo("P06", "查看全部情报", {q: selected.keyword})); } catch (error) { evidence.replaceChildren(errorState(error, context)); }
+  } catch (error) { host.append(errorState(error, context, () => navigate("P11"))); }
   return host;
 }
+
+function renderKeywordGraphSvg(nodes: Row[], edges: Row[], centerId: string): SVGSVGElement {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); svg.classList.add("r04-graph-svg"); svg.setAttribute("viewBox", "0 0 800 560"); svg.setAttribute("role", "img"); svg.setAttribute("aria-label", "真实关键词关系图谱"); const center = {x: 400, y: 280}; const others = nodes.filter((row: Row) => String(row.id) !== centerId); const positions = new Map<string, {x: number; y: number}>(); positions.set(centerId, center); others.forEach((row: Row, index: number) => { const angle = -Math.PI / 2 + (Math.PI * 2 * index) / Math.max(1, others.length); positions.set(String(row.id), {x: 400 + Math.cos(angle) * 205, y: 280 + Math.sin(angle) * 185}); });
+  for (const edge of edges) { const source = positions.get(String(edge.source)); const target = positions.get(String(edge.target)); if (!source || !target) continue; const line = document.createElementNS("http://www.w3.org/2000/svg", "line"); line.setAttribute("x1", String(source.x)); line.setAttribute("y1", String(source.y)); line.setAttribute("x2", String(target.x)); line.setAttribute("y2", String(target.y)); line.classList.add("r04-graph-edge"); svg.append(line); const label = document.createElementNS("http://www.w3.org/2000/svg", "text"); label.setAttribute("x", String((source.x + target.x) / 2)); label.setAttribute("y", String((source.y + target.y) / 2 - 6)); label.textContent = `${text(edge.type, "关系")} · ${number(edge.weight, 1)}`; label.classList.add("r04-graph-edge-label"); svg.append(label); }
+  for (const node of nodes) { const position = positions.get(String(node.id)); if (!position) continue; const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle"); circle.setAttribute("cx", String(position.x)); circle.setAttribute("cy", String(position.y)); circle.setAttribute("r", String(String(node.id) === centerId ? 30 : 22)); circle.classList.add(String(node.id) === centerId ? "r04-graph-center" : "r04-graph-node"); svg.append(circle); const label = document.createElementNS("http://www.w3.org/2000/svg", "text"); label.setAttribute("x", String(position.x)); label.setAttribute("y", String(position.y + (String(node.id) === centerId ? 52 : 40))); label.setAttribute("text-anchor", "middle"); label.textContent = text(node.keyword, `关键词 ${node.id}`); label.classList.add("r04-graph-node-label"); svg.append(label); }
+  return svg;
+}
+
+function keywordStatusLabel(value: unknown): string { return ({TRENDING: "趋势中", ACTIVE: "活跃", DORMANT: "休眠", NEW: "新发现"} as Record<string, string>)[String(value)] ?? text(value, "未提供"); }
+function keywordWithinDays(value: unknown, days: number): boolean { const timestamp = Date.parse(String(value ?? "")); return !days || !Number.isFinite(timestamp) || (Date.now() - timestamp) <= days * 86_400_000; }
+function renderMiniTrend(points: Row[]): HTMLElement { if (!points.length) return statePanel("empty", "没有可展示的趋势点。"); const host = document.createElement("div"); host.className = "r04-mini-trend"; const max = Math.max(1, ...points.slice(-7).map((row: Row) => Number(row.observations ?? 0))); for (const row of points.slice(-7)) { const bar = document.createElement("span"); bar.title = `${text(row.day)} · ${text(row.observations, "0")} 条观察`; bar.style.height = `${Math.max(8, (Number(row.observations ?? 0) / max) * 100)}%`; host.append(bar); } return host; }
+function r04PageHeading(titleValue: string, subtitleValue: string, actionLabel: string): HTMLElement { const heading = document.createElement("div"); heading.className = "r04-page-heading"; const copy = document.createElement("div"); const title = document.createElement("h1"); title.textContent = titleValue; const subtitle = document.createElement("p"); subtitle.textContent = subtitleValue; copy.append(title, subtitle); heading.append(copy); if (actionLabel) { const action = document.createElement("button"); action.type = "button"; action.className = "r04-page-action"; action.textContent = `↻ ${actionLabel}`; action.addEventListener("click", () => window.location.reload()); heading.append(action); } return heading; }
 
 async function renderOpportunities(context: ScreenContext): Promise<HTMLElement> {
   const host = document.createElement("div"); host.className = "r04-opportunity-list";
@@ -1231,6 +1351,57 @@ function installScreenStyles(): void {
     @media (max-width: 640px) { .r04-intelligence-heading { flex-direction: column; } .r04-intelligence-filters input[name=source_id] { width: auto; flex: 1 1 120px; } }
     @media (max-width: 900px) { .r04-detail-grid-r04 { grid-template-columns: 1fr; } }
     @media (max-width: 640px) { .r04-entity-header h1 { font-size: 22px; } .r04-opportunity-filters input[type=search] { min-width: 140px; } }
+    .r04-page-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--or-outline); }
+    .r04-page-heading h1 { margin: 0; font-size: 24px; line-height: 1.25; }
+    .r04-page-heading p { margin: 6px 0 0; color: var(--or-text-muted); font-size: 13px; }
+    .r04-page-action { min-height: 36px; padding: 8px 12px; border: 1px solid var(--or-outline-strong); border-radius: 6px; background: var(--or-surface); color: var(--or-text); cursor: pointer; }
+    .r04-page-action:hover { border-color: var(--or-primary); color: var(--or-primary-dark); }
+    .r04-keyword-page, .r04-watch-keyword-page, .r04-trend-page, .r04-graph-page { display: grid; gap: 18px; min-width: 0; }
+    .r04-keyword-filter, .r04-watch-add-form, .r04-watch-filters, .r04-trend-controls, .r04-graph-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-keyword-filter input, .r04-keyword-filter select, .r04-watch-add-form input, .r04-watch-filters input, .r04-watch-filters select, .r04-trend-controls select, .r04-graph-controls select { min-height: 36px; border: 1px solid var(--or-outline-strong); border-radius: 6px; padding: 7px 10px; background: var(--or-surface); color: var(--or-text); }
+    .r04-keyword-filter input, .r04-watch-filters input { flex: 1 1 200px; min-width: 160px; }
+    .r04-watch-add-form input[name=keyword] { flex: 1 1 220px; min-width: 180px; }
+    .r04-watch-add-form input[name=notes] { flex: 1 1 240px; min-width: 180px; }
+    .r04-keyword-submit { min-height: 36px; padding: 7px 12px; border: 1px solid var(--or-primary); border-radius: 6px; background: var(--or-primary); color: #fff; font-weight: 700; cursor: pointer; }
+    .r04-keyword-submit:hover { background: var(--or-primary-dark); }
+    .r04-keyword-layout, .r04-watch-layout, .r04-trend-layout, .r04-graph-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 360px); gap: 18px; align-items: start; min-width: 0; }
+    .r04-keyword-results, .r04-watch-results, .r04-keyword-inspector, .r04-watch-inspector, .r04-trend-main, .r04-trend-side, .r04-graph-canvas, .r04-graph-inspector { min-width: 0; display: grid; gap: 16px; }
+    .r04-keyword-results, .r04-watch-results, .r04-keyword-inspector, .r04-watch-inspector, .r04-graph-canvas, .r04-graph-inspector { overflow: hidden; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-keyword-results > .r02-table-wrap, .r04-watch-results > .r02-table-wrap { border: 0; border-radius: 0; }
+    .r04-keyword-pager { padding: 12px 16px; border-top: 1px solid var(--or-outline); color: var(--or-text-muted); font-size: 12px; }
+    .r04-keyword-inspector, .r04-watch-inspector { padding: 18px; }
+    .r04-keyword-inspector-inner, .r04-watch-inspector-inner { display: grid; gap: 12px; min-width: 0; }
+    .r04-keyword-inspector h2, .r04-watch-inspector h2 { margin: 0; font-size: 20px; }
+    .r04-keyword-inspector p, .r04-watch-inspector p { margin: 0; color: var(--or-text-muted); font-size: 12px; }
+    .r04-keyword-inspector-section, .r04-watch-inspector-section { display: grid; gap: 10px; padding-top: 14px; border-top: 1px solid var(--or-outline); }
+    .r04-keyword-inspector-section h3, .r04-watch-inspector-section h3 { margin: 0; font-size: 14px; }
+    .r04-keyword-inspector-section > a, .r04-watch-inspector-inner > a { color: var(--or-primary-dark); font-size: 13px; text-decoration: none; }
+    .r04-keyword-evidence-list { display: grid; gap: 9px; }
+    .r04-keyword-evidence-list > div { display: grid; gap: 3px; padding-bottom: 9px; border-bottom: 1px solid var(--or-outline); }
+    .r04-keyword-evidence-list a { color: var(--or-primary-dark); font-size: 13px; text-decoration: none; }
+    .r04-keyword-evidence-list div div, .r04-keyword-evidence-list > div > :not(a) { color: var(--or-text-muted); font-size: 11px; }
+    .r04-mini-trend { display: flex; align-items: end; gap: 5px; height: 88px; padding: 8px; border: 1px solid var(--or-outline); border-radius: 6px; background: var(--or-surface-muted); }
+    .r04-mini-trend span { flex: 1; min-height: 8px; border-radius: 3px 3px 0 0; background: var(--or-primary); opacity: .82; }
+    .r04-trend-controls, .r04-graph-controls { justify-content: flex-start; }
+    .r04-trend-controls > select:first-of-type, .r04-graph-controls > select:first-of-type { min-width: 220px; }
+    .r04-trend-main > .r04-detail-section, .r04-trend-side > .r04-detail-section { min-width: 0; }
+    .r04-trend-chart { display: block; width: 100%; min-height: 280px; padding: 8px; border: 1px solid var(--or-outline); border-radius: 6px; background: var(--or-surface-muted); }
+    .r04-trend-grid-line { stroke: var(--or-outline); stroke-width: 1; opacity: .45; }
+    .r04-trend-axis-label { fill: var(--or-text-muted); font-size: 10px; }
+    .r04-trend-line { fill: none; stroke: var(--or-primary); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+    .r04-trend-point { fill: var(--or-surface); stroke: var(--or-primary); stroke-width: 3; }
+    .r04-graph-controls { box-shadow: var(--or-shadow-1); }
+    .r04-graph-canvas { padding: 14px; }
+    .r04-graph-svg { display: block; width: 100%; min-height: 520px; border-radius: 6px; background: var(--or-surface-muted); }
+    .r04-graph-edge { stroke: var(--or-outline-strong); stroke-width: 1.5; }
+    .r04-graph-edge-label { fill: var(--or-text-muted); font-size: 10px; text-anchor: middle; }
+    .r04-graph-center { fill: var(--or-primary); stroke: var(--or-primary-dark); stroke-width: 2; }
+    .r04-graph-node { fill: var(--or-surface); stroke: var(--or-outline-strong); stroke-width: 2; }
+    .r04-graph-node-label { fill: var(--or-text); font-size: 11px; }
+    .r04-graph-inspector { padding: 18px; }
+    .r04-graph-inspector > .r04-detail-section { min-width: 0; }
+    @media (max-width: 1000px) { .r04-keyword-layout, .r04-watch-layout, .r04-trend-layout, .r04-graph-layout { grid-template-columns: 1fr; } }
+    @media (max-width: 700px) { .r04-page-heading { flex-direction: column; } .r04-keyword-filter, .r04-watch-add-form, .r04-watch-filters, .r04-trend-controls, .r04-graph-controls { align-items: stretch; } .r04-keyword-filter input, .r04-watch-filters input { min-width: 100%; } .r04-graph-svg { min-height: 360px; } }
     .r04-workbench { display: grid; gap: 20px; min-width: 0; }
     .r04-workbench-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
     .r04-workbench-heading h1 { margin: 0; font-size: 24px; line-height: 1.25; }
