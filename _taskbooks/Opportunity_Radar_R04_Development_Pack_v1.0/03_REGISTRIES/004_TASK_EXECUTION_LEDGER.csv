@@ -1,0 +1,2 @@
+task_id,title,status,commit_sha,result,started_at,finished_at,notes
+T001,真实后端能力与 UI 契约审计,PASS,RECORDED_IN_TASK_RECEIPT,PASS,2026-08-14T17:25:00+08:00,2026-08-14T17:33:00+08:00,65 个 UI 状态逐项核对；22 条缺口登记/更新；未修改后端接口或 UI 依赖原文件
