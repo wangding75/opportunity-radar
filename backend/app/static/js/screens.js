@@ -98,37 +98,145 @@ function kpi(label, value, href) {
     return host;
 }
 async function renderDashboard(context) {
-    const host = content("Decision dashboard", "Evidence-backed signals, opportunities, and operating health from the live API.");
-    let data;
-    try {
-        data = await api("/api/v1/dashboard");
-    }
-    catch (error) {
-        append(host, errorState(error, context, () => navigate("P02")));
+    const host = document.createElement("div");
+    host.className = "r04-workbench";
+    const heading = document.createElement("div");
+    heading.className = "r04-workbench-heading";
+    const title = document.createElement("h1");
+    title.textContent = "工作台";
+    const subtitle = document.createElement("p");
+    subtitle.textContent = "快速判断今天最值得关注的机会、情报变化与运行异常";
+    const refresh = document.createElement("button");
+    refresh.type = "button";
+    refresh.className = "r04-workbench-refresh";
+    refresh.textContent = "↻ 刷新视图";
+    refresh.addEventListener("click", () => window.location.reload());
+    heading.append(document.createElement("div"), refresh);
+    heading.firstElementChild?.append(title, subtitle);
+    host.append(heading);
+    const [dashboardResult, alertResult, observationsResult] = await Promise.allSettled([
+        api("/api/v1/dashboard"),
+        api("/api/v1/alerts/events?status=NEW&limit=8"),
+        api("/api/v1/observations?limit=5"),
+    ]);
+    if (dashboardResult.status === "rejected") {
+        host.append(statePanel("error", "工作台数据暂时不可用，请稍后重试。", () => void renderDashboard(context)));
+        if (dashboardResult.reason instanceof ApiError && dashboardResult.reason.status === 401)
+            context.onSessionExpired();
         return host;
     }
+    const data = dashboardResult.value;
     const totals = data.totals ?? {};
-    const metrics = document.createElement("div");
-    metrics.className = "r02-kpi-grid";
-    append(metrics, kpi("Observations", totals.observations, routeFor("P06")), kpi("Keywords", totals.keywords, routeFor("P08")), kpi("Active opportunities", totals.opportunities, routeFor("P12")), kpi("Sources", totals.sources, routeFor("P18")), kpi("New alerts", totals.unread_alerts, routeFor("P24")), kpi("Pending analysis", totals.pending_external_analysis, routeFor("P23")));
-    append(host, metrics);
-    const split = document.createElement("div");
-    split.className = "r02-two-column";
-    const opportunities = Array.isArray(data.top_opportunities) ? data.top_opportunities : [];
-    const opportunityRows = opportunities.slice(0, 8).map((row) => [
-        linkTo("P13", text(row.title), { id: row.id }), badge(text(row.stage), row.stage === "COMMERCIALIZING" ? "success" : "info"), number(row.score, 1), text(row.analysis_status),
+    const summary = document.createElement("div");
+    summary.className = "r04-workbench-summary";
+    summary.append(workbenchSummary("重点机会", totals.starred_opportunities ?? totals.opportunities, "真实研究状态中标记的机会", "P12"), workbenchSummary("近 7 日情报", totals.observations_7d, "最近一周已采集证据", "P06"), workbenchSummary("运行异常", Number(totals.failed_collection_runs_24h ?? 0) + Number(totals.open_source_circuits ?? 0), "失败运行与熔断数据源", "P21", "danger"));
+    host.append(summary);
+    const columns = document.createElement("div");
+    columns.className = "r04-workbench-columns";
+    const left = document.createElement("div");
+    left.className = "r04-workbench-primary";
+    const right = document.createElement("div");
+    right.className = "r04-workbench-secondary";
+    const opportunities = (Array.isArray(data.top_opportunities) ? data.top_opportunities : []).slice(0, 8);
+    const opportunityRows = opportunities.map((row) => [
+        linkTo("P13", text(row.title), { id: row.id }),
+        text(row.id),
+        number(row.score, 1),
+        text(row.evidence_count, "0"),
+        stageLabel(row.stage),
+        formatDate(row.last_seen_at),
     ]);
-    const opportunityCard = card("Top opportunities", opportunityRows.length ? table(["Opportunity", "Stage", "Score", "Analysis"], opportunityRows) : statePanel("empty", "No opportunity records are available."));
-    const keywordRows = (Array.isArray(data.top_keywords) ? data.top_keywords : []).slice(0, 8).map((row) => [
-        linkTo("P10", text(row.keyword), { keyword_id: row.id }), number(row.score, 1), text(row.status), text(row.observations),
-    ]);
-    const keywordCard = card("Leading keywords", keywordRows.length ? table(["Keyword", "Score", "Status", "Observations"], keywordRows) : statePanel("empty", "No keyword records are available."));
-    append(split, opportunityCard, keywordCard);
-    append(host, split);
-    const latestRows = (Array.isArray(data.latest_items) ? data.latest_items : []).slice(0, 10).map((row) => [text(row.source), text(row.type), text(row.title), formatDate(row.observed_at)]);
-    append(host, card("Latest evidence", latestRows.length ? table(["Source", "Type", "Title", "Observed"], latestRows) : statePanel("empty", "No evidence has been collected yet.")));
+    const opportunityBody = opportunityRows.length ? table(["机会", "ID", "评分", "证据", "阶段", "更新时间"], opportunityRows) : statePanel("empty", "当前没有可分诊的机会记录。");
+    left.append(workbenchSection("重点机会", linkTo("P12", "查看全部"), opportunityBody));
+    const alertBody = document.createElement("div");
+    alertBody.className = "r04-workbench-alerts";
+    if (alertResult.status === "fulfilled") {
+        const alerts = Array.isArray(alertResult.value) ? alertResult.value : [];
+        if (alerts.length)
+            for (const row of alerts.slice(0, 5)) {
+                const item = document.createElement("article");
+                item.className = "r04-workbench-alert";
+                const titleRow = document.createElement("div");
+                titleRow.className = "r04-workbench-alert-title";
+                titleRow.append(badge(alertType(row), row.priority === "CRITICAL" ? "danger" : "warning"));
+                const when = document.createElement("time");
+                when.textContent = formatDate(row.created_at);
+                titleRow.append(when);
+                const name = document.createElement("strong");
+                name.textContent = text(row.title, "未命名告警");
+                const message = document.createElement("p");
+                message.textContent = text(row.message, "该告警未提供补充说明。");
+                const target = alertTarget(row);
+                const link = document.createElement("a");
+                link.href = target.href;
+                link.textContent = target.label;
+                item.append(titleRow, name, message, link);
+                alertBody.append(item);
+            }
+        else
+            alertBody.append(statePanel("empty", "当前没有待处理告警。"));
+    }
+    else
+        alertBody.append(statePanel("partial", "告警接口暂时不可用；其余工作台数据仍可查看。"));
+    right.append(workbenchSection("需要关注", linkTo("P24", "查看全部"), alertBody));
+    const researchBody = document.createElement("div");
+    researchBody.className = "r04-workbench-research";
+    researchBody.append(capabilityUnavailableNotice("当前后端未暴露独立研究结果资源；工作台不从机会摘要拼装研究结果。", "研究结果暂不可用"));
+    researchBody.append(linkTo("P15", "进入研究任务列表"));
+    right.append(workbenchSection("最近研究结果", linkTo("P15", "查看研究"), researchBody));
+    columns.append(left, right);
+    host.append(columns);
+    const latestBody = document.createElement("div");
+    latestBody.className = "r04-workbench-latest";
+    if (observationsResult.status === "fulfilled") {
+        const rows = (observationsResult.value?.items ?? []);
+        if (rows.length)
+            for (const row of rows.slice(0, 5)) {
+                const item = document.createElement("article");
+                const meta = document.createElement("div");
+                meta.className = "r04-workbench-latest-meta";
+                meta.textContent = formatDate(row.observed_at);
+                const link = linkTo("P07", text(row.title), { id: row.id });
+                link.className = "r04-workbench-latest-title";
+                const copy = document.createElement("p");
+                copy.textContent = text(row.text, "该情报未提供摘要。");
+                const source = document.createElement("span");
+                source.textContent = `来源：${text(row.source_id)}`;
+                item.append(meta, link, copy, source);
+                latestBody.append(item);
+            }
+        else
+            latestBody.append(statePanel("empty", "当前没有已采集的最新情报。"));
+    }
+    else
+        latestBody.append(statePanel("partial", "情报接口暂时不可用；请从情报工作台重试。"));
+    host.append(workbenchSection("最新情报变化", linkTo("P06", "进入情报工作台"), latestBody, "r04-workbench-latest-section"));
     return host;
 }
+function workbenchSummary(labelValue, value, meta, screen, tone = "normal") {
+    const link = linkTo(screen, "", {});
+    link.className = `r04-workbench-summary-card r04-workbench-summary-${tone}`;
+    const label = document.createElement("span");
+    label.textContent = labelValue;
+    const numberValue = document.createElement("strong");
+    numberValue.textContent = number(value);
+    const copy = document.createElement("small");
+    copy.textContent = meta;
+    link.append(label, numberValue, copy);
+    return link;
+}
+function workbenchSection(titleValue, action, body, className = "") {
+    const section = document.createElement("section");
+    section.className = `r04-workbench-section ${className}`.trim();
+    const header = document.createElement("header");
+    header.className = "r04-workbench-section-header";
+    const title = document.createElement("h2");
+    title.textContent = titleValue;
+    header.append(title, action);
+    section.append(header, body);
+    return section;
+}
+function stageLabel(value) { return { DISCOVERY: "发现", EARLY_GROWTH: "早期增长", PRODUCTIZING: "产品化", COMMERCIALIZING: "商业化", DORMANT: "休眠" }[String(value)] ?? text(value); }
 async function renderSearch(context) {
     const host = document.createElement("div");
     host.className = "r04-search-page";
@@ -1092,6 +1200,46 @@ function installScreenStyles() {
     const style = document.createElement("style");
     style.id = "r02-screen-styles";
     style.textContent = `
+    .r04-workbench { display: grid; gap: 20px; min-width: 0; }
+    .r04-workbench-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .r04-workbench-heading h1 { margin: 0; font-size: 24px; line-height: 1.25; }
+    .r04-workbench-heading p { margin: 6px 0 0; color: var(--or-text-muted); font-size: 13px; }
+    .r04-workbench-refresh { min-height: 36px; padding: 8px 12px; border: 1px solid var(--or-outline-strong); border-radius: 6px; background: var(--or-surface); color: var(--or-text); }
+    .r04-workbench-refresh:hover { border-color: var(--or-primary); color: var(--or-primary-dark); }
+    .r04-workbench-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .r04-workbench-summary-card { display: grid; gap: 4px; padding: 16px 20px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); color: var(--or-text); text-decoration: none; }
+    .r04-workbench-summary-card:hover { border-color: var(--or-primary); }
+    .r04-workbench-summary-card > span { color: var(--or-text-muted); font-size: 12px; font-weight: 700; }
+    .r04-workbench-summary-card > strong { font-size: 24px; line-height: 1; }
+    .r04-workbench-summary-card > small { color: var(--or-text-muted); font-size: 12px; }
+    .r04-workbench-summary-danger { border-color: var(--or-danger); }
+    .r04-workbench-summary-danger > strong { color: var(--or-danger); }
+    .r04-workbench-columns { display: grid; grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr); gap: 20px; align-items: start; }
+    .r04-workbench-primary, .r04-workbench-secondary { display: grid; gap: 20px; min-width: 0; }
+    .r04-workbench-section { min-width: 0; overflow: hidden; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-workbench-section-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--or-outline); }
+    .r04-workbench-section-header h2 { margin: 0; font-size: 16px; }
+    .r04-workbench-section-header a { color: var(--or-primary-dark); font-size: 12px; text-decoration: none; }
+    .r04-workbench-section-header a:hover { text-decoration: underline; }
+    .r04-workbench-section > .r02-table-wrap { border: 0; border-radius: 0; }
+    .r04-workbench-alerts, .r04-workbench-research { display: grid; gap: 12px; padding: 16px; }
+    .r04-workbench-alert { display: grid; gap: 6px; padding: 12px; border: 1px solid var(--or-outline); border-radius: 6px; background: var(--or-surface-muted); }
+    .r04-workbench-alert-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .r04-workbench-alert-title time { color: var(--or-text-muted); font-size: 11px; }
+    .r04-workbench-alert strong { font-size: 13px; }
+    .r04-workbench-alert p { margin: 0; color: var(--or-text-muted); font-size: 12px; line-height: 1.5; }
+    .r04-workbench-alert a, .r04-workbench-research > a { color: var(--or-primary-dark); font-size: 12px; text-decoration: none; }
+    .r04-workbench-alert a:hover, .r04-workbench-research > a:hover { text-decoration: underline; }
+    .r04-workbench-latest-section { margin-bottom: 8px; }
+    .r04-workbench-latest { display: grid; }
+    .r04-workbench-latest article { display: grid; grid-template-columns: 112px minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 16px 20px; border-bottom: 1px solid var(--or-outline); }
+    .r04-workbench-latest article:last-child { border-bottom: 0; }
+    .r04-workbench-latest-meta, .r04-workbench-latest article > span { color: var(--or-text-muted); font-size: 11px; }
+    .r04-workbench-latest-title { min-width: 0; overflow: hidden; color: var(--or-primary-dark); font-size: 13px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; text-decoration: none; }
+    .r04-workbench-latest-title:hover { text-decoration: underline; }
+    .r04-workbench-latest article p { grid-column: 2 / 3; margin: -4px 0 0; overflow: hidden; color: var(--or-text-muted); font-size: 12px; line-height: 1.5; text-overflow: ellipsis; white-space: nowrap; }
+    @media (max-width: 1000px) { .r04-workbench-columns { grid-template-columns: 1fr; } }
+    @media (max-width: 720px) { .r04-workbench-summary { grid-template-columns: 1fr; } .r04-workbench-heading { flex-direction: column; } .r04-workbench-latest article { grid-template-columns: 1fr; gap: 6px; } .r04-workbench-latest article p { grid-column: auto; white-space: normal; } }
     .r02-screen-content { display: grid; gap: 20px; }
     .r02-screen-intro h2 { margin: 0 0 5px; font-size: 21px; }
     .r02-screen-intro p { margin: 0; color: var(--r02-text-muted); }
