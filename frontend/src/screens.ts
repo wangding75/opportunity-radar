@@ -28,7 +28,7 @@ export async function renderScreen(route: RouteState, session: AuthSession, cont
     case "P17": return route.params.get("id") ? renderResearchResultDetail(route, context) : renderResearchResultList(route, context);
     case "P18": return renderSources(context);
     case "P19": return renderSourceHealth(route, context);
-    case "P20": return renderMonitoring(context);
+    case "P20": return renderMonitoring(route, context);
     case "P21": return renderRuns(context);
     case "P22": return renderRunDetail(route, context);
     case "P23": return renderAnalysisQueue(context);
@@ -1559,11 +1559,64 @@ function renderSourceErrorsTab(sourceId: string, health: Row, runs: Row[], resul
   host.append(capabilityUnavailableNotice("后端没有独立错误历史、HTTP 状态或恢复事件资源；此处只展示 collection-runs.error 与 sources/health.last_error 的真实字段，不提供重试按钮。", "错误契约范围"), linkTo("P18", "返回数据源概览", {id: sourceId})); return host;
 }
 
-async function renderMonitoring(context: ScreenContext): Promise<HTMLElement> {
-  const host = content("Monitoring plan", "Probe planning is read-only here; execution remains an admin backend operation.");
-  try { const data = await api("/api/v1/probes/plan"); const rows = Array.isArray(data) ? data : (data.tasks ?? data.queries ?? []); append(host, rows.length ? table(["Query", "Source", "Intent", "Reason"], rows.slice(0, 100).map((row: Row) => [text(row.query), text(row.source_id), text(row.intent), text(row.reason ?? row.priority)])) : card("Plan snapshot", table(["Field", "Value"], Object.entries(data ?? {}).map(([key, value]) => [key, typeof value === "object" ? JSON.stringify(value) : text(value)])))); } catch (error) { append(host, errorState(error, context)); }
+async function renderMonitoring(route: RouteState, context: ScreenContext): Promise<HTMLElement> {
+  const sourceId = route.params.get("source_id"); const query = route.params.get("query");
+  if (sourceId && query) return renderMonitoringDetail(route, context, sourceId, query);
+  const host = document.createElement("div"); host.className = "r04-monitoring-page";
+  host.append(readOnlyNotice("当前后端调度控制接口未确认，本页仅展示监控计划及运行状态。", "监控计划只读"), r04PageHeading("监控计划", "查看现有监控范围、调度频率、最近运行与下一次计划时间", "刷新监控计划"));
+  try {
+    const [planResult, tasksResult, sourcesResult, healthResult, runsResult] = await Promise.allSettled([
+      api("/api/v1/probes/plan"), api("/api/v1/probes/tasks?limit=1000"), api("/api/v1/sources"), api("/api/v1/sources/health"), api("/api/v1/collection-runs?limit=500"),
+    ]);
+    if (planResult.status === "rejected") throw planResult.reason;
+    const plan = planResult.value as Row; const probes = Array.isArray(plan) ? plan as Row[] : Array.isArray(plan.probes) ? plan.probes as Row[] : [];
+    const tasks = tasksResult.status === "fulfilled" && Array.isArray(tasksResult.value) ? tasksResult.value as Row[] : [];
+    const sources = sourcesResult.status === "fulfilled" && Array.isArray(sourcesResult.value) ? sourcesResult.value as Row[] : [];
+    const healthRows = healthResult.status === "fulfilled" && Array.isArray(healthResult.value) ? healthResult.value as Row[] : [];
+    const runs = runsResult.status === "fulfilled" && Array.isArray(runsResult.value) ? runsResult.value as Row[] : [];
+    const sourceById = new Map(sources.map((row) => [String(row.source_id), row])); const healthById = new Map(healthRows.map((row) => [String(row.source_id), row])); const taskByKey = new Map(tasks.map((row) => [monitoringKey(row), row])); const runByKey = latestMonitoringRuns(runs);
+    const records = probes.map((probe) => ({probe, task: taskByKey.get(monitoringKey(probe)), source: sourceById.get(String(probe.source_id)), health: healthById.get(String(probe.source_id)), run: runByKey.get(monitoringKey(probe))}));
+    if (!records.length) { host.append(statePanel("empty", "当前没有可展示的实时监控计划项。")); return host; }
+    const filters = document.createElement("form"); filters.className = "r04-monitoring-filters"; const search = document.createElement("input"); search.type = "search"; search.placeholder = "搜索监控计划或查询…"; search.setAttribute("aria-label", "搜索监控计划或查询"); const status = document.createElement("select"); status.setAttribute("aria-label", "计划状态"); addOption(status, "", "所有状态"); ["ACTIVE", "PAUSED", "FAILED", "UNSYNCED"].forEach((value) => addOption(status, value, monitoringStatusLabel(value))); const source = document.createElement("select"); source.setAttribute("aria-label", "数据源"); addOption(source, "", "所有数据源"); [...new Set(records.map((row) => String(row.probe.source_id)))].forEach((value) => addOption(source, value, text(sourceById.get(value)?.display_name, value))); const submit = document.createElement("button"); submit.type = "submit"; submit.className = "r04-monitoring-submit"; submit.textContent = "筛选"; filters.append(search, status, source, submit); host.append(filters);
+    const layout = document.createElement("div"); layout.className = "r04-monitoring-layout"; const results = document.createElement("section"); results.className = "r04-monitoring-results"; const inspector = document.createElement("aside"); inspector.className = "r04-monitoring-inspector"; layout.append(results, inspector); host.append(layout);
+    const draw = (): void => { const q = search.value.trim().toLowerCase(); const selectedStatus = status.value; const selectedSource = source.value; const filtered = records.filter((record) => { const rowStatus = monitoringStatus(record.task); const haystack = `${record.probe.keyword ?? ""} ${record.probe.query ?? ""} ${record.probe.source_id ?? ""}`.toLowerCase(); return (!q || haystack.includes(q)) && (!selectedStatus || rowStatus === selectedStatus) && (!selectedSource || String(record.probe.source_id) === selectedSource); }); const tableRows = filtered.map((record) => monitoringListRow(record)); results.replaceChildren(tableRows.length ? table(["监控项 / 真实键", "监控范围", "状态", "调度频率", "数据源", "最近运行", "最近结果"], tableRows) : statePanel("empty", "当前筛选条件下暂无监控计划项。")); inspector.replaceChildren(filtered[0] ? monitoringInspector(filtered[0]) : statePanel("empty", "请选择可用的监控计划项。")); };
+    filters.addEventListener("submit", (event) => { event.preventDefault(); draw(); }); [status, source].forEach((field) => field.addEventListener("change", draw)); search.addEventListener("input", draw); draw();
+    const unavailable: string[] = []; if (tasksResult.status === "rejected") unavailable.push("任务状态、最近运行和下一次计划时间需要管理员读取权限"); if (runsResult.status === "rejected") unavailable.push("运行详情链接需要管理员读取权限"); if (unavailable.length) host.append(capabilityUnavailableNotice(`${unavailable.join("；")}。实时计划仍可正常展示。`, "部分计划字段暂不可用"));
+  } catch (error) { host.append(errorState(error, context, () => void renderMonitoring(route, context))); }
   return host;
 }
+
+async function renderMonitoringDetail(route: RouteState, context: ScreenContext, sourceId: string, query: string): Promise<HTMLElement> {
+  const host = document.createElement("div"); host.className = "r04-monitoring-detail";
+  try {
+    const [planResult, tasksResult, sourcesResult, healthResult, runsResult, observationsResult] = await Promise.allSettled([
+      api("/api/v1/probes/plan"), api("/api/v1/probes/tasks?limit=1000"), api("/api/v1/sources"), api("/api/v1/sources/health"), api(`/api/v1/collection-runs?source_id=${encodeURIComponent(sourceId)}&limit=100`), api(`/api/v1/observations?source_id=${encodeURIComponent(sourceId)}&q=${encodeURIComponent(query)}&limit=5`),
+    ]);
+    if (planResult.status === "rejected") throw planResult.reason;
+    const plan = planResult.value as Row; const probes = Array.isArray(plan) ? plan as Row[] : Array.isArray(plan.probes) ? plan.probes as Row[] : []; const probe = probes.find((row) => String(row.source_id) === sourceId && String(row.query) === query && (!route.params.get("keyword_id") || String(row.keyword_id) === route.params.get("keyword_id")));
+    if (!probe) { host.append(objectNotFound("监控计划项", `${sourceId} / ${query}`)); return host; }
+    const tasks = tasksResult.status === "fulfilled" && Array.isArray(tasksResult.value) ? tasksResult.value as Row[] : []; const task = tasks.find((row) => monitoringKey(row) === monitoringKey(probe)); const sources = sourcesResult.status === "fulfilled" && Array.isArray(sourcesResult.value) ? sourcesResult.value as Row[] : []; const source = sources.find((row) => String(row.source_id) === sourceId); const healthRows = healthResult.status === "fulfilled" && Array.isArray(healthResult.value) ? healthResult.value as Row[] : []; const health = healthRows.find((row) => String(row.source_id) === sourceId) ?? {status: "UNKNOWN", source_id: sourceId}; const runs = runsResult.status === "fulfilled" && Array.isArray(runsResult.value) ? runsResult.value as Row[] : []; const observations = observationsResult.status === "fulfilled" && observationsResult.value?.items ? observationsResult.value.items as Row[] : [];
+    const header = document.createElement("header"); header.className = "r04-monitoring-detail-header"; const breadcrumb = document.createElement("nav"); breadcrumb.className = "r04-result-breadcrumb"; breadcrumb.append(linkTo("P20", "监控计划"), document.createTextNode(" / "), document.createTextNode(text(probe.keyword, query))); const heading = document.createElement("div"); heading.className = "r04-monitoring-detail-heading"; const title = document.createElement("div"); const h1 = document.createElement("h1"); h1.textContent = text(probe.keyword, query); const key = document.createElement("code"); key.textContent = `${sourceId} · ${query}`; title.append(h1, key); const copy = button("复制链接", {onClick: () => { void navigator.clipboard?.writeText(window.location.href).then(() => { copy.textContent = "链接已复制"; }); }}); heading.append(title, copy); const meta = document.createElement("div"); meta.className = "r04-monitoring-detail-meta"; meta.append(badge(monitoringStatusLabel(monitoringStatus(task)), monitoringStatusTone(monitoringStatus(task))), sourceMeta("执行频率", intervalLabel(probe.interval_minutes)), sourceMeta("监控范围", text(probe.query, "未返回")), sourceMeta("上次运行", formatDate(task?.last_run_at ?? runs[0]?.started_at)), sourceMeta("下次运行", formatDate(task?.next_run_at))); header.append(breadcrumb, heading, meta); host.append(header, readOnlyNotice("当前调度控制写接口未确认，本页不提供暂停、恢复、立即运行或编辑。", "监控计划详情只读"));
+    const layout = document.createElement("div"); layout.className = "r04-monitoring-detail-layout"; const main = document.createElement("main"); main.className = "r04-monitoring-detail-main"; const side = document.createElement("aside"); side.className = "r04-monitoring-detail-side";
+    const scope = document.createElement("div"); scope.className = "r04-monitoring-scope-copy"; const scopeText = document.createElement("p"); scopeText.textContent = `该计划项由关键词「${text(probe.keyword, "未返回")}」生成，按真实查询「${query}」从指定数据源采集。`; const tags = document.createElement("div"); tags.className = "r04-monitoring-tags"; [probe.keyword, probe.intent, `优先级 ${text(probe.priority, "未返回")}`].filter(Boolean).forEach((value) => { const tag = document.createElement("span"); tag.textContent = String(value); tags.append(tag); }); scope.append(scopeText, tags); main.append(detailSectionWithBody("监控范围描述", scope));
+    const sourceRows = source ? [[linkTo("P18", text(source.display_name, sourceId), {id: sourceId}), sourceTypeLabel(source.acquisition_method), badge(sourceHealthLabel(health), sourceHealthTone(health)), formatDate(health.last_success_at)]] : [[linkTo("P18", sourceId, {id: sourceId}), "—", badge(sourceHealthLabel(health), sourceHealthTone(health)), formatDate(health.last_success_at)]]; main.append(detailSectionWithBody("关联数据源", table(["数据源名称", "类型", "健康状态", "最近成功"], sourceRows)));
+    const recentIntel = observations.length ? table(["时间", "情报", "来源"], observations.map((row) => [formatDate(row.observed_at), linkTo("P07", text(row.title, `情报 #${row.id}`), {id: row.id, source_id: sourceId}), text(row.source_id, sourceId)])) : statePanel("empty", "该计划项暂无匹配的最近情报。"); main.append(detailSectionWithBody("最近情报", recentIntel));
+    side.append(detailSectionWithBody("调度摘要", detailList([["计划项键", `${sourceId} / ${query}`], ["查询意图", text(probe.intent, "未返回")], ["执行间隔", intervalLabel(probe.interval_minutes)], ["优先级", text(probe.priority, "未返回")], ["最近状态", monitoringStatusLabel(monitoringStatus(task))], ["下次计划", formatDate(task?.next_run_at)] ])));
+    const success = health.success_rate_pct == null ? "—" : `${number(health.success_rate_pct, 2)}%`; side.append(detailSectionWithBody("健康指标", detailList([["执行成功率", success], ["近期失败", text(health.failed_runs, "0")], ["平均耗时", health.avg_duration_ms == null ? "—" : `${number(health.avg_duration_ms, 2)} ms`], ["最近产出", text(health.last_inserted, "0")]])));
+    if (runs.length) side.append(detailSectionWithBody("最近运行", sourceRunCard(runs[0])), linkTo("P21", "查看全部运行记录")); else if (runsResult.status === "rejected") side.append(capabilityUnavailableNotice("运行记录接口需要管理员读取权限，当前只显示任务状态和健康统计。", "最近运行暂不可用")); else side.append(detailSectionWithBody("最近运行", statePanel("empty", "该计划项暂无运行记录。")));
+    if (tasksResult.status === "rejected") side.append(capabilityUnavailableNotice("监控计划没有独立持久化实体；任务状态、上次运行和下次计划时间需要管理员读取 probes/tasks。", "计划状态范围"));
+    layout.append(main, side); host.append(layout); if (observationsResult.status === "rejected") host.append(capabilityUnavailableNotice("最近情报读取失败；计划项和数据源状态仍来自已确认接口。", "最近情报暂不可用")); return host;
+  } catch (error) { host.append(errorState(error, context, () => void renderMonitoringDetail(route, context, sourceId, query))); return host; }
+}
+
+function monitoringKey(row: Row): string { return `${row.source_id ?? ""}|${row.query ?? ""}|${row.intent ?? ""}`; }
+function latestMonitoringRuns(rows: Row[]): Map<string, Row> { const map = new Map<string, Row>(); for (const row of rows) { const key = monitoringKey(row); if (!map.has(key)) map.set(key, row); } return map; }
+function monitoringStatus(task?: Row): string { if (!task) return "UNSYNCED"; if (!task.active) return "PAUSED"; if (task.last_status === "FAILED") return "FAILED"; return "ACTIVE"; }
+function monitoringStatusLabel(value: string): string { return ({ACTIVE: "运行中", PAUSED: "已暂停", FAILED: "最近失败", UNSYNCED: "待同步"} as Record<string, string>)[value] ?? text(value, "未知"); }
+function monitoringStatusTone(value: string): "neutral" | "success" | "warning" | "danger" { return ({ACTIVE: "success", PAUSED: "neutral", FAILED: "danger", UNSYNCED: "warning"} as Record<string, "neutral" | "success" | "warning" | "danger">)[value] ?? "neutral"; }
+function intervalLabel(value: unknown): string { const minutes = Number(value); if (!Number.isFinite(minutes)) return "未返回"; if (minutes % 1440 === 0) return `每 ${minutes / 1440} 天`; if (minutes % 60 === 0) return `每 ${minutes / 60} 小时`; return `每 ${minutes} 分钟`; }
+function monitoringListRow(record: {probe: Row; task?: Row; source?: Row; health?: Row; run?: Row}): Array<string | HTMLElement> { const plan = linkTo("P20", text(record.probe.keyword, text(record.probe.query)), {source_id: record.probe.source_id, query: record.probe.query, keyword_id: record.probe.keyword_id}); plan.className = "r04-monitoring-plan-link"; const key = document.createElement("div"); key.className = "r04-monitoring-plan-cell"; key.append(plan); const keyCopy = document.createElement("code"); keyCopy.textContent = `${text(record.probe.source_id)} · ${text(record.probe.query)}`; key.append(keyCopy); const status = monitoringStatus(record.task); return [key, text(record.probe.query), badge(monitoringStatusLabel(status), monitoringStatusTone(status)), intervalLabel(record.probe.interval_minutes), record.source ? linkTo("P18", text(record.source.display_name, record.probe.source_id), {id: record.probe.source_id}) : linkTo("P18", text(record.probe.source_id), {id: record.probe.source_id}), record.task?.last_run_at ? formatDate(record.task.last_run_at) : record.run ? linkTo("P22", formatDate(record.run.started_at), {id: record.run.id}) : "—", record.task?.last_status ? runStatusLabel(record.task.last_status) : record.run ? runStatusLabel(record.run.status) : "待同步"]; }
+function monitoringInspector(record: {probe: Row; task?: Row; source?: Row; health?: Row; run?: Row}): HTMLElement { const host = document.createElement("div"); host.className = "r04-monitoring-inspector-inner"; host.append(badge(monitoringStatusLabel(monitoringStatus(record.task)), monitoringStatusTone(monitoringStatus(record.task))), document.createElement("h2")); (host.querySelector("h2") as HTMLElement).textContent = text(record.probe.keyword, record.probe.query); const copy = document.createElement("code"); copy.textContent = `${text(record.probe.source_id)} · ${text(record.probe.query)}`; host.append(copy, detailSectionWithBody("监控范围与调度", detailList([["查询", record.probe.query], ["意图", record.probe.intent], ["执行间隔", intervalLabel(record.probe.interval_minutes)], ["优先级", record.probe.priority], ["最近运行", formatDate(record.task?.last_run_at ?? record.run?.started_at)], ["下次计划", formatDate(record.task?.next_run_at)]])), record.source ? linkTo("P18", "查看关联数据源", {id: record.probe.source_id}) : linkTo("P18", "查看数据源", {id: record.probe.source_id}), linkTo("P20", "打开计划详情", {source_id: record.probe.source_id, query: record.probe.query, keyword_id: record.probe.keyword_id})); return host; }
 
 async function renderRuns(context: ScreenContext): Promise<HTMLElement> {
   const host = content("Collection runs", "Recent connector runs and their persisted outcomes.");
@@ -1771,8 +1824,56 @@ function installScreenStyles(): void {
     .r04-source-capabilities li { padding: 5px 9px; border: 1px solid var(--or-outline); border-radius: 999px; color: var(--or-text-muted); font-size: 12px; }
     .r04-source-run-card { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--or-outline); border-radius: 6px; background: var(--or-surface-muted); color: var(--or-text-muted); font-size: 12px; }
     .r04-source-run-card a { font-size: 13px; font-weight: 700; }
+    .r04-source-tab-panel { display: grid; gap: 16px; min-width: 0; }
+    .r04-source-tab-filters { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-source-tab-filters select { min-height: 36px; border: 1px solid var(--or-outline-strong); border-radius: 6px; padding: 7px 10px; background: var(--or-surface); color: var(--or-text); }
+    .r04-source-tab-count { margin-left: auto; color: var(--or-text-muted); font-size: 12px; }
+    .r04-source-tab-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); gap: 18px; align-items: start; min-width: 0; }
+    .r04-source-tab-results, .r04-source-tab-inspector { min-width: 0; overflow: hidden; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-source-tab-results > .r02-table-wrap { border: 0; border-radius: 0; }
+    .r04-source-tab-inspector { display: grid; gap: 14px; padding: 18px; }
+    .r04-source-tab-inspector > a { color: var(--or-primary-dark); font-size: 13px; text-decoration: none; }
+    .r04-source-tab-inspector > a:hover { text-decoration: underline; }
+    @media (max-width: 1000px) { .r04-source-tab-layout { grid-template-columns: 1fr; } }
+    @media (max-width: 700px) { .r04-source-tab-filters { align-items: stretch; } .r04-source-tab-filters select { flex: 1 1 100%; } .r04-source-tab-count { margin-left: 0; width: 100%; } }
     @media (max-width: 1000px) { .r04-source-detail-layout { grid-template-columns: 1fr; } }
     @media (max-width: 700px) { .r04-source-detail-heading { flex-direction: column; } .r04-source-filters { align-items: stretch; } .r04-source-filters input, .r04-source-filters select, .r04-source-filter-submit { flex: 1 1 100%; } .r04-source-filters input[type=date] { flex-basis: 45%; } }
+    .r04-monitoring-page, .r04-monitoring-detail { display: grid; gap: 18px; min-width: 0; }
+    .r04-monitoring-filters, .r04-monitoring-detail-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .r04-monitoring-filters { padding: 12px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-monitoring-filters input, .r04-monitoring-filters select { min-height: 36px; box-sizing: border-box; border: 1px solid var(--or-outline-strong); border-radius: 6px; padding: 7px 10px; background: var(--or-surface); color: var(--or-text); }
+    .r04-monitoring-filters input { flex: 1 1 240px; min-width: 180px; }
+    .r04-monitoring-filters input:focus, .r04-monitoring-filters select:focus { border-color: var(--or-primary); outline: 0; }
+    .r04-monitoring-submit { min-height: 36px; padding: 7px 12px; border: 1px solid var(--or-primary); border-radius: 6px; background: var(--or-primary); color: #fff; font-weight: 700; cursor: pointer; }
+    .r04-monitoring-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 360px); gap: 18px; align-items: start; min-width: 0; }
+    .r04-monitoring-results, .r04-monitoring-inspector { min-width: 0; overflow: hidden; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-monitoring-results > .r02-table-wrap { border: 0; border-radius: 0; }
+    .r04-monitoring-plan-cell { display: grid; gap: 3px; min-width: 180px; }
+    .r04-monitoring-plan-link { color: var(--or-text); font-weight: 700; text-decoration: none; }
+    .r04-monitoring-plan-link:hover { color: var(--or-primary-dark); text-decoration: underline; }
+    .r04-monitoring-plan-cell code, .r04-monitoring-inspector-inner > code, .r04-monitoring-detail-heading code { color: var(--or-text-muted); font-size: 11px; overflow-wrap: anywhere; }
+    .r04-monitoring-inspector { padding: 18px; }
+    .r04-monitoring-inspector-inner { display: grid; gap: 12px; min-width: 0; }
+    .r04-monitoring-inspector-inner h2 { margin: 0; font-size: 19px; }
+    .r04-monitoring-inspector-inner > a, .r04-monitoring-detail a { color: var(--or-primary-dark); text-decoration: none; }
+    .r04-monitoring-inspector-inner > a:hover, .r04-monitoring-detail a:hover { text-decoration: underline; }
+    .r04-monitoring-detail-header { display: grid; gap: 12px; padding: 20px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-monitoring-detail-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .r04-monitoring-detail-heading h1 { margin: 0 0 4px; font-size: 26px; line-height: 1.25; }
+    .r04-monitoring-detail-heading button { min-height: 36px; padding: 8px 12px; border: 1px solid var(--or-outline-strong); border-radius: 6px; background: var(--or-surface); color: var(--or-text); cursor: pointer; }
+    .r04-monitoring-detail-heading button:hover { border-color: var(--or-primary); color: var(--or-primary-dark); }
+    .r04-monitoring-detail-meta { padding-top: 12px; border-top: 1px solid var(--or-outline); }
+    .r04-monitoring-detail-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 18px; align-items: start; min-width: 0; }
+    .r04-monitoring-detail-main, .r04-monitoring-detail-side { display: grid; gap: 18px; min-width: 0; }
+    .r04-monitoring-detail .r04-detail-section { min-width: 0; padding: 18px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-monitoring-detail .r04-detail-section > h2 { margin: 0 0 14px; font-size: 16px; }
+    .r04-monitoring-scope-copy { display: grid; gap: 14px; }
+    .r04-monitoring-scope-copy p { margin: 0; line-height: 1.8; color: var(--or-text); }
+    .r04-monitoring-tags { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 14px; border-top: 1px solid var(--or-outline); }
+    .r04-monitoring-tags span { padding: 5px 9px; border: 1px solid var(--or-outline); border-radius: 999px; color: var(--or-text-muted); font-size: 12px; }
+    .r04-monitoring-detail .r02-table-wrap { overflow: auto; }
+    @media (max-width: 1000px) { .r04-monitoring-layout, .r04-monitoring-detail-layout { grid-template-columns: 1fr; } }
+    @media (max-width: 700px) { .r04-monitoring-filters { align-items: stretch; } .r04-monitoring-filters input, .r04-monitoring-filters select, .r04-monitoring-submit { flex: 1 1 100%; } .r04-monitoring-detail-heading { flex-direction: column; } }
     .r04-page-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--or-outline); }
     .r04-page-heading h1 { margin: 0; font-size: 24px; line-height: 1.25; }
     .r04-page-heading p { margin: 6px 0 0; color: var(--or-text-muted); font-size: 13px; }
