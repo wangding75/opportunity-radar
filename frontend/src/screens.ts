@@ -22,10 +22,10 @@ export async function renderScreen(route: RouteState, session: AuthSession, cont
     case "P11": return renderGraph(route, context);
     case "P12": return renderOpportunities(context);
     case "P13": return renderOpportunityDetail(route, context, "detail");
-    case "P14": return renderOpportunityDetail(route, context, "analysis");
-    case "P15": return renderResearch(context);
+    case "P14": return route.params.get("id") ? renderOpportunityDetail(route, context, "analysis") : renderStructuredAnalysisList(route, context);
+    case "P15": return renderResearch(route, context);
     case "P16": return renderOpportunityDetail(route, context, "research");
-    case "P17": return renderOpportunityDetail(route, context, "result");
+    case "P17": return route.params.get("id") ? renderOpportunityDetail(route, context, "result") : renderResearchResultList(route, context);
     case "P18": return renderSources(context);
     case "P19": return renderSourceHealth(route, context);
     case "P20": return renderMonitoring(context);
@@ -1162,11 +1162,113 @@ function detailList(entries: Array<[string, unknown]>): HTMLElement { const dl =
 function objectNotFound(kind: string, id: string): HTMLElement { const panel = document.createElement("div"); panel.className = "r02-object-not-found"; const heading = document.createElement("h2"); heading.textContent = `${kind}不存在`; const copy = document.createElement("p"); copy.textContent = `未找到 ID 为 ${id} 的真实${kind}记录。`; const actions = document.createElement("div"); appendActionRow(actions, button("返回工作台", {variant: "primary", onClick: () => navigate("P02")}), button("返回上一页", {onClick: () => history.back()})); panel.append(heading, copy, actions); return panel; }
 function externalLink(url: string): HTMLAnchorElement { const link = document.createElement("a"); link.href = url; link.target = "_blank"; link.rel = "noreferrer"; link.textContent = "Open"; return link; }
 
-async function renderResearch(context: ScreenContext): Promise<HTMLElement> {
-  const host = content("Research workflow", "Research records are currently represented by the opportunity research state API.");
-  try { const data = await api("/api/v1/opportunities?page=0&limit=100"); const rows = (data ?? []).map((row: Row) => [linkTo("P16", text(row.title), {id: row.id}), badge(text(row.research?.status ?? "NEW"), row.research?.status === "TRACKING" ? "success" : "neutral"), text(row.research?.priority ?? 0), text(row.research?.notes ?? "")]); append(host, rows.length ? table(["Opportunity", "Status", "Priority", "Notes"], rows) : statePanel("empty", "No opportunities have research state.")); }
-  catch (error) { append(host, errorState(error, context)); }
+async function renderStructuredAnalysisList(route: RouteState, context: ScreenContext): Promise<HTMLElement> {
+  const host = document.createElement("div"); host.className = "r04-research-list";
+  host.append(r04PageHeading("结构化分析", "查看机会已经持久化的结构化分析状态与摘要", "刷新分析列表"));
+  host.append(readOnlyNotice("当前后端没有独立 StructuredAnalysis 资源；列表使用机会接口返回的 analysis_* 字段，只展示已有记录，不提供生成或重生成操作。", "结构化分析只读"));
+  try {
+    const data = await api("/api/v1/opportunities?include_dormant=true&limit=200");
+    const records = Array.isArray(data) ? data as Row[] : [];
+    if (!records.length) { host.append(statePanel("empty", "当前没有可展示的机会分析记录。")); return host; }
+    const controls = document.createElement("form"); controls.className = "r04-research-filters";
+    const search = document.createElement("input"); search.type = "search"; search.placeholder = "搜索机会标题或摘要"; search.setAttribute("aria-label", "搜索机会标题或摘要");
+    const status = document.createElement("select"); status.setAttribute("aria-label", "分析状态"); addOption(status, "", "分析状态：全部"); ["READY", "PENDING", "DEGRADED", "FAILED"].forEach((value) => addOption(status, value, analysisLabel(value)));
+    const period = document.createElement("select"); period.setAttribute("aria-label", "最近更新时间"); addOption(period, "", "时间：全部"); addOption(period, "7", "最近 7 天"); addOption(period, "30", "最近 30 天"); addOption(period, "90", "最近 90 天");
+    const submit = document.createElement("button"); submit.type = "submit"; submit.className = "r04-keyword-submit"; submit.textContent = "筛选";
+    controls.append(search, status, period, submit); host.append(controls);
+    const layout = document.createElement("div"); layout.className = "r04-research-list-layout";
+    const results = document.createElement("section"); results.className = "r04-research-results";
+    const inspector = document.createElement("aside"); inspector.className = "r04-research-inspector";
+    const draw = (): void => {
+      const query = search.value.trim().toLowerCase(); const selectedStatus = status.value; const days = Number(period.value || 0);
+      const filtered = records.filter((row: Row) => {
+        const haystack = `${row.title ?? ""} ${row.summary ?? ""} ${row.id ?? ""}`.toLowerCase();
+        const timestamp = Date.parse(String(row.last_seen_at ?? row.first_seen_at ?? ""));
+        const inPeriod = !days || (Number.isFinite(timestamp) && Date.now() - timestamp <= days * 86_400_000);
+        return (!query || haystack.includes(query)) && (!selectedStatus || String(row.analysis_status ?? "") === selectedStatus) && inPeriod;
+      });
+      const tableRows = filtered.map((row: Row) => [linkTo("P14", text(row.title, `机会 ${row.id}`), {id: row.id}), text(row.id), badge(analysisLabel(row.analysis_status), analysisTone(row.analysis_status)), text(row.analysis_provider, "未返回"), text(row.analysis_attempt_count, "0"), text(row.evidence_count, "0"), formatDate(row.last_seen_at)]);
+      results.replaceChildren(tableRows.length ? table(["机会", "机会 ID", "分析状态", "提供方", "尝试次数", "证据数", "最近出现"], tableRows) : statePanel("empty", "没有符合当前筛选条件的真实分析记录。"));
+      renderStructuredAnalysisInspector(inspector, filtered[0]);
+    };
+    controls.addEventListener("submit", (event) => { event.preventDefault(); draw(); }); search.addEventListener("input", draw); status.addEventListener("change", draw); period.addEventListener("change", draw); draw();
+    layout.append(results, inspector); host.append(layout);
+    const selectedId = route.params.get("selected_id"); if (selectedId) { const selected = records.find((row: Row) => String(row.id) === selectedId); if (selected) renderStructuredAnalysisInspector(inspector, selected); }
+  } catch (error) { host.append(errorState(error, context, () => void renderStructuredAnalysisList(route, context))); }
   return host;
+}
+
+function renderStructuredAnalysisInspector(host: HTMLElement, row?: Row): void {
+  if (!row) { host.replaceChildren(statePanel("empty", "从列表选择一条真实分析记录查看摘要。")); return; }
+  const body = document.createElement("div"); body.className = "r04-research-inspector-inner";
+  const title = document.createElement("h2"); title.textContent = text(row.title, `机会 ${row.id}`);
+  body.append(title, detailList([["分析状态", analysisLabel(row.analysis_status)], ["提供方", text(row.analysis_provider, "未返回")], ["尝试次数", text(row.analysis_attempt_count, "0")], ["证据数", text(row.evidence_count, "0")], ["最近出现", formatDate(row.last_seen_at)], ["摘要", text(row.summary, "机会接口未返回摘要。")]]));
+  const actions = document.createElement("div"); actions.className = "r04-research-inspector-actions"; actions.append(linkTo("P14", "打开分析详情", {id: row.id}), linkTo("P13", "查看机会", {id: row.id}), linkTo("P13", "查看机会证据", {id: row.id, tab: "evidence"}));
+  body.append(actions, capabilityUnavailableNotice("分析详情中的引用与结构化字段需要进入机会详情读取；后端没有独立分析记录 ID 或处理轨迹。", "分析记录范围")); host.replaceChildren(body);
+}
+
+async function renderResearch(route: RouteState, context: ScreenContext): Promise<HTMLElement> {
+  const host = document.createElement("div"); host.className = "r04-research-list";
+  host.append(r04PageHeading("研究任务", "按机会研究状态查看需要跟进的对象", "刷新研究任务"));
+  host.append(readOnlyNotice("当前后端未暴露 ResearchTask 资源、负责人、任务目标或状态推进接口；下表仅映射真实机会的 OpportunityResearch 状态，所有任务写操作均隐藏。", "研究任务只读降级"));
+  try {
+    const data = await api("/api/v1/opportunities/page?include_dormant=true&limit=200");
+    const records = Array.isArray(data?.items) ? data.items as Row[] : [];
+    if (!records.length) { host.append(statePanel("empty", "当前没有可展示的机会研究状态。")); return host; }
+    const controls = document.createElement("form"); controls.className = "r04-research-filters";
+    const search = document.createElement("input"); search.type = "search"; search.placeholder = "搜索机会标题或 ID"; search.setAttribute("aria-label", "搜索机会标题或 ID");
+    const taskStatus = document.createElement("select"); taskStatus.setAttribute("aria-label", "研究状态"); addOption(taskStatus, "", "研究状态：全部"); ["NEW", "REVIEWING", "TRACKING", "DISMISSED", "ARCHIVED"].forEach((value) => addOption(taskStatus, value, researchLabel(value)));
+    const priority = document.createElement("select"); priority.setAttribute("aria-label", "优先级"); addOption(priority, "", "优先级：全部"); ["5", "4", "3", "2", "1", "0"].forEach((value) => addOption(priority, value, `${value} 级`));
+    const submit = document.createElement("button"); submit.type = "submit"; submit.className = "r04-keyword-submit"; submit.textContent = "筛选";
+    controls.append(search, taskStatus, priority, submit); host.append(controls);
+    const layout = document.createElement("div"); layout.className = "r04-research-list-layout";
+    const results = document.createElement("section"); results.className = "r04-research-results";
+    const inspector = document.createElement("aside"); inspector.className = "r04-research-inspector";
+    const draw = (): void => {
+      const query = search.value.trim().toLowerCase(); const selectedStatus = taskStatus.value; const selectedPriority = priority.value;
+      const filtered = records.filter((row: Row) => { const research = row.research ?? {}; const haystack = `${row.title ?? ""} ${row.id ?? ""}`.toLowerCase(); return (!query || haystack.includes(query)) && (!selectedStatus || String(research.status ?? "NEW") === selectedStatus) && (!selectedPriority || String(research.priority ?? 0) === selectedPriority); });
+      const tableRows = filtered.map((row: Row) => { const research = row.research ?? {}; return [linkTo("P16", text(row.title, `机会 ${row.id}`), {id: row.id}), text(row.id), badge(researchLabel(research.status), researchTone(research.status)), text(research.priority, "0"), research.starred ? badge("重点", "warning") : text("普通"), formatDate(research.updated_at), linkTo("P13", "查看机会", {id: row.id})]; });
+      results.replaceChildren(tableRows.length ? table(["机会", "机会 ID", "研究状态", "优先级", "标记", "更新时间", "关联机会"], tableRows) : statePanel("empty", "没有符合当前筛选条件的真实研究状态。"));
+      renderResearchTaskInspector(inspector, filtered[0]);
+    };
+    controls.addEventListener("submit", (event) => { event.preventDefault(); draw(); }); search.addEventListener("input", draw); taskStatus.addEventListener("change", draw); priority.addEventListener("change", draw); draw();
+    layout.append(results, inspector); host.append(layout);
+    const selectedId = route.params.get("selected_id"); if (selectedId) { const selected = records.find((row: Row) => String(row.id) === selectedId); if (selected) renderResearchTaskInspector(inspector, selected); }
+  } catch (error) { host.append(errorState(error, context, () => void renderResearch(route, context))); }
+  return host;
+}
+
+function renderResearchTaskInspector(host: HTMLElement, row?: Row): void {
+  if (!row) { host.replaceChildren(statePanel("empty", "从列表选择一条真实研究状态查看详情。")); return; }
+  const research = row.research ?? {}; const body = document.createElement("div"); body.className = "r04-research-inspector-inner";
+  const title = document.createElement("h2"); title.textContent = text(row.title, `机会 ${row.id}`);
+  body.append(title, detailList([["机会 ID", row.id], ["研究状态", researchLabel(research.status)], ["优先级", research.priority], ["重点机会", research.starred ? "是" : "否"], ["标签", (research.tags ?? []).join("、") || "未返回"], ["备注", text(research.notes, "未返回")], ["更新时间", formatDate(research.updated_at)]]));
+  const actions = document.createElement("div"); actions.className = "r04-research-inspector-actions"; actions.append(linkTo("P16", "打开研究详情", {id: row.id}), linkTo("P13", "查看机会", {id: row.id}), linkTo("P13", "查看机会证据", {id: row.id, tab: "evidence"}));
+  body.append(actions, capabilityUnavailableNotice("研究任务的任务 ID、负责人、目标、证据覆盖率和完成结果没有后端资源；这里不显示 HTML mock 字段。", "任务字段范围")); host.replaceChildren(body);
+}
+
+async function renderResearchResultList(_route: RouteState, context: ScreenContext): Promise<HTMLElement> {
+  const host = document.createElement("div"); host.className = "r04-research-list";
+  host.append(r04PageHeading("研究结果", "查看已经持久化的机会分析快照", "刷新研究结果"));
+  host.append(readOnlyNotice("当前后端没有 ResearchResult 资源；下表仅展示机会接口可确认的 READY 分析快照，不把机会摘要冒充独立研究结果，也不提供生成或重试按钮。", "研究结果只读降级"));
+  try {
+    const data = await api("/api/v1/opportunities?include_dormant=true&limit=200");
+    const records = (Array.isArray(data) ? data as Row[] : []).filter((row: Row) => String(row.analysis_status ?? "") === "READY");
+    const results = document.createElement("section"); results.className = "r04-research-results";
+    const rows = records.map((row: Row) => [linkTo("P17", text(row.title, `机会 ${row.id}`), {id: row.id}), badge("已完成", "success"), text(row.analysis_provider, "未返回"), text(row.evidence_count, "0"), text(row.summary, "机会接口未返回分析摘要。"), formatDate(row.last_seen_at)]);
+    results.append(rows.length ? table(["机会", "分析状态", "提供方", "证据数", "结果摘要", "最近出现"], rows) : statePanel("empty", "当前没有后端可确认的 READY 分析快照。"));
+    const note = capabilityUnavailableNotice("研究结果详情会读取对应机会详情中的 analysis 字段；因为没有独立结果 ID、来源任务或完成事件，列表不展示这些未暴露的字段。", "研究结果资源范围");
+    host.append(results, note, linkTo("P14", "查看结构化分析列表"), linkTo("P15", "查看研究任务列表"));
+  } catch (error) { host.append(errorState(error, context, () => void renderResearchResultList(_route, context))); }
+  return host;
+}
+
+function analysisTone(value: unknown): "neutral" | "success" | "warning" | "danger" | "info" {
+  return ({READY: "success", PENDING: "info", DEGRADED: "warning", FAILED: "danger"} as Record<string, "neutral" | "success" | "warning" | "danger" | "info">)[String(value)] ?? "neutral";
+}
+
+function researchTone(value: unknown): "neutral" | "success" | "warning" | "danger" | "info" {
+  return ({TRACKING: "success", REVIEWING: "info", DISMISSED: "danger", ARCHIVED: "neutral"} as Record<string, "neutral" | "success" | "warning" | "danger" | "info">)[String(value)] ?? "neutral";
 }
 
 async function renderSources(context: ScreenContext): Promise<HTMLElement> {
@@ -1356,6 +1458,21 @@ function installScreenStyles(): void {
     .r04-page-heading p { margin: 6px 0 0; color: var(--or-text-muted); font-size: 13px; }
     .r04-page-action { min-height: 36px; padding: 8px 12px; border: 1px solid var(--or-outline-strong); border-radius: 6px; background: var(--or-surface); color: var(--or-text); cursor: pointer; }
     .r04-page-action:hover { border-color: var(--or-primary); color: var(--or-primary-dark); }
+    .r04-research-list { display: grid; gap: 18px; min-width: 0; }
+    .r04-research-filters { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-research-filters input, .r04-research-filters select { min-height: 36px; border: 1px solid var(--or-outline-strong); border-radius: 6px; padding: 7px 10px; background: var(--or-surface); color: var(--or-text); }
+    .r04-research-filters input { flex: 1 1 220px; min-width: 180px; }
+    .r04-research-filters select { max-width: 180px; }
+    .r04-research-filters input:focus, .r04-research-filters select:focus { border-color: var(--or-primary); outline: 0; }
+    .r04-research-list-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 360px); gap: 18px; align-items: start; min-width: 0; }
+    .r04-research-results { min-width: 0; overflow: hidden; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-research-results > .r02-table-wrap { border: 0; border-radius: 0; }
+    .r04-research-inspector { display: grid; gap: 14px; min-width: 0; padding: 18px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-research-inspector-inner { display: grid; gap: 14px; min-width: 0; }
+    .r04-research-inspector-inner h2 { margin: 0; font-size: 18px; line-height: 1.35; }
+    .r04-research-inspector-actions { display: grid; gap: 8px; }
+    .r04-research-inspector-actions a { color: var(--or-primary-dark); font-size: 13px; text-decoration: none; }
+    .r04-research-inspector-actions a:hover { text-decoration: underline; }
     .r04-keyword-page, .r04-watch-keyword-page, .r04-trend-page, .r04-graph-page { display: grid; gap: 18px; min-width: 0; }
     .r04-keyword-filter, .r04-watch-add-form, .r04-watch-filters, .r04-trend-controls, .r04-graph-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
     .r04-keyword-filter input, .r04-keyword-filter select, .r04-watch-add-form input, .r04-watch-filters input, .r04-watch-filters select, .r04-trend-controls select, .r04-graph-controls select { min-height: 36px; border: 1px solid var(--or-outline-strong); border-radius: 6px; padding: 7px 10px; background: var(--or-surface); color: var(--or-text); }
@@ -1400,7 +1517,7 @@ function installScreenStyles(): void {
     .r04-graph-node-label { fill: var(--or-text); font-size: 11px; }
     .r04-graph-inspector { padding: 18px; }
     .r04-graph-inspector > .r04-detail-section { min-width: 0; }
-    @media (max-width: 1000px) { .r04-keyword-layout, .r04-watch-layout, .r04-trend-layout, .r04-graph-layout { grid-template-columns: 1fr; } }
+    @media (max-width: 1000px) { .r04-keyword-layout, .r04-watch-layout, .r04-trend-layout, .r04-graph-layout, .r04-research-list-layout { grid-template-columns: 1fr; } }
     @media (max-width: 700px) { .r04-page-heading { flex-direction: column; } .r04-keyword-filter, .r04-watch-add-form, .r04-watch-filters, .r04-trend-controls, .r04-graph-controls { align-items: stretch; } .r04-keyword-filter input, .r04-watch-filters input { min-width: 100%; } .r04-graph-svg { min-height: 360px; } }
     .r04-workbench { display: grid; gap: 20px; min-width: 0; }
     .r04-workbench-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }

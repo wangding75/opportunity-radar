@@ -9,3 +9,4 @@ T007,机会证据、分析研究与历史,PASS,RECORDED_IN_TASK_RECEIPT,PASS,202
 T008,最新情报列表与摘要详情,PASS,RECORDED_IN_TASK_RECEIPT,PASS,2026-08-14T19:32:00+08:00,2026-08-14T19:55:00+08:00,U015-U016 已读取；列表和摘要读取 observations 真实接口并传递对象 ID；来源 URL/运行列表可下钻；关系与处理轨迹明确降级；更新 GAP-015
 T009,情报原始证据、关系与处理过程,PASS,RECORDED_IN_TASK_RECEIPT,PASS,2026-08-14T19:56:00+08:00,2026-08-14T20:22:00+08:00,U017-U019 已读取；原始正文和字段对照只展示 observations 返回值；关系/处理轨迹无安全契约时明确降级；来源健康真实读取；更新 GAP-015
 T010,关键词、趋势与关系图谱,PASS,RECORDED_IN_TASK_RECEIPT,PASS,2026-08-14T20:23:00+08:00,2026-08-14T21:20:00+08:00,U020-U023 已读取；关键词/关注/趋势/图谱均接真实接口；关注写操作调用 watch-keywords POST/PATCH；趋势事件与机会/实体关系字段未暴露，按契约降级；无新增 Backend Gap
+T011,研究三类列表入口,PASS,RECORDED_IN_TASK_RECEIPT,PASS,2026-08-14T18:05:00+08:00,2026-08-14T18:20:00+08:00,U024-U026 已读取；P14/P15/P17 建立正式列表入口并使用真实机会 analysis_* 与 OpportunityResearch；ResearchTask/ResearchResult/StructuredAnalysis 独立资源缺口按只读降级；更新 GAP-016

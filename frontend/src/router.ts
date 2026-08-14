@@ -9,8 +9,8 @@ export type RouteState = {screen: ScreenId; params: URLSearchParams};
 export const SCREEN_ROUTES: Record<ScreenId, string> = {
   P01: "/login", P02: "/dashboard", P03: "/search", P04: "/forbidden", P05: "/not-found",
   P06: "/observations", P07: "/observations/:id", P08: "/keywords/discovery", P09: "/keywords/watch",
-  P10: "/trends", P11: "/graph", P12: "/opportunities", P13: "/opportunities/:id", P14: "/analysis/:id",
-  P15: "/research", P16: "/research/:id", P17: "/research/:id/result", P18: "/sources",
+  P10: "/trends", P11: "/graph", P12: "/opportunities", P13: "/opportunities/:id", P14: "/analysis",
+  P15: "/research", P16: "/research/:id", P17: "/research-results", P18: "/sources",
   P19: "/sources/:id/health", P20: "/monitoring", P21: "/runs", P22: "/runs/:id", P23: "/analysis-queue",
   P24: "/alerts", P25: "/alerts/rules", P26: "/audit", P27: "/users", P28: "/account",
   "P29-A": "/settings/general", "P29-B": "/settings/security", "P29-C": "/settings/notifications",
@@ -24,6 +24,8 @@ const LEGACY_ALIASES: Record<string, ScreenId> = {
 };
 
 export function routeFor(screen: ScreenId, params: Record<string, string | number> = {}): string {
+  if (screen === "P14" && params.id !== undefined) return `#/analysis/${encodeURIComponent(String(params.id))}${queryFor(params, ["id"])}`;
+  if (screen === "P17" && params.id !== undefined) return `#/research/${encodeURIComponent(String(params.id))}/result${queryFor(params, ["id"])}`;
   let path = SCREEN_ROUTES[screen];
   const query = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
@@ -33,6 +35,13 @@ export function routeFor(screen: ScreenId, params: Record<string, string | numbe
   });
   const suffix = query.toString() ? `?${query.toString()}` : "";
   return `#${path}${suffix}`;
+}
+
+function queryFor(params: Record<string, string | number>, consumed: string[]): string {
+  const query = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => { if (!consumed.includes(key)) query.set(key, String(value)); });
+  const suffix = query.toString();
+  return suffix ? `?${suffix}` : "";
 }
 
 export function parseRoute(hash = window.location.hash): RouteState {
