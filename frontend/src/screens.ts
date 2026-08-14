@@ -25,7 +25,7 @@ export async function renderScreen(route: RouteState, session: AuthSession, cont
     case "P14": return route.params.get("id") ? renderOpportunityDetail(route, context, "analysis") : renderStructuredAnalysisList(route, context);
     case "P15": return renderResearch(route, context);
     case "P16": return renderOpportunityDetail(route, context, "research");
-    case "P17": return route.params.get("id") ? renderOpportunityDetail(route, context, "result") : renderResearchResultList(route, context);
+    case "P17": return route.params.get("id") ? renderResearchResultDetail(route, context) : renderResearchResultList(route, context);
     case "P18": return renderSources(context);
     case "P19": return renderSourceHealth(route, context);
     case "P20": return renderMonitoring(context);
@@ -1263,6 +1263,77 @@ async function renderResearchResultList(_route: RouteState, context: ScreenConte
   return host;
 }
 
+async function renderResearchResultDetail(route: RouteState, context: ScreenContext): Promise<HTMLElement> {
+  const id = route.params.get("id"); const host = document.createElement("div"); host.className = "r04-research-result-detail";
+  if (!id) { host.append(objectNotFound("研究结果", "缺失")); return host; }
+  try {
+    const data = await api(`/api/v1/opportunities/${encodeURIComponent(id)}?evidence_limit=100`);
+    const requestedTab = route.params.get("tab") ?? "conclusion"; const activeTab = ["conclusion", "evidence", "method", "activity"].includes(requestedTab) ? requestedTab : "conclusion";
+    const header = document.createElement("header"); header.className = "r04-research-result-header";
+    const breadcrumb = document.createElement("nav"); breadcrumb.className = "r04-result-breadcrumb"; breadcrumb.append(linkTo("P15", "研究"), document.createTextNode(" / "), linkTo("P17", "研究结果"), document.createTextNode(" / "), document.createTextNode(text(data.title, `机会 ${id}`)));
+    const title = document.createElement("h1"); title.textContent = text(data.title, `机会 ${id}`);
+    const meta = document.createElement("div"); meta.className = "r04-result-meta"; meta.append(badge(analysisLabel(data.analysis?.status), analysisTone(data.analysis?.status)), document.createTextNode(" · "), linkTo("P13", "关联机会", {id}), document.createTextNode(` · 证据返回覆盖 ${resultEvidenceCoverage(data)} · 分析时间 ${formatDate(data.analysis?.analyzed_at)}`));
+    const actions = document.createElement("div"); actions.className = "r04-result-actions"; const copy = button("复制链接", {onClick: () => { void navigator.clipboard?.writeText(window.location.href).then(() => { copy.textContent = "链接已复制"; }); }}); actions.append(copy);
+    const heading = document.createElement("div"); heading.className = "r04-result-heading-row"; const headingCopy = document.createElement("div"); headingCopy.append(title, meta); heading.append(headingCopy, actions); header.append(breadcrumb, heading);
+    host.append(header, readOnlyNotice("本页只展示机会详情接口已经返回的分析与证据字段，不提供重新生成、修改研究状态或伪造活动记录。", "研究结果只读"), researchResultTabs(id, activeTab), renderResearchResultTab(data, id, activeTab));
+  } catch (error) { host.append(errorState(error, context, () => void renderResearchResultDetail(route, context))); }
+  return host;
+}
+
+function researchResultTabs(id: string, active: string): HTMLElement {
+  const nav = document.createElement("nav"); nav.className = "r04-result-tabs"; nav.setAttribute("aria-label", "研究结果详情导航");
+  for (const [tab, label] of [["conclusion", "结论"], ["evidence", "证据"], ["method", "方法"], ["activity", "活动记录"]]) { const link = linkTo("P17", label, {id, tab}); link.className = active === tab ? "is-active" : ""; link.setAttribute("aria-current", active === tab ? "page" : "false"); nav.append(link); }
+  return nav;
+}
+
+function renderResearchResultTab(data: Row, id: string, active: string): HTMLElement {
+  if (active === "evidence") return renderResearchResultEvidence(data, id);
+  if (active === "method") return renderResearchResultMethod(data);
+  if (active === "activity") return renderResearchResultActivity(data, id);
+  return renderResearchResultConclusion(data, id);
+}
+
+function renderResearchResultConclusion(data: Row, id: string): HTMLElement {
+  const layout = document.createElement("div"); layout.className = "r04-result-tab-layout"; const main = document.createElement("main"); main.className = "r04-result-tab-main"; const side = document.createElement("aside"); side.className = "r04-result-tab-side";
+  main.append(detailSectionWithBody("执行结论", data.analysis?.summary ? paragraph(text(data.analysis.summary)) : statePanel("empty", "机会详情未返回分析摘要。")));
+  main.append(detailSectionWithBody("分析字段", detailList([["目标用户", data.analysis?.target_user], ["商业模式", data.analysis?.business_model], ["变现方式", data.analysis?.monetization], ["风险说明", data.analysis?.risk_notes]])));
+  side.append(detailSectionWithBody("关键来源", researchCitationList(data.analysis?.citations ?? [], id)), linkTo("P13", "查看关联机会", {id}), capabilityUnavailableNotice("后端没有独立研究结果的结论实体、源任务或研究完成事件；本页只读取 opportunity.analysis。", "结果资源范围")); layout.append(main, side); return layout;
+}
+
+function researchCitationList(rows: Row[], opportunityId: string): HTMLElement {
+  if (!rows.length) return statePanel("empty", "当前分析没有返回已绑定的引用来源。");
+  const items = document.createElement("div"); items.className = "r04-result-citation-list";
+  rows.slice(0, 8).forEach((row: Row, index: number) => { const item = document.createElement("div"); const link = linkTo("P13", text(row.title, `引用 ${index + 1}`), {id: opportunityId, tab: "evidence", evidence_id: text(row.evidence_id)}); const meta = document.createElement("small"); meta.textContent = `${text(row.source, "未返回来源")} · ${qualityLabel(row.quality)}`; item.append(link, meta); items.append(item); });
+  return items;
+}
+
+function renderResearchResultEvidence(data: Row, id: string): HTMLElement {
+  const host = document.createElement("div"); host.className = "r04-result-tab-layout"; const main = document.createElement("main"); main.className = "r04-result-tab-main"; const side = document.createElement("aside"); side.className = "r04-result-tab-side";
+  const evidence = (data.evidence ?? []) as Row[]; const filters = document.createElement("div"); filters.className = "r04-result-evidence-filters"; const quality = document.createElement("select"); quality.setAttribute("aria-label", "证据质量"); addOption(quality, "", "质量：全部"); ["A", "B", "C"].forEach((value) => addOption(quality, value, qualityLabel(value))); const type = document.createElement("select"); type.setAttribute("aria-label", "证据类型"); addOption(type, "", "类型：全部"); Array.from(new Set(evidence.map((row: Row) => text(row.type, "未标注")))).forEach((value) => addOption(type, value, value)); const count = document.createElement("span"); count.className = "r04-result-evidence-count"; filters.append(quality, type, count);
+  const results = document.createElement("div"); results.className = "r04-result-evidence-results";
+  const draw = (): void => { const rows = evidence.filter((row: Row) => (!quality.value || String(row.quality) === quality.value) && (!type.value || text(row.type, "未标注") === type.value)); count.textContent = `显示 ${rows.length} / ${evidence.length} 条真实证据`; const tableRows = rows.map((row: Row) => [linkTo("P13", text(row.evidence_id ?? row.id), {id, tab: "evidence", evidence_id: text(row.evidence_id ?? row.id)}), text(row.title, "未返回标题"), evidenceSourceCell(row), weightLabel(row.weight), badge(qualityLabel(row.quality), qualityTone(row.quality)), formatDate(row.observed_at)]); results.replaceChildren(tableRows.length ? table(["证据 ID", "证据摘要", "来源", "极性", "置信度", "观察时间"], tableRows) : statePanel("empty", "没有符合当前筛选条件的真实证据。")); };
+  quality.addEventListener("change", draw); type.addEventListener("change", draw); draw(); main.append(detailSectionWithBody("证据清单", filters), results); side.append(detailSectionWithBody("证据统计", detailList([["已存证据", data.evidence_summary?.stored ?? data.evidence_count], ["本次返回", data.evidence_summary?.returned ?? evidence.length], ["近 7 日", data.evidence_summary?.recent_7d], ["近 30 日", data.evidence_summary?.recent_30d], ["平均质量权重", number(data.evidence_summary?.average_quality_weight, 2)]])), capabilityUnavailableNotice("证据来自机会详情的 evidence binding；后端没有独立 ResearchResultEvidence 资源，关联结论和来源只使用接口返回的 ID、URL 与字段。", "证据契约范围")); host.append(main, side); return host;
+}
+
+function evidenceSourceCell(row: Row): HTMLElement | string { if (row.url) { const link = externalLink(text(row.url)); link.textContent = text(row.source, "打开原始来源"); return link; } return text(row.source, "未返回来源"); }
+function qualityTone(value: unknown): "neutral" | "success" | "warning" | "danger" | "info" { return ({A: "success", B: "warning", C: "danger"} as Record<string, "neutral" | "success" | "warning" | "danger" | "info">)[String(value)] ?? "neutral"; }
+function paragraph(value: string): HTMLElement { const p = document.createElement("p"); p.className = "r04-result-paragraph"; p.textContent = value; return p; }
+
+function renderResearchResultMethod(data: Row): HTMLElement {
+  const layout = document.createElement("div"); layout.className = "r04-result-tab-layout"; const main = document.createElement("main"); main.className = "r04-result-tab-main"; const side = document.createElement("aside"); side.className = "r04-result-tab-side";
+  main.append(detailSectionWithBody("已确认的分析上下文", detailList([["分析提供方", data.analysis?.provider], ["分析状态", analysisLabel(data.analysis?.status)], ["分析时间", formatDate(data.analysis?.analyzed_at)], ["引用契约版本", data.analysis?.citation_contract_version], ["冲突报告", data.analysis?.conflict && Object.keys(data.analysis.conflict).length ? JSON.stringify(data.analysis.conflict) : "未返回"]])));
+  main.append(capabilityUnavailableNotice("后端没有返回研究范围、研究问题、纳入/排除规则、分析模型或结果限制的独立字段；不使用 HTML mock 文案补齐方法说明。", "方法字段暂不可用"));
+  side.append(detailSectionWithBody("可验证的证据统计", detailList([["已存证据", data.evidence_summary?.stored ?? data.evidence_count], ["来源数量", data.evidence_summary?.sources ? Object.keys(data.evidence_summary.sources).length : "未返回"], ["质量分布", data.evidence_summary?.qualities ? JSON.stringify(data.evidence_summary.qualities) : "未返回"]])), linkTo("P17", "返回研究结果结论", {id: data.id, tab: "conclusion"})); layout.append(main, side); return layout;
+}
+
+function renderResearchResultActivity(data: Row, id: string): HTMLElement {
+  const layout = document.createElement("div"); layout.className = "r04-result-activity-layout"; const events: Array<[unknown, string, string]> = []; if (data.analysis?.analyzed_at) events.push([data.analysis.analyzed_at, "分析时间", `由 ${text(data.analysis.provider, "未指定提供方")} 写入的 opportunity.analysis 时间字段。`]); if (data.analysis?.last_attempt_at) events.push([data.analysis.last_attempt_at, "最近尝试时间", "机会分析记录返回的最近尝试时间字段。"]); if (data.analysis?.next_retry_at) events.push([data.analysis.next_retry_at, "下一次重试时间", "机会分析记录返回的下一次重试时间字段。"]); if (data.analysis?.error) events.push([data.analysis.last_attempt_at ?? data.analysis.analyzed_at, "分析错误", text(data.analysis.error)]);
+  const timeline = document.createElement("div"); timeline.className = "r04-result-timeline"; timeline.append(events.length ? table(["时间", "字段", "已确认内容"], events.map(([when, label, detail]) => [formatDate(when), badge(label, label === "分析错误" ? "danger" : "info"), detail])) : statePanel("empty", "机会详情未返回可展示的分析时间字段。"));
+  layout.append(detailSectionWithBody("可确认的系统时间字段", timeline), capabilityUnavailableNotice("后端没有研究结果活动事件、操作人或导出记录资源；此处只展示 opportunity.analysis 返回的真实时间与错误字段，不拼装完整时间线。", "活动记录暂不可用"), linkTo("P13", "返回关联机会", {id})); return layout;
+}
+
+function resultEvidenceCoverage(data: Row): string { const stored = Number(data.evidence_summary?.stored ?? data.evidence_count ?? 0); const returned = Number(data.evidence_summary?.returned ?? (data.evidence ?? []).length); return stored > 0 ? `${Math.round((returned / stored) * 100)}%（返回 ${returned}/${stored}）` : "未返回"; }
+
 function analysisTone(value: unknown): "neutral" | "success" | "warning" | "danger" | "info" {
   return ({READY: "success", PENDING: "info", DEGRADED: "warning", FAILED: "danger"} as Record<string, "neutral" | "success" | "warning" | "danger" | "info">)[String(value)] ?? "neutral";
 }
@@ -1473,6 +1544,41 @@ function installScreenStyles(): void {
     .r04-research-inspector-actions { display: grid; gap: 8px; }
     .r04-research-inspector-actions a { color: var(--or-primary-dark); font-size: 13px; text-decoration: none; }
     .r04-research-inspector-actions a:hover { text-decoration: underline; }
+    .r04-research-result-detail { display: grid; gap: 18px; min-width: 0; }
+    .r04-research-result-header { display: grid; gap: 12px; }
+    .r04-result-breadcrumb { display: flex; flex-wrap: wrap; gap: 6px; color: var(--or-text-muted); font-size: 12px; }
+    .r04-result-breadcrumb a, .r04-result-meta a, .r04-result-tab-side > a, .r04-result-activity-layout > a { color: var(--or-primary-dark); text-decoration: none; }
+    .r04-result-breadcrumb a:hover, .r04-result-meta a:hover, .r04-result-tab-side > a:hover, .r04-result-activity-layout > a:hover { text-decoration: underline; }
+    .r04-result-heading-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .r04-result-heading-row h1 { margin: 0; color: var(--or-text); font-size: 28px; line-height: 1.3; }
+    .r04-result-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-top: 10px; color: var(--or-text-muted); font-size: 12px; }
+    .r04-result-actions { display: flex; gap: 8px; flex: 0 0 auto; }
+    .r04-result-tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--or-outline); }
+    .r04-result-tabs a { padding: 11px 14px; border-bottom: 2px solid transparent; color: var(--or-text-muted); font-size: 13px; text-decoration: none; }
+    .r04-result-tabs a:hover { background: var(--or-surface-muted); color: var(--or-text); }
+    .r04-result-tabs a.is-active { border-bottom-color: var(--or-primary); color: var(--or-primary-dark); font-weight: 700; }
+    .r04-result-tab-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 20px; align-items: start; min-width: 0; }
+    .r04-result-tab-main, .r04-result-tab-side, .r04-result-activity-layout { display: grid; gap: 20px; min-width: 0; }
+    .r04-result-paragraph { margin: 0; color: var(--or-text); line-height: 1.85; white-space: pre-wrap; }
+    .r04-result-tab-main > .r04-detail-section, .r04-result-tab-side > .r04-detail-section { min-width: 0; }
+    .r04-result-citation-list { display: grid; gap: 10px; }
+    .r04-result-citation-list > div { display: grid; gap: 3px; padding-bottom: 10px; border-bottom: 1px solid var(--or-outline); }
+    .r04-result-citation-list > div:last-child { border-bottom: 0; }
+    .r04-result-citation-list a { color: var(--or-primary-dark); font-size: 13px; text-decoration: none; }
+    .r04-result-citation-list a:hover { text-decoration: underline; }
+    .r04-result-citation-list small { color: var(--or-text-muted); font-size: 11px; }
+    .r04-result-evidence-filters { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .r04-result-evidence-filters select { min-height: 36px; border: 1px solid var(--or-outline-strong); border-radius: 6px; padding: 7px 10px; background: var(--or-surface); color: var(--or-text); }
+    .r04-result-evidence-count { margin-left: auto; color: var(--or-text-muted); font-size: 12px; }
+    .r04-result-evidence-results { min-width: 0; overflow: hidden; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-result-evidence-results > .r02-table-wrap { border: 0; border-radius: 0; }
+    .r04-result-evidence-results a { color: var(--or-primary-dark); text-decoration: none; }
+    .r04-result-evidence-results a:hover { text-decoration: underline; }
+    .r04-result-activity-layout { max-width: 1000px; }
+    .r04-result-timeline { min-width: 0; overflow: hidden; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-result-timeline > .r02-table-wrap { border: 0; border-radius: 0; }
+    @media (max-width: 1000px) { .r04-result-tab-layout { grid-template-columns: 1fr; } }
+    @media (max-width: 700px) { .r04-result-heading-row { flex-direction: column; } .r04-result-heading-row h1 { font-size: 22px; } .r04-result-evidence-count { margin-left: 0; width: 100%; } }
     .r04-keyword-page, .r04-watch-keyword-page, .r04-trend-page, .r04-graph-page { display: grid; gap: 18px; min-width: 0; }
     .r04-keyword-filter, .r04-watch-add-form, .r04-watch-filters, .r04-trend-controls, .r04-graph-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
     .r04-keyword-filter input, .r04-keyword-filter select, .r04-watch-add-form input, .r04-watch-filters input, .r04-watch-filters select, .r04-trend-controls select, .r04-graph-controls select { min-height: 36px; border: 1px solid var(--or-outline-strong); border-radius: 6px; padding: 7px 10px; background: var(--or-surface); color: var(--or-text); }
