@@ -2433,30 +2433,222 @@ function researchTone(value) {
     return { TRACKING: "success", REVIEWING: "info", DISMISSED: "danger", ARCHIVED: "neutral" }[String(value)] ?? "neutral";
 }
 async function renderSources(context) {
-    const host = content("Sources", "Registered connectors and their runtime availability.");
+    const host = document.createElement("div");
+    host.className = "r04-source-page";
+    host.append(r04PageHeading("数据源", "查看情报采集来源、连接健康、最近成功时间与数据产出", "刷新数据源"));
+    host.append(readOnlyNotice("当前页面展示数据源状态；启停、编辑连接与手动运行能力仅在后端接口确认后接入。", "数据源状态只读"));
     try {
-        const rows = await api("/api/v1/sources");
-        const tableRows = (rows ?? []).map((row) => [text(row.display_name ?? row.source_id), text(row.source_id), row.runtime_enabled ? badge("Enabled", "success") : badge("Disabled", "neutral"), text(row.kind ?? row.type), linkTo("P19", "Health", { id: row.source_id })]);
-        append(host, tableRows.length ? table(["Source", "Id", "Runtime", "Kind", "Detail"], tableRows) : statePanel("empty", "No source connectors are registered."));
+        const [sourcesResult, healthResult, runsResult] = await Promise.allSettled([
+            api("/api/v1/sources"),
+            api("/api/v1/sources/health"),
+            api("/api/v1/collection-runs?limit=500"),
+        ]);
+        if (sourcesResult.status === "rejected")
+            throw sourcesResult.reason;
+        if (healthResult.status === "rejected")
+            throw healthResult.reason;
+        const sources = Array.isArray(sourcesResult.value) ? sourcesResult.value : [];
+        const healthRows = Array.isArray(healthResult.value) ? healthResult.value : [];
+        const healthById = new Map(healthRows.map((row) => [String(row.source_id), row]));
+        const runs = runsResult.status === "fulfilled" && Array.isArray(runsResult.value) ? runsResult.value : [];
+        const latestRunBySource = new Map();
+        for (const run of runs)
+            if (!latestRunBySource.has(String(run.source_id)))
+                latestRunBySource.set(String(run.source_id), run);
+        if (!sources.length) {
+            host.append(statePanel("empty", "当前没有已注册的数据源。"));
+            return host;
+        }
+        const filters = document.createElement("form");
+        filters.className = "r04-source-filters";
+        const search = document.createElement("input");
+        search.type = "search";
+        search.placeholder = "搜索数据源…";
+        search.setAttribute("aria-label", "搜索数据源");
+        const type = document.createElement("select");
+        type.setAttribute("aria-label", "数据源类型");
+        addOption(type, "", "所有类型");
+        const types = [...new Set(sources.map((row) => sourceTypeLabel(row.acquisition_method)))].sort();
+        types.forEach((value) => addOption(type, value, value));
+        const enabled = document.createElement("select");
+        enabled.setAttribute("aria-label", "启用状态");
+        addOption(enabled, "", "所有状态");
+        addOption(enabled, "enabled", "已启用");
+        addOption(enabled, "disabled", "已停用");
+        const health = document.createElement("select");
+        health.setAttribute("aria-label", "健康度");
+        addOption(health, "", "健康度");
+        addOption(health, "good", "良好（≥90%）");
+        addOption(health, "warning", "警告（70–89%）");
+        addOption(health, "danger", "危急（<70%）");
+        const from = document.createElement("input");
+        from.type = "date";
+        from.setAttribute("aria-label", "最近成功起始日期");
+        const to = document.createElement("input");
+        to.type = "date";
+        to.setAttribute("aria-label", "最近成功结束日期");
+        const submit = document.createElement("button");
+        submit.type = "submit";
+        submit.className = "r04-source-filter-submit";
+        submit.textContent = "筛选";
+        filters.append(search, type, enabled, health, from, document.createTextNode("至"), to, submit);
+        host.append(filters);
+        const results = document.createElement("section");
+        results.className = "r04-source-results";
+        host.append(results);
+        const draw = () => {
+            const query = search.value.trim().toLowerCase();
+            const selectedType = type.value;
+            const selectedEnabled = enabled.value;
+            const selectedHealth = health.value;
+            const fromTime = from.value ? Date.parse(`${from.value}T00:00:00`) : Number.NaN;
+            const toTime = to.value ? Date.parse(`${to.value}T23:59:59`) : Number.NaN;
+            const filtered = sources.filter((row) => {
+                const id = String(row.source_id);
+                const healthRow = healthById.get(id) ?? {};
+                const enabledState = Boolean(row.runtime_enabled && row.enabled !== false);
+                const score = sourceHealthScore(healthRow);
+                const lastSuccess = Date.parse(String(healthRow.last_success_at ?? ""));
+                const haystack = `${row.display_name ?? ""} ${id} ${row.acquisition_method ?? ""} ${row.query_mode ?? ""}`.toLowerCase();
+                const healthMatch = !selectedHealth || (selectedHealth === "good" ? score !== null && score >= 90 : selectedHealth === "warning" ? score !== null && score >= 70 && score < 90 : score !== null && score < 70);
+                return (!query || haystack.includes(query)) && (!selectedType || sourceTypeLabel(row.acquisition_method) === selectedType) && (!selectedEnabled || (selectedEnabled === "enabled") === enabledState) && healthMatch && (Number.isNaN(fromTime) || (Number.isFinite(lastSuccess) && lastSuccess >= fromTime)) && (Number.isNaN(toTime) || (Number.isFinite(lastSuccess) && lastSuccess <= toTime));
+            });
+            const rows = filtered.map((row) => {
+                const id = String(row.source_id);
+                const healthRow = healthById.get(id) ?? {};
+                const latest = latestRunBySource.get(id);
+                const name = document.createElement("div");
+                name.className = "r04-source-name";
+                const nameLink = linkTo("P19", text(row.display_name, id), { id });
+                name.append(nameLink);
+                const sourceId = document.createElement("code");
+                sourceId.textContent = id;
+                name.append(sourceId);
+                return [name, sourceTypeLabel(row.acquisition_method), row.runtime_enabled && row.enabled !== false ? badge("已启用", "success") : badge("已停用", "neutral"), sourceHealthMeter(healthRow), formatDate(healthRow.last_success_at), latest ? linkTo("P22", formatDate(latest.started_at), { id: latest.id }) : formatDate(healthRow.last_success_at), text(healthRow.last_inserted, "0"), sourceErrorLabel(healthRow)];
+            });
+            results.replaceChildren(table(["数据源", "类型", "启用状态", "健康度", "最近成功", "最近运行", "近期产出", "错误/限流"], rows), sourceResultCount(filtered.length, sources.length));
+        };
+        filters.addEventListener("submit", (event) => { event.preventDefault(); draw(); });
+        [search, type, enabled, health, from, to].forEach((field) => field.addEventListener("change", draw));
+        search.addEventListener("input", draw);
+        draw();
+        if (runsResult.status === "rejected")
+            host.append(capabilityUnavailableNotice("运行记录接口需要管理员读取权限；列表仍展示数据源健康接口返回的最近成功时间和累计产出。", "最近运行明细暂不可用"));
     }
     catch (error) {
-        append(host, errorState(error, context));
+        host.append(errorState(error, context, () => void renderSources(context)));
     }
     return host;
 }
 async function renderSourceHealth(route, context) {
     const sourceId = route.params.get("id");
-    const host = content("Source health", "Connector health and persisted circuit state.");
+    const host = document.createElement("div");
+    host.className = "r04-source-detail";
+    if (!sourceId) {
+        host.append(objectNotFound("数据源", "缺失"));
+        return host;
+    }
     try {
-        const rows = await api("/api/v1/sources/health");
-        const selected = sourceId ? rows.filter((row) => String(row.source_id) === sourceId) : rows;
-        append(host, selected.length ? table(["Source", "Status", "Latency", "Last success", "Last error"], selected.map((row) => [text(row.source_id), badge(text(row.status ?? row.runtime_status ?? "UNKNOWN"), row.status === "HEALTHY" ? "success" : "warning"), text(row.latency_ms ?? row.duration_ms), formatDate(row.last_success_at), text(row.last_error)])) : statePanel("empty", "No health record matches this source."));
+        const [sourcesResult, healthResult, runsResult, observationsResult] = await Promise.allSettled([
+            api("/api/v1/sources"),
+            api("/api/v1/sources/health"),
+            api(`/api/v1/collection-runs?source_id=${encodeURIComponent(sourceId)}&limit=5`),
+            api(`/api/v1/observations?source_id=${encodeURIComponent(sourceId)}&limit=5`),
+        ]);
+        if (sourcesResult.status === "rejected")
+            throw sourcesResult.reason;
+        if (healthResult.status === "rejected")
+            throw healthResult.reason;
+        const source = (Array.isArray(sourcesResult.value) ? sourcesResult.value : []).find((row) => String(row.source_id) === sourceId);
+        if (!source) {
+            host.append(objectNotFound("数据源", sourceId));
+            return host;
+        }
+        const health = (Array.isArray(healthResult.value) ? healthResult.value : []).find((row) => String(row.source_id) === sourceId) ?? { source_id: sourceId, status: "UNKNOWN" };
+        const runs = runsResult.status === "fulfilled" && Array.isArray(runsResult.value) ? runsResult.value : [];
+        const observations = observationsResult.status === "fulfilled" && observationsResult.value?.items ? observationsResult.value.items : [];
+        const header = document.createElement("header");
+        header.className = "r04-source-detail-header";
+        const breadcrumb = document.createElement("nav");
+        breadcrumb.className = "r04-result-breadcrumb";
+        breadcrumb.append(linkTo("P21", "运行记录"), document.createTextNode(" / "), linkTo("P18", "数据源"), document.createTextNode(" / "), document.createTextNode(sourceId));
+        const headingRow = document.createElement("div");
+        headingRow.className = "r04-source-detail-heading";
+        const heading = document.createElement("div");
+        const title = document.createElement("h1");
+        title.textContent = text(source.display_name, sourceId);
+        const id = document.createElement("code");
+        id.textContent = sourceId;
+        heading.append(title, id);
+        const action = button("复制链接", { onClick: () => { void navigator.clipboard?.writeText(window.location.href).then(() => { action.textContent = "链接已复制"; }); } });
+        headingRow.append(heading, action);
+        breadcrumb.after(headingRow);
+        const metrics = document.createElement("div");
+        metrics.className = "r04-source-detail-metrics";
+        metrics.append(sourceMeta("类型", sourceTypeLabel(source.acquisition_method)), sourceMeta("状态", source.runtime_enabled && source.enabled !== false ? "已启用" : "已停用", source.runtime_enabled && source.enabled !== false ? "success" : "neutral"), sourceMeta("健康度", sourceHealthLabel(health), sourceHealthTone(health)), sourceMeta("最近成功", formatDate(health.last_success_at)), sourceMeta("最近运行", runs[0] ? formatDate(runs[0].started_at) : formatDate(health.last_success_at)), sourceMeta("采集模式", queryModeLabel(source.query_mode)));
+        header.append(breadcrumb, headingRow, metrics);
+        host.append(header, readOnlyNotice("当前页面仅展示连接配置与运行状态，不提供编辑连接、启停或立即运行。", "数据源详情只读"));
+        const requestedTab = route.params.get("tab") ?? "overview";
+        const tabsHost = sourceDetailTabs(sourceId, requestedTab);
+        host.append(tabsHost);
+        if (requestedTab !== "overview") {
+            host.append(capabilityUnavailableNotice("本任务先开放数据源概览；运行记录、产出与错误明细将在后续任务接入真实资源后启用。", "该详情页签暂不可用"));
+            return host;
+        }
+        const layout = document.createElement("div");
+        layout.className = "r04-source-detail-layout";
+        const main = document.createElement("main");
+        main.className = "r04-source-detail-main";
+        const side = document.createElement("aside");
+        side.className = "r04-source-detail-side";
+        main.append(detailSectionWithBody("来源配置摘要", detailList([["显示名称", source.display_name], ["数据源 ID", sourceId], ["采集方式", sourceTypeLabel(source.acquisition_method)], ["证据质量", qualityLabel(source.evidence_quality)], ["采集风险", text(source.acquisition_risk, "未返回")], ["查询模式", queryModeLabel(source.query_mode)], ["能力", sourceCapabilities(source.capabilities)]])), detailSectionWithBody("采集范围", sourceCapabilitiesList(source.capabilities)));
+        const recent = observations.length ? table(["时间", "摘要", "证据质量"], observations.map((row) => [formatDate(row.observed_at), row.source_url ? externalLink(text(row.source_url)) : text(row.title, "未命名情报"), qualityLabel(row.evidence_quality)])) : statePanel("empty", "该数据源暂无可展示的最近情报。");
+        main.append(detailSectionWithBody("最近情报", recent));
+        side.append(detailSectionWithBody("健康信号", detailList([["最近耗时", health.last_duration_ms == null ? "—" : `${number(health.last_duration_ms)} ms`], ["成功率", health.success_rate_pct == null ? "—" : `${number(health.success_rate_pct, 2)}%`], ["健康状态", sourceHealthLabel(health)], ["连续失败", text(health.consecutive_failures, "0")]])), detailSectionWithBody("状态监测", detailList([["累计运行", text(health.total_runs, "0")], ["成功运行", text(health.successful_runs, "0")], ["失败运行", text(health.failed_runs, "0")], ["限流运行", text(health.rate_limited_runs, "0")], ["最近产出", text(health.last_inserted, "0")], ["熔断截止", formatDate(health.circuit_open_until)]])));
+        if (runs.length)
+            side.append(detailSectionWithBody("最近运行", sourceRunCard(runs[0])));
+        else if (runsResult.status === "rejected")
+            side.append(capabilityUnavailableNotice("运行记录接口需要管理员读取权限；当前仅展示健康接口中的累计统计。", "最近运行暂不可用"));
+        else
+            side.append(detailSectionWithBody("最近运行", statePanel("empty", "该数据源暂无运行记录。")));
+        side.append(linkTo("P21", "查看全部运行记录"), linkTo("P18", "返回数据源列表"));
+        layout.append(main, side);
+        host.append(layout);
+        if (observationsResult.status === "rejected")
+            host.append(capabilityUnavailableNotice("最近情报读取失败；数据源配置和健康状态仍来自真实接口。", "最近情报暂不可用"));
     }
     catch (error) {
-        append(host, errorState(error, context));
+        host.append(errorState(error, context, () => void renderSourceHealth(route, context)));
     }
     return host;
 }
+function sourceTypeLabel(value) { return { OFFICIAL_API: "官方 API", OFFICIAL_EXPORT: "官方导出", PUBLIC_WEB: "公开网页", INSTRUMENTED_APP: "应用上报", MANUAL_IMPORT: "人工导入" }[String(value)] ?? text(value, "未标注"); }
+function queryModeLabel(value) { return { KEYWORD: "关键词", SCHEDULED: "定时采集", REGION: "区域采集", PUSH_ONLY: "仅接收上报" }[String(value)] ?? text(value, "未标注"); }
+function sourceHealthScore(row) { const value = Number(row.success_rate_pct); return Number.isFinite(value) ? value : null; }
+function sourceHealthLabel(row) { return { HEALTHY: "良好", DEGRADED: "警告", CIRCUIT_OPEN: "熔断", UNKNOWN: "未知", configured: "已配置", disabled: "已停用" }[String(row.status)] ?? text(row.status, "未知"); }
+function sourceHealthTone(row) { return { HEALTHY: "success", DEGRADED: "warning", CIRCUIT_OPEN: "danger", UNKNOWN: "neutral", configured: "success", disabled: "neutral" }[String(row.status)] ?? "neutral"; }
+function sourceHealthMeter(row) { const wrap = document.createElement("div"); wrap.className = "r04-source-health-meter"; const bar = document.createElement("span"); const score = sourceHealthScore(row); bar.style.width = `${Math.max(0, Math.min(100, score ?? 0))}%`; bar.dataset.tone = sourceHealthTone(row); const label = document.createElement("small"); label.textContent = score === null ? "—" : `${number(score, 0)}%`; wrap.append(bar, label); return wrap; }
+function sourceErrorLabel(row) { const failures = Number(row.failed_runs ?? 0); const limited = Number(row.rate_limited_runs ?? 0); return failures || limited ? `${failures} / ${limited ? `限流 ${limited}` : "失败"}` : "—"; }
+function sourceResultCount(filtered, total) { const copy = document.createElement("p"); copy.className = "r04-source-result-count"; copy.textContent = `显示 ${filtered} 条，共 ${total} 个数据源`; return copy; }
+function sourceMeta(label, value, tone) { const item = document.createElement("div"); item.className = "r04-source-meta"; const labelEl = document.createElement("span"); labelEl.textContent = `${label}：`; item.append(labelEl, tone ? badge(value, tone) : document.createTextNode(value)); return item; }
+function sourceCapabilities(values) { return Array.isArray(values) && values.length ? values.map((value) => String(value)).join("、") : "未返回"; }
+function sourceCapabilitiesList(values) { const list = document.createElement("ul"); list.className = "r04-source-capabilities"; if (!Array.isArray(values) || !values.length) {
+    list.append(document.createTextNode("后端未返回能力清单。"));
+    return list;
+} for (const value of values) {
+    const item = document.createElement("li");
+    item.textContent = String(value);
+    list.append(item);
+} return list; }
+function sourceRunCard(run) { const body = document.createElement("div"); body.className = "r04-source-run-card"; const link = linkTo("P22", `运行 #${text(run.id)}`, { id: run.id }); const status = badge(runStatusLabel(run.status), run.status === "SUCCEEDED" ? "success" : run.status === "FAILED" ? "danger" : "warning"); body.append(link, status, document.createTextNode(`开始于 ${formatDate(run.started_at)} · 耗时 ${run.duration_ms == null ? "—" : `${number(run.duration_ms)} ms`} · 产出 ${text(run.inserted, "0")} 条`)); return body; }
+function runStatusLabel(value) { return { SUCCEEDED: "成功", FAILED: "失败", RUNNING: "运行中", PENDING: "等待中" }[String(value)] ?? text(value, "未知"); }
+function sourceDetailTabs(id, active) { const nav = document.createElement("nav"); nav.className = "r04-source-detail-tabs"; nav.setAttribute("aria-label", "数据源详情导航"); const overview = linkTo("P19", "概览", { id, tab: "overview" }); overview.className = active === "overview" ? "is-active" : ""; overview.setAttribute("aria-current", active === "overview" ? "page" : "false"); nav.append(overview); for (const label of ["运行记录", "产出", "错误"]) {
+    const disabled = document.createElement("span");
+    disabled.className = "is-disabled";
+    disabled.textContent = label;
+    disabled.setAttribute("aria-disabled", "true");
+    nav.append(disabled);
+} return nav; }
 async function renderMonitoring(context) {
     const host = content("Monitoring plan", "Probe planning is read-only here; execution remains an admin backend operation.");
     try {
@@ -2800,6 +2992,50 @@ function installScreenStyles() {
     @media (max-width: 640px) { .r04-intelligence-heading { flex-direction: column; } .r04-intelligence-filters input[name=source_id] { width: auto; flex: 1 1 120px; } }
     @media (max-width: 900px) { .r04-detail-grid-r04 { grid-template-columns: 1fr; } }
     @media (max-width: 640px) { .r04-entity-header h1 { font-size: 22px; } .r04-opportunity-filters input[type=search] { min-width: 140px; } }
+    .r04-source-page, .r04-source-detail { display: grid; gap: 18px; min-width: 0; }
+    .r04-source-filters { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-source-filters input, .r04-source-filters select { min-height: 36px; box-sizing: border-box; border: 1px solid var(--or-outline-strong); border-radius: 6px; padding: 7px 10px; background: var(--or-surface); color: var(--or-text); }
+    .r04-source-filters input[type=search] { flex: 1 1 210px; min-width: 180px; }
+    .r04-source-filters input[type=date] { flex: 0 1 150px; }
+    .r04-source-filters input:focus, .r04-source-filters select:focus { border-color: var(--or-primary); outline: 0; }
+    .r04-source-filter-submit { min-height: 36px; padding: 7px 12px; border: 1px solid var(--or-primary); border-radius: 6px; background: var(--or-primary); color: #fff; font-weight: 700; cursor: pointer; }
+    .r04-source-results { min-width: 0; overflow: hidden; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-source-results > .r02-table-wrap { border: 0; border-radius: 0; }
+    .r04-source-name { display: grid; gap: 3px; min-width: 150px; }
+    .r04-source-name a, .r04-source-run-card a, .r04-source-detail a { color: var(--or-primary-dark); text-decoration: none; }
+    .r04-source-name a:hover, .r04-source-run-card a:hover, .r04-source-detail a:hover { text-decoration: underline; }
+    .r04-source-name code, .r04-source-detail-heading code { color: var(--or-text-muted); font-size: 11px; }
+    .r04-source-health-meter { display: flex; align-items: center; gap: 8px; min-width: 105px; }
+    .r04-source-health-meter > span { display: block; width: 64px; height: 6px; border-radius: 999px; background: var(--or-outline-strong); position: relative; overflow: hidden; }
+    .r04-source-health-meter > span::after { position: absolute; inset: 0; content: ""; background: var(--or-text-muted); }
+    .r04-source-health-meter > span[data-tone=success]::after { background: var(--or-primary); }
+    .r04-source-health-meter > span[data-tone=warning]::after { background: var(--or-warning); }
+    .r04-source-health-meter > span[data-tone=danger]::after { background: var(--or-danger); }
+    .r04-source-health-meter small, .r04-source-result-count { color: var(--or-text-muted); font-size: 12px; }
+    .r04-source-result-count { margin: 0; padding: 12px 16px; border-top: 1px solid var(--or-outline); }
+    .r04-source-detail-header { display: grid; gap: 12px; padding: 20px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-source-detail-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .r04-source-detail-heading h1 { margin: 0 0 4px; font-size: 26px; line-height: 1.25; }
+    .r04-source-detail-heading button { min-height: 36px; padding: 8px 12px; border: 1px solid var(--or-outline-strong); border-radius: 6px; background: var(--or-surface); color: var(--or-text); cursor: pointer; }
+    .r04-source-detail-heading button:hover { border-color: var(--or-primary); color: var(--or-primary-dark); }
+    .r04-source-detail-metrics { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; padding-top: 12px; border-top: 1px solid var(--or-outline); }
+    .r04-source-meta { display: inline-flex; align-items: center; gap: 4px; color: var(--or-text-muted); font-size: 13px; }
+    .r04-source-meta > span { color: var(--or-text-muted); }
+    .r04-source-detail-tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--or-outline); }
+    .r04-source-detail-tabs a, .r04-source-detail-tabs .is-disabled { padding: 11px 14px; border-bottom: 2px solid transparent; color: var(--or-text-muted); font-size: 13px; text-decoration: none; }
+    .r04-source-detail-tabs a:hover { background: var(--or-surface-muted); color: var(--or-text); }
+    .r04-source-detail-tabs a.is-active { border-bottom-color: var(--or-primary); color: var(--or-primary-dark); font-weight: 700; }
+    .r04-source-detail-tabs .is-disabled { color: var(--or-text-muted); cursor: not-allowed; opacity: .55; }
+    .r04-source-detail-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 18px; align-items: start; min-width: 0; }
+    .r04-source-detail-main, .r04-source-detail-side { display: grid; gap: 18px; min-width: 0; }
+    .r04-source-detail .r04-detail-section { min-width: 0; padding: 18px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-source-detail .r04-detail-section > h2 { margin: 0 0 14px; font-size: 16px; }
+    .r04-source-capabilities { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+    .r04-source-capabilities li { padding: 5px 9px; border: 1px solid var(--or-outline); border-radius: 999px; color: var(--or-text-muted); font-size: 12px; }
+    .r04-source-run-card { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--or-outline); border-radius: 6px; background: var(--or-surface-muted); color: var(--or-text-muted); font-size: 12px; }
+    .r04-source-run-card a { font-size: 13px; font-weight: 700; }
+    @media (max-width: 1000px) { .r04-source-detail-layout { grid-template-columns: 1fr; } }
+    @media (max-width: 700px) { .r04-source-detail-heading { flex-direction: column; } .r04-source-filters { align-items: stretch; } .r04-source-filters input, .r04-source-filters select, .r04-source-filter-submit { flex: 1 1 100%; } .r04-source-filters input[type=date] { flex-basis: 45%; } }
     .r04-page-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--or-outline); }
     .r04-page-heading h1 { margin: 0; font-size: 24px; line-height: 1.25; }
     .r04-page-heading p { margin: 6px 0 0; color: var(--or-text-muted); font-size: 13px; }
