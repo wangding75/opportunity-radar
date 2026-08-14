@@ -24,7 +24,7 @@ export async function renderScreen(route, session, context) {
         case "P18": return renderSources(context);
         case "P19": return renderSourceHealth(route, context);
         case "P20": return renderMonitoring(route, context);
-        case "P21": return renderRuns(context);
+        case "P21": return renderRuns(route, context);
         case "P22": return renderRunDetail(route, context);
         case "P23": return renderAnalysisQueue(context);
         case "P24": return renderAlerts(context);
@@ -2909,18 +2909,86 @@ function intervalLabel(value) { const minutes = Number(value); if (!Number.isFin
     return `每 ${minutes / 60} 小时`; return `每 ${minutes} 分钟`; }
 function monitoringListRow(record) { const plan = linkTo("P20", text(record.probe.keyword, text(record.probe.query)), { source_id: record.probe.source_id, query: record.probe.query, keyword_id: record.probe.keyword_id }); plan.className = "r04-monitoring-plan-link"; const key = document.createElement("div"); key.className = "r04-monitoring-plan-cell"; key.append(plan); const keyCopy = document.createElement("code"); keyCopy.textContent = `${text(record.probe.source_id)} · ${text(record.probe.query)}`; key.append(keyCopy); const status = monitoringStatus(record.task); return [key, text(record.probe.query), badge(monitoringStatusLabel(status), monitoringStatusTone(status)), intervalLabel(record.probe.interval_minutes), record.source ? linkTo("P18", text(record.source.display_name, record.probe.source_id), { id: record.probe.source_id }) : linkTo("P18", text(record.probe.source_id), { id: record.probe.source_id }), record.task?.last_run_at ? formatDate(record.task.last_run_at) : record.run ? linkTo("P22", formatDate(record.run.started_at), { id: record.run.id }) : "—", record.task?.last_status ? runStatusLabel(record.task.last_status) : record.run ? runStatusLabel(record.run.status) : "待同步"]; }
 function monitoringInspector(record) { const host = document.createElement("div"); host.className = "r04-monitoring-inspector-inner"; host.append(badge(monitoringStatusLabel(monitoringStatus(record.task)), monitoringStatusTone(monitoringStatus(record.task))), document.createElement("h2")); host.querySelector("h2").textContent = text(record.probe.keyword, record.probe.query); const copy = document.createElement("code"); copy.textContent = `${text(record.probe.source_id)} · ${text(record.probe.query)}`; host.append(copy, detailSectionWithBody("监控范围与调度", detailList([["查询", record.probe.query], ["意图", record.probe.intent], ["执行间隔", intervalLabel(record.probe.interval_minutes)], ["优先级", record.probe.priority], ["最近运行", formatDate(record.task?.last_run_at ?? record.run?.started_at)], ["下次计划", formatDate(record.task?.next_run_at)]])), record.source ? linkTo("P18", "查看关联数据源", { id: record.probe.source_id }) : linkTo("P18", "查看数据源", { id: record.probe.source_id }), linkTo("P20", "打开计划详情", { source_id: record.probe.source_id, query: record.probe.query, keyword_id: record.probe.keyword_id })); return host; }
-async function renderRuns(context) {
-    const host = content("Collection runs", "Recent connector runs and their persisted outcomes.");
+async function renderRuns(route, context) {
+    const host = document.createElement("div");
+    host.className = "r04-runs-page";
+    host.append(r04PageHeading("运行记录", "查看采集、分析与研究后台任务的执行结果和错误信息", "刷新运行记录"), readOnlyNotice("手动运行、取消、重试等调度控制待后端安全接口确认后接入。", "运行记录只读"));
     try {
-        const rows = await api("/api/v1/collection-runs?limit=100");
-        const tableRows = (rows ?? []).map((row) => [linkTo("P22", `Run ${row.id}`, { id: row.id }), text(row.source_id), text(row.query), badge(text(row.status), row.status === "SUCCEEDED" ? "success" : row.status === "FAILED" ? "danger" : "warning"), text(row.fetched), text(row.inserted), formatDate(row.started_at)]);
-        append(host, tableRows.length ? table(["Run", "Source", "Query", "Status", "Fetched", "Inserted", "Started"], tableRows) : statePanel("empty", "No collection runs are recorded."));
+        const [runsResult, sourcesResult, workersResult] = await Promise.allSettled([api("/api/v1/collection-runs?limit=500"), api("/api/v1/sources"), api("/api/v1/workers")]);
+        if (runsResult.status === "rejected")
+            throw runsResult.reason;
+        const records = Array.isArray(runsResult.value) ? runsResult.value : [];
+        const sources = sourcesResult.status === "fulfilled" && Array.isArray(sourcesResult.value) ? sourcesResult.value : [];
+        const workers = workersResult.status === "fulfilled" && Array.isArray(workersResult.value) ? workersResult.value : [];
+        const sourceById = new Map(sources.map((row) => [String(row.source_id), row]));
+        const stale = workers.find((row) => String(row.status) === "STALE");
+        if (stale)
+            host.append(capabilityUnavailableNotice(`工作节点 ${text(stale.worker_id)} 最近心跳状态为 STALE（最近可见 ${formatDate(stale.last_seen_at)}），这里只读展示，不提供节点控制。`, "工作节点健康提示"));
+        else if (workersResult.status === "rejected")
+            host.append(capabilityUnavailableNotice("工作节点健康接口需要管理员读取权限；运行记录仍可正常查看。", "工作节点状态暂不可用"));
+        if (!records.length) {
+            host.append(statePanel("empty", "当前没有已记录的运行结果。"));
+            return host;
+        }
+        const filters = document.createElement("form");
+        filters.className = "r04-runs-filters";
+        const search = document.createElement("input");
+        search.type = "search";
+        search.value = route.params.get("q") ?? "";
+        search.placeholder = "搜索运行 ID / 来源 / 查询…";
+        search.setAttribute("aria-label", "搜索运行 ID 来源或查询");
+        const source = document.createElement("select");
+        source.setAttribute("aria-label", "数据源");
+        addOption(source, "", "所有数据源");
+        [...new Set(records.map((row) => String(row.source_id)))].forEach((value) => { addOption(source, value, text(sourceById.get(value)?.display_name, value)); });
+        if (route.params.get("source_id"))
+            source.value = route.params.get("source_id");
+        const execution = document.createElement("select");
+        execution.setAttribute("aria-label", "执行类型");
+        addOption(execution, "", "所有执行类型");
+        [...new Set(records.map((row) => String(row.intent ?? "UNKNOWN")))].forEach((value) => addOption(execution, value, runIntentLabel(value)));
+        const worker = document.createElement("select");
+        worker.setAttribute("aria-label", "工作节点");
+        addOption(worker, "", "所有工作节点");
+        [...new Set(records.map((row) => String(row.worker_id ?? "")))].filter(Boolean).forEach((value) => addOption(worker, value, value));
+        const status = document.createElement("select");
+        status.setAttribute("aria-label", "运行状态");
+        addOption(status, "", "所有状态");
+        ["RUNNING", "SUCCEEDED", "FAILED", "SKIPPED"].forEach((value) => addOption(status, value, runStatusLabel(value)));
+        const from = document.createElement("input");
+        from.type = "date";
+        from.setAttribute("aria-label", "运行起始日期");
+        const to = document.createElement("input");
+        to.type = "date";
+        to.setAttribute("aria-label", "运行结束日期");
+        const submit = document.createElement("button");
+        submit.type = "submit";
+        submit.className = "r04-runs-submit";
+        submit.textContent = "筛选";
+        filters.append(search, source, execution, worker, status, from, document.createTextNode("至"), to, submit);
+        host.append(filters);
+        const results = document.createElement("section");
+        results.className = "r04-runs-results";
+        host.append(results);
+        const draw = () => { const q = search.value.trim().toLowerCase(); const fromTime = from.value ? Date.parse(`${from.value}T00:00:00`) : Number.NaN; const toTime = to.value ? Date.parse(`${to.value}T23:59:59`) : Number.NaN; const filtered = records.filter((row) => { const started = Date.parse(String(row.started_at ?? "")); const haystack = `${row.id ?? ""} ${row.source_id ?? ""} ${row.query ?? ""}`.toLowerCase(); return (!q || haystack.includes(q)) && (!source.value || String(row.source_id) === source.value) && (!execution.value || String(row.intent ?? "UNKNOWN") === execution.value) && (!worker.value || String(row.worker_id ?? "") === worker.value) && (!status.value || String(row.status) === status.value) && (Number.isNaN(fromTime) || (Number.isFinite(started) && started >= fromTime)) && (Number.isNaN(toTime) || (Number.isFinite(started) && started <= toTime)); }); const rows = filtered.map((row) => runListRow(row, sourceById.get(String(row.source_id)))); const count = document.createElement("p"); count.className = "r04-runs-count"; count.textContent = `显示 ${filtered.length} 条，共 ${records.length} 条运行记录`; results.replaceChildren(rows.length ? table(["RUN-ID", "来源 / 查询", "执行类型", "工作节点", "状态", "开始时间", "耗时", "获取数", "写入 / 更新数", "触发方式", "错误摘要"], rows) : statePanel("empty", "当前筛选条件下暂无运行记录。"), count); };
+        filters.addEventListener("submit", (event) => { event.preventDefault(); draw(); });
+        [source, execution, worker, status, from, to].forEach((field) => field.addEventListener("change", draw));
+        search.addEventListener("input", draw);
+        draw();
     }
     catch (error) {
-        append(host, errorState(error, context));
+        host.append(errorState(error, context, () => void renderRuns(route, context)));
     }
     return host;
 }
+function runIntentLabel(value) { return { BASE: "基础采集", SUPPLY: "供给采集", DEMAND: "需求采集", EXECUTION: "执行采集", STRUCTURED_ANALYSIS: "结构化分析" }[String(value)] ?? text(value, "未标注"); }
+function runDurationLabel(value) { const ms = Number(value); if (!Number.isFinite(ms))
+    return "—"; if (ms >= 60000)
+    return `${Math.floor(ms / 60000)}分 ${Math.round((ms % 60000) / 1000)}秒`; return `${Math.round(ms / 1000)}秒`; }
+function runListRow(row, source) { const sourceCell = document.createElement("div"); sourceCell.className = "r04-run-source-cell"; const sourceLink = linkTo("P18", text(source?.display_name, text(row.source_id)), { id: row.source_id }); sourceCell.append(sourceLink); const query = document.createElement("small"); query.textContent = text(row.query, "未返回查询"); sourceCell.append(query); const worker = document.createElement("code"); worker.textContent = text(row.worker_id, "未分配"); const error = row.error ? text(row.error) : "—"; const errorCell = row.error ? document.createElement("span") : "—"; if (typeof errorCell !== "string") {
+    errorCell.className = "r04-run-error";
+    errorCell.textContent = error;
+} return [linkTo("P22", `运行 #${text(row.id)}`, { id: row.id }), sourceCell, runIntentLabel(row.intent), worker, badge(runStatusLabel(row.status), row.status === "SUCCEEDED" ? "success" : row.status === "FAILED" ? "danger" : row.status === "RUNNING" ? "info" : "warning"), formatDate(row.started_at), runDurationLabel(row.duration_ms), text(row.fetched, "0"), text(row.inserted, "0"), row.probe_task_id ? "计划任务" : "未返回", errorCell]; }
 async function renderRunDetail(route, context) {
     const id = route.params.get("id");
     const host = content("Collection run detail", "The run record is loaded from the existing collection-runs endpoint.");
@@ -3332,6 +3400,23 @@ function installScreenStyles() {
     .r04-monitoring-detail .r02-table-wrap { overflow: auto; }
     @media (max-width: 1000px) { .r04-monitoring-layout, .r04-monitoring-detail-layout { grid-template-columns: 1fr; } }
     @media (max-width: 700px) { .r04-monitoring-filters { align-items: stretch; } .r04-monitoring-filters input, .r04-monitoring-filters select, .r04-monitoring-submit { flex: 1 1 100%; } .r04-monitoring-detail-heading { flex-direction: column; } }
+    .r04-runs-page { display: grid; gap: 18px; min-width: 0; }
+    .r04-runs-filters { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-runs-filters input, .r04-runs-filters select { min-height: 36px; box-sizing: border-box; border: 1px solid var(--or-outline-strong); border-radius: 6px; padding: 7px 10px; background: var(--or-surface); color: var(--or-text); }
+    .r04-runs-filters input[type=search] { flex: 1 1 230px; min-width: 180px; }
+    .r04-runs-filters input[type=date] { flex: 0 1 150px; }
+    .r04-runs-filters input:focus, .r04-runs-filters select:focus { border-color: var(--or-primary); outline: 0; }
+    .r04-runs-submit { min-height: 36px; padding: 7px 12px; border: 1px solid var(--or-primary); border-radius: 6px; background: var(--or-primary); color: #fff; font-weight: 700; cursor: pointer; }
+    .r04-runs-results { min-width: 0; overflow: hidden; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-runs-results > .r02-table-wrap { border: 0; border-radius: 0; }
+    .r04-runs-results a { color: var(--or-primary-dark); text-decoration: none; }
+    .r04-runs-results a:hover { text-decoration: underline; }
+    .r04-run-source-cell { display: grid; gap: 3px; min-width: 180px; }
+    .r04-run-source-cell small { color: var(--or-text-muted); font-size: 11px; overflow-wrap: anywhere; }
+    .r04-run-source-cell code { width: max-content; padding: 3px 6px; border-radius: 4px; background: var(--or-surface-muted); color: var(--or-text-muted); font-size: 11px; }
+    .r04-run-error { display: block; max-width: 260px; overflow: hidden; color: var(--or-danger); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+    .r04-runs-count { margin: 0; padding: 12px 16px; border-top: 1px solid var(--or-outline); color: var(--or-text-muted); font-size: 12px; }
+    @media (max-width: 700px) { .r04-runs-filters { align-items: stretch; } .r04-runs-filters input, .r04-runs-filters select, .r04-runs-submit { flex: 1 1 100%; } .r04-runs-filters input[type=date] { flex-basis: 45%; } }
     .r04-page-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--or-outline); }
     .r04-page-heading h1 { margin: 0; font-size: 24px; line-height: 1.25; }
     .r04-page-heading p { margin: 6px 0 0; color: var(--or-text-muted); font-size: 13px; }
