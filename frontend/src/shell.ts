@@ -184,11 +184,25 @@ function createTopBar(userLabel: string, _role: string, _onLogout?: () => void):
   topbar.className = "or-topbar";
   topbar.dataset.component = "TopBar";
 
-  const search = document.createElement("a");
+  const search = document.createElement("form");
   search.className = "or-topbar-search";
-  search.href = routeFor("P03");
+  search.setAttribute("role", "search");
   search.setAttribute("aria-label", "打开全局搜索");
-  search.innerHTML = `<span class="or-topbar-search-icon" aria-hidden="true">⌕</span><span>搜索机会、情报、研究、运行记录…</span>`;
+  const searchIcon = document.createElement("span");
+  searchIcon.className = "or-topbar-search-icon";
+  searchIcon.setAttribute("aria-hidden", "true");
+  searchIcon.textContent = "⌕";
+  const searchInput = document.createElement("input");
+  searchInput.type = "search";
+  searchInput.name = "q";
+  searchInput.placeholder = "搜索机会、情报或实体 ID…";
+  searchInput.setAttribute("aria-label", "搜索机会、情报或实体 ID");
+  search.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const query = searchInput.value.trim();
+    navigate("P03", query ? {q: query} : {});
+  });
+  search.append(searchIcon, searchInput);
   topbar.append(search);
 
   const spacer = document.createElement("span");
@@ -198,10 +212,6 @@ function createTopBar(userLabel: string, _role: string, _onLogout?: () => void):
   actions.className = "or-topbar-actions";
   actions.append(shellAction("↻", "刷新", () => window.location.reload()));
   const notification = shellAction("♧", "通知", () => { const handled = window.dispatchEvent(new CustomEvent("or-shell-action", {detail: "notifications", cancelable: true})); if (handled) navigate("P24"); });
-  const dot = document.createElement("span");
-  dot.className = "or-notification-dot";
-  dot.setAttribute("aria-hidden", "true");
-  notification.append(dot);
   actions.append(notification);
   actions.append(shellAction("?", "帮助", () => { const handled = window.dispatchEvent(new CustomEvent("or-shell-action", {detail: "help", cancelable: true})); if (handled) navigate("P30"); }));
   const divider = document.createElement("span");

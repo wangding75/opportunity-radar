@@ -3,10 +3,11 @@ import { parseRoute, navigate, routeFor } from "./router.js";
 import { createAppShell, updateAppShell } from "./shell.js";
 import { installR04Theme } from "./theme.js";
 import { installComponentStyles } from "./ui.js";
-import { renderScreen } from "./screens.js";
+import { renderHelpDrawer, renderNotificationDrawer, renderScreen } from "./screens.js";
 let session = null;
 let shell = null;
 let rootElement = null;
+let utilityDrawer = null;
 let renderSequence = 0;
 export function renderApp(root) {
     installR04Theme();
@@ -14,7 +15,20 @@ export function renderApp(root) {
     rootElement = root;
     const render = () => { void renderRoute(parseRoute()); };
     window.addEventListener("hashchange", render);
+    window.addEventListener("or-shell-action", handleShellAction);
     void bootstrap(render);
+}
+function handleShellAction(event) {
+    const action = event.detail;
+    if (action !== "notifications" && action !== "help")
+        return;
+    event.preventDefault();
+    if (!rootElement || !session)
+        return;
+    utilityDrawer?.remove();
+    const context = { onSessionExpired: handleSessionExpired, onForbidden: () => navigate("P04") };
+    utilityDrawer = action === "notifications" ? renderNotificationDrawer(context) : renderHelpDrawer(parseRoute());
+    rootElement.append(utilityDrawer);
 }
 async function bootstrap(render) {
     try {
@@ -42,6 +56,8 @@ async function renderRoute(route) {
     if (!rootElement)
         return;
     const sequence = ++renderSequence;
+    utilityDrawer?.remove();
+    utilityDrawer = null;
     try {
         if (route.screen === "P01" || route.screen === "P26A" || !session) {
             shell = null;

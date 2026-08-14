@@ -117,9 +117,11 @@ export function installR04Theme() {
 
     .or-main { min-width: 0; height: 100%; margin-left: var(--or-nav-width); display: flex; flex-direction: column; }
     .or-topbar { position: fixed; top: 0; right: 0; left: var(--or-nav-width); z-index: 10; height: var(--or-topbar-height); display: flex; align-items: center; gap: 16px; padding: 0 24px; background: var(--or-surface); border-bottom: 1px solid var(--or-outline); }
-    .or-topbar-search { position: relative; display: flex; align-items: center; gap: 10px; width: min(480px, 100%); height: 36px; padding: 0 12px; border: 1px solid transparent; border-radius: 4px; background: var(--or-surface-muted); color: var(--or-text-muted); text-decoration: none; font-size: 13px; }
+    .or-topbar-search { position: relative; display: flex; align-items: center; gap: 10px; width: min(480px, 100%); height: 36px; padding: 0 12px; border: 1px solid transparent; border-radius: 4px; background: var(--or-surface-muted); color: var(--or-text-muted); font-size: 13px; }
     .or-topbar-search:hover { border-color: var(--or-outline-strong); background: var(--or-surface); }
     .or-topbar-search-icon { color: var(--or-text); font-size: 18px; line-height: 1; }
+    .or-topbar-search input { min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; color: var(--or-text); }
+    .or-topbar-search input::placeholder { color: var(--or-text-muted); }
     .or-topbar-spacer { flex: 1; }
     .or-topbar-actions { display: flex; align-items: center; gap: 6px; }
     .or-topbar-action { position: relative; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--or-text-muted); font-size: 19px; }

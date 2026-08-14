@@ -1,6 +1,6 @@
 import { api, ApiError } from "./client.js";
 import { routeFor, navigate } from "./router.js";
-import { appendActionRow, badge, button, card, drawer, input, linkTo, modal, select, settingsFrame, statePanel, table } from "./ui.js";
+import { appendActionRow, badge, button, capabilityUnavailableNotice, card, drawer, input, linkTo, modal, select, settingsFrame, statePanel, table } from "./ui.js";
 export async function renderScreen(route, session, context) {
     installScreenStyles();
     switch (route.screen) {
@@ -130,74 +130,151 @@ async function renderDashboard(context) {
     return host;
 }
 async function renderSearch(context) {
-    const host = content("Global search", "Search the existing opportunity, observation, and keyword read models in parallel.");
+    const host = document.createElement("div");
+    host.className = "r04-search-page";
+    const heading = document.createElement("div");
+    heading.className = "r04-search-heading";
+    const title = document.createElement("h1");
+    title.textContent = "全局搜索";
+    const subtitle = document.createElement("p");
+    subtitle.textContent = "在已确认可搜索的机会、情报和关键词中查找真实记录。";
+    heading.append(title, subtitle);
     const form = document.createElement("form");
-    form.className = "r02-search-form";
-    const queryWrap = input("Search query", { placeholder: "keyword, title, or evidence text" });
-    const categoryWrap = select("Category", ["all", "opportunities", "observations", "keywords"], "all");
-    const query = queryWrap.querySelector("input");
-    const category = categoryWrap.querySelector("select");
-    const submit = button("Search", { variant: "primary", type: "submit" });
-    appendActionRow(form, submit);
-    form.prepend(queryWrap, categoryWrap);
+    form.className = "r04-search-form";
+    const query = document.createElement("input");
+    query.type = "search";
+    query.name = "q";
+    query.placeholder = "输入关键词、标题或实体 ID";
+    query.setAttribute("aria-label", "搜索关键词、标题或实体 ID");
+    const submit = document.createElement("button");
+    submit.type = "submit";
+    submit.className = "r04-search-submit";
+    submit.textContent = "搜索";
+    form.append(query, submit);
+    const body = document.createElement("div");
+    body.className = "r04-search-layout";
+    const main = document.createElement("section");
+    main.className = "r04-search-main";
+    const tabsHost = document.createElement("nav");
+    tabsHost.className = "r04-search-tabs";
+    tabsHost.setAttribute("aria-label", "搜索对象类型");
     const results = document.createElement("div");
-    results.className = "r02-search-results";
-    form.addEventListener("submit", (event) => {
-        event.preventDefault();
-        void runSearch(text(query?.value, "").trim(), text(category?.value, "all"), results, context);
-    });
-    append(host, form, results);
-    const initial = new URLSearchParams(window.location.hash.split("?")[1] ?? "").get("q");
-    if (initial) {
-        if (query)
-            query.value = initial;
-        void runSearch(initial, "all", results, context);
-    }
+    results.className = "r04-search-results";
+    const filter = document.createElement("aside");
+    filter.className = "r04-search-filter";
+    const filterTitle = document.createElement("h2");
+    filterTitle.textContent = "筛选条件";
+    const filterCopy = document.createElement("p");
+    filterCopy.textContent = "搜索范围由当前后端资源决定。研究和运行暂未提供统一搜索资源，因此不展示未验证的结果。";
+    filter.append(filterTitle, filterCopy, capabilityUnavailableNotice("研究与运行没有统一搜索接口；可从帮助入口进入对应列表。", "搜索范围说明"));
+    let activeCategory = "all";
+    const categories = [["all", "全部"], ["opportunities", "机会"], ["observations", "情报"], ["keywords", "关键词"]];
+    const renderTabs = () => {
+        tabsHost.replaceChildren();
+        for (const [key, label] of categories) {
+            const tab = document.createElement("button");
+            tab.type = "button";
+            tab.className = `r04-search-tab${activeCategory === key ? " is-active" : ""}`;
+            tab.textContent = label;
+            tab.setAttribute("aria-selected", String(activeCategory === key));
+            tab.addEventListener("click", () => { activeCategory = key; renderTabs(); void runSearch(text(query.value).trim(), activeCategory, results, context); });
+            tabsHost.append(tab);
+        }
+    };
+    form.addEventListener("submit", (event) => { event.preventDefault(); void runSearch(text(query.value).trim(), activeCategory, results, context); });
+    const initial = new URLSearchParams(window.location.hash.split("?")[1] ?? "").get("q") ?? "";
+    query.value = initial;
+    renderTabs();
+    main.append(tabsHost, results);
+    body.append(main, filter);
+    host.append(heading, form, body);
+    if (initial)
+        void runSearch(initial, activeCategory, results, context);
     else
-        results.append(statePanel("ready", "Enter a query to search live records."));
+        results.append(statePanel("ready", "输入查询词后搜索真实业务记录。"));
     return host;
 }
 async function runSearch(query, category, results, context) {
-    results.replaceChildren(statePanel("loading", "Searching live records…"));
+    results.replaceChildren(statePanel("loading", "正在搜索真实记录…"));
     if (!query) {
-        results.replaceChildren(statePanel("empty", "Enter a query first."));
+        results.replaceChildren(statePanel("empty", "请输入查询词后再搜索。"));
         return;
     }
     const jobs = [];
     if (category === "all" || category === "opportunities")
         jobs.push(api(`/api/v1/opportunities/page?q=${encodeURIComponent(query)}&limit=50`));
-    else
-        jobs.push(Promise.resolve({ items: [] }));
     if (category === "all" || category === "observations")
         jobs.push(api(`/api/v1/observations?q=${encodeURIComponent(query)}&limit=50`));
-    else
-        jobs.push(Promise.resolve({ items: [] }));
     if (category === "all" || category === "keywords")
         jobs.push(api("/api/v1/keywords?limit=500"));
-    else
-        jobs.push(Promise.resolve([]));
     const settled = await Promise.allSettled(jobs);
     const failed = settled.find((item) => item.status === "rejected");
-    if (failed && failed.status === "rejected" && settled.every((item) => item.status === "rejected")) {
-        results.replaceChildren(errorState(failed.reason, context));
+    if (settled.length > 0 && settled.every((item) => item.status === "rejected")) {
+        results.replaceChildren(statePanel("error", "搜索接口暂时不可用，请稍后重试。", () => void runSearch(query, category, results, context)));
+        if (failed && failed.status === "rejected" && failed.reason instanceof ApiError && failed.reason.status === 401)
+            context.onSessionExpired();
         return;
     }
-    const [opportunities, observations, keywords] = settled.map((item) => item.status === "fulfilled" ? item.value : null);
-    const rows = [];
-    for (const row of opportunities?.items ?? [])
-        rows.push([badge("Opportunity", "success"), linkTo("P13", text(row.title), { id: row.id }), text(row.summary), number(row.score, 1)]);
-    for (const row of observations?.items ?? [])
-        rows.push([badge("Observation", "info"), linkTo("P07", text(row.title), { id: row.id }), text(row.text), formatDate(row.observed_at)]);
-    for (const row of (keywords ?? []).filter((item) => `${item.keyword} ${item.canonical}`.toLowerCase().includes(query.toLowerCase())))
-        rows.push([badge("Keyword", "warning"), linkTo("P10", text(row.keyword), { keyword_id: row.id }), text(row.status), number(row.score, 1)]);
-    if (!rows.length)
-        results.replaceChildren(statePanel("empty", `No live records matched “${query}”.`));
+    const records = [];
+    let index = 0;
+    if (category === "all" || category === "opportunities") {
+        const value = settled[index++];
+        if (value.status === "fulfilled")
+            for (const row of value.value?.items ?? [])
+                records.push(searchResultCard("机会", "success", text(row.opportunity_key ?? row.id), text(row.title), text(row.summary), `评分 ${number(row.score, 1)} · ${text(row.stage)}`, routeFor("P13", { id: row.id })));
+    }
+    if (category === "all" || category === "observations") {
+        const value = settled[index++];
+        if (value.status === "fulfilled")
+            for (const row of value.value?.items ?? [])
+                records.push(searchResultCard("情报", "info", text(row.source_id), text(row.title), text(row.text), `观察时间 ${formatDate(row.observed_at)}`, routeFor("P07", { id: row.id })));
+    }
+    if (category === "all" || category === "keywords") {
+        const value = settled[index++];
+        if (value.status === "fulfilled")
+            for (const row of (value.value ?? []).filter((item) => `${item.keyword ?? item.display_name ?? ""} ${item.canonical ?? ""}`.toLowerCase().includes(query.toLowerCase())))
+                records.push(searchResultCard("关键词", "warning", text(row.id), text(row.keyword ?? row.display_name), `状态：${text(row.status)}`, `得分 ${number(row.score, 1)} · 观察数 ${text(row.observation_count)}`, routeFor("P10", { keyword_id: row.id })));
+    }
+    const summary = document.createElement("p");
+    summary.className = "r04-search-summary";
+    summary.textContent = `找到 ${records.length} 个相关结果`;
+    results.replaceChildren(summary);
+    if (!records.length)
+        results.append(statePanel("empty", `没有找到与“${query}”匹配的真实记录。`));
     else {
-        const panel = card(`Results for “${query}”`, table(["Type", "Record", "Context", "Signal"], rows));
-        results.replaceChildren(panel);
+        const list = document.createElement("div");
+        list.className = "r04-search-list";
+        list.append(...records);
+        results.append(list);
     }
     if (failed)
-        results.prepend(statePanel("partial", "Some search categories could not be loaded; visible results are still live."));
+        results.prepend(statePanel("partial", "部分搜索分类暂时不可用；当前结果仍来自真实接口。"));
+}
+function searchResultCard(type, tone, id, titleValue, description, meta, href) {
+    const card = document.createElement("article");
+    card.className = "r04-search-result";
+    const top = document.createElement("div");
+    top.className = "r04-search-result-top";
+    top.append(badge(type, tone));
+    const idEl = document.createElement("code");
+    idEl.textContent = id;
+    top.append(idEl);
+    const title = document.createElement("a");
+    title.href = href;
+    title.textContent = titleValue;
+    title.className = "r04-search-result-title";
+    const copy = document.createElement("p");
+    copy.textContent = description;
+    const footer = document.createElement("div");
+    footer.className = "r04-search-result-footer";
+    const metaEl = document.createElement("span");
+    metaEl.textContent = meta;
+    const open = document.createElement("a");
+    open.href = href;
+    open.textContent = "查看详情";
+    footer.append(metaEl, open);
+    card.append(top, title, copy, footer);
+    return card;
 }
 function renderLoginHelp() {
     const page = document.createElement("main");
@@ -261,6 +338,152 @@ function helpSection(titleValue, values) {
     section.append(title, list);
     return section;
 }
+export function renderNotificationDrawer(context) {
+    const utility = createUtilityDrawer("通知", "最近需要关注的系统与业务变化");
+    const loading = statePanel("loading", "正在读取告警事件…");
+    utility.body.append(loading);
+    const allAlerts = linkTo("P24", "查看全部告警");
+    const runs = linkTo("P21", "查看运行记录");
+    utility.footer.append(allAlerts, runs);
+    void loadNotificationEvents(utility.body, context);
+    return utility.overlay;
+}
+async function loadNotificationEvents(body, context) {
+    try {
+        const rows = await api("/api/v1/alerts/events?limit=20");
+        body.replaceChildren();
+        if (!Array.isArray(rows) || !rows.length) {
+            body.append(statePanel("empty", "当前没有可读取的告警事件。"));
+            return;
+        }
+        const list = document.createElement("div");
+        list.className = "r04-notification-list";
+        for (const row of rows) {
+            const item = document.createElement("article");
+            item.className = `r04-notification-item r04-notification-${String(row.priority ?? "NORMAL").toLowerCase()}`;
+            const top = document.createElement("div");
+            top.className = "r04-notification-top";
+            top.append(badge(alertType(row), row.priority === "CRITICAL" ? "danger" : row.status === "NEW" ? "warning" : "neutral"));
+            const time = document.createElement("time");
+            time.dateTime = String(row.created_at ?? "");
+            time.textContent = formatDate(row.created_at);
+            top.append(time);
+            const title = document.createElement("h3");
+            title.textContent = text(row.title, "未命名告警");
+            const message = document.createElement("p");
+            message.textContent = text(row.message, "该告警未提供补充说明。");
+            const meta = document.createElement("span");
+            meta.className = "r04-notification-meta";
+            meta.textContent = `ID：${text(row.event_key ?? row.id)} · 状态：${alertStatusLabel(row.status)}`;
+            const target = alertTarget(row);
+            const link = document.createElement("a");
+            link.href = target.href;
+            link.textContent = target.label;
+            const footer = document.createElement("div");
+            footer.className = "r04-notification-footer";
+            footer.append(meta, link);
+            item.append(top, title, message, footer);
+            list.append(item);
+        }
+        body.append(list);
+    }
+    catch (error) {
+        body.replaceChildren();
+        if (error instanceof ApiError && error.status === 401)
+            context.onSessionExpired();
+        body.append(statePanel("error", "通知数据暂时不可用。", () => void loadNotificationEvents(body, context)));
+    }
+}
+function alertType(row) {
+    if (row.priority === "CRITICAL")
+        return "关键告警";
+    if (row.opportunity_id)
+        return "机会变化";
+    if (row.keyword_id)
+        return "关键词告警";
+    return "系统告警";
+}
+function alertStatusLabel(value) {
+    return { NEW: "新建", ACKNOWLEDGED: "已确认", DISMISSED: "已忽略", RESOLVED: "已解决" }[String(value)] ?? text(value);
+}
+function alertTarget(row) {
+    if (row.opportunity_id)
+        return { href: routeFor("P13", { id: row.opportunity_id }), label: "查看机会" };
+    if (row.keyword_id)
+        return { href: routeFor("P10", { keyword_id: row.keyword_id }), label: "查看关键词" };
+    return { href: routeFor("P24"), label: "查看告警详情" };
+}
+export function renderHelpDrawer(route) {
+    const utility = createUtilityDrawer("帮助", "当前页面说明与常用排查入口");
+    const current = document.createElement("section");
+    current.className = "r04-help-drawer-section";
+    const currentTitle = document.createElement("h3");
+    currentTitle.textContent = "当前页面说明";
+    const currentCopy = document.createElement("p");
+    currentCopy.textContent = `当前位于${pageLabel(route.screen)}。这里的内容来自真实接口或明确的只读降级状态。`;
+    current.append(currentTitle, currentCopy);
+    const path = document.createElement("section");
+    path.className = "r04-help-drawer-section";
+    const pathTitle = document.createElement("h3");
+    pathTitle.textContent = "常用使用路径";
+    const opportunityPath = document.createElement("div");
+    opportunityPath.className = "r04-help-path";
+    opportunityPath.append(linkTo("P02", "工作台"), arrow(), linkTo("P12", "机会"), arrow(), linkTo("P06", "证据"), arrow(), linkTo("P18", "数据源"));
+    const operationsPath = document.createElement("div");
+    operationsPath.className = "r04-help-path";
+    operationsPath.append(linkTo("P18", "数据源"), arrow(), linkTo("P21", "运行记录"), arrow(), linkTo("P22", "运行详情"), arrow(), linkTo("P23", "分析队列"));
+    path.append(pathTitle, pathLabel("机会溯源链路"), opportunityPath, pathLabel("故障排查链路"), operationsPath);
+    const glossary = document.createElement("section");
+    glossary.className = "r04-help-drawer-section";
+    const glossaryTitle = document.createElement("h3");
+    glossaryTitle.textContent = "术语说明";
+    glossary.append(glossaryTitle, glossaryItem("机会分数", "系统基于已确认维度计算的机会潜在价值评分。"), glossaryItem("置信度", "情报来源和分析逻辑的可靠性评级。"), glossaryItem("证据覆盖", "研究结果由有效证据支持的比例；未有后端字段时不推算。"), glossaryItem("数据新鲜度", "距离底层数据源最后一次成功同步的时间间隔。"));
+    utility.body.append(current, path, glossary);
+    utility.footer.append(linkTo("P30", "查看系统诊断"), linkTo("P28", "查看账户与安全"), linkTo("P04", "403 权限说明", { requested: window.location.pathname }));
+    return utility.overlay;
+}
+function createUtilityDrawer(titleValue, subtitleValue) {
+    const overlay = document.createElement("div");
+    overlay.className = "r04-utility-overlay";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    const scrim = document.createElement("button");
+    scrim.type = "button";
+    scrim.className = "r04-utility-scrim";
+    scrim.setAttribute("aria-label", "关闭抽屉");
+    const panel = document.createElement("aside");
+    panel.className = "r04-utility-drawer";
+    const header = document.createElement("header");
+    header.className = "r04-utility-header";
+    const heading = document.createElement("div");
+    const title = document.createElement("h2");
+    title.textContent = titleValue;
+    const subtitle = document.createElement("p");
+    subtitle.textContent = subtitleValue;
+    heading.append(title, subtitle);
+    const close = document.createElement("button");
+    close.type = "button";
+    close.className = "r04-utility-close";
+    close.setAttribute("aria-label", "关闭抽屉");
+    close.textContent = "×";
+    header.append(heading, close);
+    const body = document.createElement("div");
+    body.className = "r04-utility-body";
+    const footer = document.createElement("footer");
+    footer.className = "r04-utility-footer";
+    const dismiss = () => overlay.remove();
+    close.addEventListener("click", dismiss);
+    scrim.addEventListener("click", dismiss);
+    overlay.addEventListener("keydown", (event) => { if (event.key === "Escape")
+        dismiss(); });
+    panel.append(header, body, footer);
+    overlay.append(scrim, panel);
+    return { overlay, body, footer };
+}
+function arrow() { const span = document.createElement("span"); span.className = "r04-help-arrow"; span.textContent = "→"; return span; }
+function pathLabel(value) { const span = document.createElement("strong"); span.className = "r04-help-path-label"; span.textContent = `${value}：`; return span; }
+function glossaryItem(titleValue, copyValue) { const item = document.createElement("div"); item.className = "r04-help-glossary-item"; const title = document.createElement("strong"); title.textContent = titleValue; const copy = document.createElement("p"); copy.textContent = copyValue; item.append(title, copy); return item; }
+function pageLabel(screen) { return { P02: "工作台", P03: "全局搜索", P06: "最新情报", P12: "机会", P13: "机会详情", P18: "数据源", P21: "运行记录", P24: "告警" }[screen] ?? "当前页面"; }
 function renderForbidden(route, session) {
     const host = document.createElement("main");
     host.className = "r04-error-page";

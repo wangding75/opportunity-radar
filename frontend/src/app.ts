@@ -3,12 +3,13 @@ import { parseRoute, navigate, routeFor, type RouteState } from "./router.js";
 import { createAppShell, renderFramePlaceholder, updateAppShell } from "./shell.js";
 import { installR04Theme } from "./theme.js";
 import { installComponentStyles } from "./ui.js";
-import { renderScreen } from "./screens.js";
+import { renderHelpDrawer, renderNotificationDrawer, renderScreen } from "./screens.js";
 
 type AuthSession = {label: string; role: string};
 let session: AuthSession | null = null;
 let shell: HTMLElement | null = null;
 let rootElement: HTMLElement | null = null;
+let utilityDrawer: HTMLElement | null = null;
 let renderSequence = 0;
 
 export function renderApp(root: HTMLElement): void {
@@ -17,7 +18,19 @@ export function renderApp(root: HTMLElement): void {
   rootElement = root;
   const render = (): void => { void renderRoute(parseRoute()); };
   window.addEventListener("hashchange", render);
+  window.addEventListener("or-shell-action", handleShellAction);
   void bootstrap(render);
+}
+
+function handleShellAction(event: Event): void {
+  const action = (event as CustomEvent<string>).detail;
+  if (action !== "notifications" && action !== "help") return;
+  event.preventDefault();
+  if (!rootElement || !session) return;
+  utilityDrawer?.remove();
+  const context = {onSessionExpired: handleSessionExpired, onForbidden: () => navigate("P04")};
+  utilityDrawer = action === "notifications" ? renderNotificationDrawer(context) : renderHelpDrawer(parseRoute());
+  rootElement.append(utilityDrawer);
 }
 
 async function bootstrap(render: () => void): Promise<void> {
@@ -41,6 +54,8 @@ async function bootstrap(render: () => void): Promise<void> {
 async function renderRoute(route: RouteState): Promise<void> {
   if (!rootElement) return;
   const sequence = ++renderSequence;
+  utilityDrawer?.remove();
+  utilityDrawer = null;
   try {
     if (route.screen === "P01" || route.screen === "P26A" || !session) {
       shell = null;
