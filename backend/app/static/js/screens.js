@@ -775,7 +775,8 @@ async function renderIntelligenceSummary(route, context) {
             host.append(objectNotFound("情报", id));
             return host;
         }
-        const activeTab = route.params.get("tab") ?? "summary";
+        const requestedTab = route.params.get("tab") ?? "summary";
+        const activeTab = ["summary", "raw", "relations", "process"].includes(requestedTab) ? requestedTab : "summary";
         const header = document.createElement("header");
         header.className = "r04-intelligence-entity";
         const crumb = document.createElement("div");
@@ -797,8 +798,14 @@ async function renderIntelligenceSummary(route, context) {
         header.append(crumb, title, badge("已采集记录", "neutral"), meta, tabs);
         const body = document.createElement("div");
         body.className = "r04-intelligence-detail-grid";
-        if (activeTab !== "summary") {
-            body.append(capabilityUnavailableNotice("当前后端只为情报列表提供观察记录；独立原始证据、关系和处理轨迹资源尚未暴露。本页不从 mock 文案拼装详情。", "该详情 Tab 暂不可用"));
+        if (activeTab === "raw") {
+            body.append(renderIntelligenceRaw(row));
+        }
+        else if (activeTab === "relations") {
+            body.append(renderIntelligenceRelations(row));
+        }
+        else if (activeTab === "process") {
+            body.append(await renderIntelligenceProcess(row, context));
         }
         else {
             const main = document.createElement("main");
@@ -834,6 +841,115 @@ async function renderIntelligenceSummary(route, context) {
         host.append(errorState(error, context, () => void renderIntelligenceSummary(route, context)));
     }
     return host;
+}
+function renderIntelligenceRaw(row) {
+    const host = document.createElement("div");
+    host.className = "r04-intelligence-tab-layout";
+    const main = document.createElement("main");
+    main.className = "r04-intelligence-tab-main";
+    const rawBody = document.createElement("div");
+    rawBody.className = "r04-intelligence-raw-body";
+    const pre = document.createElement("pre");
+    pre.className = "r04-intelligence-raw-snippet";
+    pre.textContent = text(row.text, "该观察记录没有返回正文片段。");
+    const rawNote = document.createElement("p");
+    rawNote.className = "r04-intelligence-raw-note";
+    rawNote.textContent = "正文来自 observations API 返回的 text 字段；接口当前最多返回 2000 个字符，未宣称为完整原始页面。";
+    rawBody.append(pre, rawNote);
+    main.append(detailSectionWithBody("原始正文 / 抓取片段", rawBody));
+    const fieldRows = [
+        ["id", text(row.id), "情报记录标识"],
+        ["title", text(row.title, "未提供"), "列表标题"],
+        ["text", text(row.text, "未提供"), "正文片段"],
+        ["source_id", text(row.source_id, "未提供"), "来源归属"],
+        ["source_url", row.source_url ? externalLink(String(row.source_url)) : "未提供", "原始来源入口"],
+        ["item_type", observationTypeLabel(row.item_type), "观察类型"],
+        ["evidence_quality", qualityLabel(row.evidence_quality), "证据质量"],
+        ["acquisition_method", text(row.acquisition_method, "未提供"), "采集方式"],
+        ["observed_at", formatDate(row.observed_at), "采集时间"],
+    ];
+    main.append(detailSectionWithBody("已返回字段 / 只读对照", table(["observations 字段", "当前值", "用途"], fieldRows)));
+    const side = document.createElement("aside");
+    side.className = "r04-intelligence-tab-side";
+    side.append(detailSectionWithBody("来源信息", detailList([["来源 ID", row.source_id], ["来源 URL", row.source_url ? "已提供" : "未提供"], ["采集方式", row.acquisition_method], ["采集时间", formatDate(row.observed_at)]])));
+    side.append(detailSectionWithBody("技术溯源", capabilityUnavailableNotice("content hash、原始 HTML、collection run ID 和处理日志没有由当前情报接口返回，因此不显示 HTML 中的示例值。", "技术字段暂不可用")));
+    side.append(row.source_url ? externalLink(String(row.source_url)) : linkTo("P19", "查看数据源健康"));
+    host.append(main, side);
+    return host;
+}
+function renderIntelligenceRelations(row) {
+    const host = document.createElement("div");
+    host.className = "r04-intelligence-tab-layout";
+    const main = document.createElement("main");
+    main.className = "r04-intelligence-tab-main";
+    const matrix = document.createElement("div");
+    matrix.className = "r04-intelligence-relation-panel";
+    matrix.append(capabilityUnavailableNotice("当前后端没有按情报 ID 查询关系拓扑、实体、相似情报或关联机会的资源。此处不使用 HTML mock 中的固定对象 ID、推理理由或关系强度。", "关系拓扑暂不可用"));
+    const actualRows = [["情报记录", text(row.id), "当前 observations 记录"], ["来源", text(row.source_id, "未提供"), "observations.source_id 字段"]];
+    main.append(detailSectionWithBody("关系拓扑与推理矩阵", matrix), detailSectionWithBody("当前可确认的归属", table(["对象", "标识", "证据"], actualRows)));
+    const side = document.createElement("aside");
+    side.className = "r04-intelligence-tab-side";
+    const links = document.createElement("div");
+    links.className = "r04-intelligence-drilldown";
+    links.append(linkTo("P19", "查看数据源与健康", { id: text(row.source_id) }), linkTo("P12", "查看真实机会列表"), linkTo("P15", "查看研究入口"));
+    side.append(detailSectionWithBody("安全下钻入口", links));
+    side.append(capabilityUnavailableNotice("没有真实关联对象 ID 时，不提供“关联机会”或“手动触发分析”按钮，避免伪写和固定对象跳转。", "关联操作已隐藏"));
+    host.append(main, side);
+    return host;
+}
+async function renderIntelligenceProcess(row, context) {
+    const host = document.createElement("div");
+    host.className = "r04-intelligence-tab-layout";
+    const main = document.createElement("main");
+    main.className = "r04-intelligence-tab-main";
+    const pipeline = document.createElement("section");
+    pipeline.className = "r04-intelligence-process";
+    const heading = document.createElement("div");
+    heading.className = "r04-intelligence-process-heading";
+    const headingTitle = document.createElement("h2");
+    headingTitle.textContent = "数据处理流水线";
+    const headingNote = document.createElement("span");
+    headingNote.textContent = "仅显示当前记录可证实的阶段";
+    heading.append(headingTitle, headingNote);
+    pipeline.append(heading);
+    pipeline.append(intelligenceProcessStage("采集记录", "接口已返回", [["来源", row.source_id], ["采集方式", row.acquisition_method], ["采集时间", formatDate(row.observed_at)], ["输入", row.source_url ? String(row.source_url) : "未提供 URL"]]));
+    pipeline.append(intelligenceProcessStage("观察记录入库", "接口已返回", [["记录 ID", row.id], ["类型", observationTypeLabel(row.item_type)], ["标题", row.title], ["正文", row.text ? "已返回正文片段" : "未返回正文"]]));
+    const unavailableStage = document.createElement("div");
+    unavailableStage.className = "r04-intelligence-process-stage";
+    unavailableStage.append(document.createElement("span"), detailSectionWithBody("规范化、关系与机会关联", capabilityUnavailableNotice("当前没有返回该情报对应的 collection run、处理步骤、日志、关系输出或机会关联 ID，因此无法证明这些阶段已执行。", "处理轨迹未暴露")));
+    pipeline.append(unavailableStage);
+    main.append(pipeline);
+    const side = document.createElement("aside");
+    side.className = "r04-intelligence-tab-side";
+    const health = document.createElement("div");
+    health.append(statePanel("loading", "正在读取来源健康状态…"));
+    try {
+        const rows = await api("/api/v1/sources/health");
+        const selected = (Array.isArray(rows) ? rows : []).filter((item) => String(item.source_id) === String(row.source_id));
+        health.replaceChildren(selected.length ? table(["来源", "状态", "最近成功", "最近错误"], selected.map((item) => [text(item.source_id), badge(text(item.status ?? item.runtime_status, "未提供"), item.status === "HEALTHY" ? "success" : "warning"), formatDate(item.last_success_at), text(item.last_error, "未返回")])) : statePanel("empty", "没有找到该来源的健康记录。"));
+    }
+    catch (error) {
+        health.replaceChildren(errorState(error, context));
+    }
+    side.append(detailSectionWithBody("来源健康", health));
+    side.append(detailSectionWithBody("运行上下文", capabilityUnavailableNotice("观察记录没有返回可关联的 run ID；运行列表需要管理员权限，无法在此把其它运行归因给当前情报。", "运行关联暂不可用")), linkTo("P21", "查看运行记录（管理员）"));
+    host.append(main, side);
+    return host;
+}
+function intelligenceProcessStage(titleValue, statusValue, entries) {
+    const stage = document.createElement("div");
+    stage.className = "r04-intelligence-process-stage";
+    const marker = document.createElement("span");
+    marker.className = "r04-intelligence-process-marker";
+    marker.textContent = "·";
+    const content = document.createElement("div");
+    content.className = "r04-intelligence-process-stage-content";
+    const title = document.createElement("h3");
+    title.textContent = titleValue;
+    title.append(badge(statusValue, "info"));
+    content.append(title, detailList(entries));
+    stage.append(marker, content);
+    return stage;
 }
 function observationTypeLabel(value) { return { NEWS: "新闻", JOB: "职位", PRODUCT: "产品", REPOSITORY: "代码仓库", TREND: "趋势" }[String(value)] ?? text(value, "未分类"); }
 async function renderObservations(context) {
@@ -1686,6 +1802,26 @@ function installScreenStyles() {
     .r04-intelligence-evidence blockquote { margin: 0; padding: 14px; border-left: 2px solid var(--or-primary); border-radius: 0 6px 6px 0; background: var(--or-surface-muted); color: var(--or-text); line-height: 1.7; white-space: pre-wrap; }
     .r04-intelligence-evidence a, .r04-intelligence-detail-side > a { color: var(--or-primary-dark); font-size: 13px; text-decoration: none; }
     .r04-intelligence-evidence a:hover, .r04-intelligence-detail-side > a:hover { text-decoration: underline; }
+    .r04-intelligence-tab-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 20px; align-items: start; }
+    .r04-intelligence-tab-main, .r04-intelligence-tab-side { display: grid; gap: 20px; min-width: 0; }
+    .r04-intelligence-raw-body { display: grid; gap: 10px; }
+    .r04-intelligence-raw-snippet { max-height: 420px; margin: 0; overflow: auto; padding: 16px; border-radius: 6px; background: #22272b; color: #f1f5f9; font: 12px/1.7 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .r04-intelligence-raw-note { margin: 0; color: var(--or-text-muted); font-size: 12px; line-height: 1.6; }
+    .r04-intelligence-tab-side > a, .r04-intelligence-drilldown a { color: var(--or-primary-dark); font-size: 13px; text-decoration: none; }
+    .r04-intelligence-tab-side > a:hover, .r04-intelligence-drilldown a:hover { text-decoration: underline; }
+    .r04-intelligence-relation-panel { display: grid; gap: 16px; min-height: 220px; align-content: start; }
+    .r04-intelligence-drilldown { display: grid; gap: 10px; }
+    .r04-intelligence-process { display: grid; gap: 18px; padding: 20px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-intelligence-process-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--or-outline); }
+    .r04-intelligence-process-heading h2 { margin: 0; font-size: 18px; }
+    .r04-intelligence-process-heading span { color: var(--or-text-muted); font-size: 11px; }
+    .r04-intelligence-process-stage { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; position: relative; }
+    .r04-intelligence-process-stage:not(:last-child)::after { position: absolute; top: 22px; bottom: -18px; left: 10px; width: 1px; background: var(--or-outline); content: ""; }
+    .r04-intelligence-process-marker { z-index: 1; display: grid; width: 22px; height: 22px; place-items: center; border: 2px solid var(--or-primary); border-radius: 50%; background: var(--or-surface); color: var(--or-primary); font-weight: 700; }
+    .r04-intelligence-process-stage-content { display: grid; gap: 10px; min-width: 0; padding: 14px; border: 1px solid var(--or-outline); border-radius: 6px; background: var(--or-surface-muted); }
+    .r04-intelligence-process-stage-content h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 14px; }
+    .r04-intelligence-process-stage-content h3 .r02-badge { font-size: 10px; }
+    @media (max-width: 900px) { .r04-intelligence-tab-layout { grid-template-columns: 1fr; } }
     @media (max-width: 900px) { .r04-intelligence-detail-grid { grid-template-columns: 1fr; } }
     @media (max-width: 640px) { .r04-intelligence-heading { flex-direction: column; } .r04-intelligence-filters input[name=source_id] { width: auto; flex: 1 1 120px; } }
     @media (max-width: 900px) { .r04-detail-grid-r04 { grid-template-columns: 1fr; } }
