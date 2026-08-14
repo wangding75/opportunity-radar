@@ -1,7 +1,7 @@
 import { api, getAuthConfig, loginRequest, logoutRequest, setCsrfCookieName, ApiError } from "./client.js";
 import { parseRoute, navigate, type RouteState } from "./router.js";
 import { createAppShell, renderFramePlaceholder, updateAppShell } from "./shell.js";
-import { installR02Theme } from "./theme.js";
+import { installR04Theme } from "./theme.js";
 import { installComponentStyles } from "./ui.js";
 import { renderScreen } from "./screens.js";
 
@@ -12,7 +12,7 @@ let rootElement: HTMLElement | null = null;
 let renderSequence = 0;
 
 export function renderApp(root: HTMLElement): void {
-  installR02Theme();
+  installR04Theme();
   installComponentStyles();
   rootElement = root;
   const render = (): void => { void renderRoute(parseRoute()); };
@@ -68,13 +68,13 @@ async function renderRoute(route: RouteState): Promise<void> {
 
 function statePanelForError(error: unknown, retry: () => void): HTMLElement {
   const panel = document.createElement("div");
-  panel.className = "r02-state r02-state-error";
+  panel.className = "r04-state r04-state-error";
   const title = document.createElement("strong");
-  title.textContent = "Unable to load";
+  title.textContent = "页面加载失败";
   const message = document.createElement("span");
   message.textContent = error instanceof Error ? error.message : String(error);
   const retryButton = document.createElement("button");
-  retryButton.className = "r02-button r02-button-secondary";
+  retryButton.className = "r04-button r04-button-secondary";
   retryButton.type = "button";
   retryButton.textContent = "Retry";
   retryButton.addEventListener("click", retry);

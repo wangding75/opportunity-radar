@@ -70,10 +70,35 @@ export function card(title: string, body?: HTMLElement): HTMLElement {
 export function statePanel(state: AsyncState, message?: string, retry?: () => void): HTMLElement {
   const el = document.createElement("div");
   el.className = `r02-state r02-state-${state}`;
-  const title: Record<AsyncState, string> = {loading: "Loading", empty: "No data", error: "Unable to load", partial: "Partial data", stale: "Stale data", permission: "Permission required", "rate-limit": "Rate limited", ready: "Ready"};
+  const title: Record<AsyncState, string> = {loading: "正在加载", empty: "暂无数据", error: "加载失败", partial: "部分数据可用", stale: "数据可能已过期", permission: "需要权限", "rate-limit": "请求过于频繁", ready: "已就绪"};
   el.innerHTML = `<strong>${title[state]}</strong><span>${message ?? ""}</span>`;
   if (retry) el.append(button("Retry", {variant: "secondary", onClick: retry}));
   return el;
+}
+
+export function readOnlyNotice(message = "当前页面仅供查阅，内容不可修改。未确认的写操作已从界面中移除。", title = "只读提示：仅供查阅"): HTMLElement {
+  return capabilityNotice("r04-read-only-notice", "◉", title, message);
+}
+
+export function capabilityUnavailableNotice(message = "尚未确认具备安全且语义等价的后端接口，相关操作暂不可用。", title = "功能暂不可用"): HTMLElement {
+  return capabilityNotice("r04-capability-unavailable", "⊘", title, message);
+}
+
+function capabilityNotice(className: string, iconValue: string, titleValue: string, messageValue: string): HTMLElement {
+  const host = document.createElement("section");
+  host.className = `r04-notice ${className}`;
+  const icon = document.createElement("span");
+  icon.className = "r04-notice-icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent = iconValue;
+  const body = document.createElement("div");
+  const heading = document.createElement("h2");
+  heading.textContent = titleValue;
+  const copy = document.createElement("p");
+  copy.textContent = messageValue;
+  body.append(heading, copy);
+  host.append(icon, body);
+  return host;
 }
 
 export function table(headers: string[], rows: Array<Array<string | HTMLElement>> = []): HTMLElement {
@@ -215,6 +240,12 @@ export function installComponentStyles(): void {
     .r02-modal { width: min(560px, 96vw); max-height: 90vh; border-radius: 12px; padding: 24px; }
     .r02-overlay-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
     .r02-overlay-header h2 { margin: 0; font-size: 18px; }
+    .r04-notice { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 1px solid var(--or-outline); border-radius: 6px; background: var(--or-surface); }
+    .r04-notice-icon { flex: 0 0 auto; color: var(--or-text-muted); font-size: 20px; line-height: 1.2; }
+    .r04-notice h2 { margin: 0; color: var(--or-text); font-size: 14px; }
+    .r04-notice p { margin: 5px 0 0; color: var(--or-text-muted); font-size: 12px; line-height: 1.6; }
+    .r04-capability-unavailable { border-style: dashed; background: var(--or-surface-muted); }
+    .r04-capability-unavailable .r04-notice-icon { color: var(--or-text-muted); }
     @media (max-width: 640px) { .r02-table { min-width: 650px; } .r02-drawer { width: 100vw; } }
   `;
   document.head.appendChild(style);
