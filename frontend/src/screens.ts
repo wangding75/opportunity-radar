@@ -24,7 +24,7 @@ export async function renderScreen(route: RouteState, session: AuthSession, cont
     case "P13": return renderOpportunityDetail(route, context, "detail");
     case "P14": return route.params.get("id") ? renderOpportunityDetail(route, context, "analysis") : renderStructuredAnalysisList(route, context);
     case "P15": return renderResearch(route, context);
-    case "P16": return renderOpportunityDetail(route, context, "research");
+    case "P16": return renderResearchTaskDetail(route, context);
     case "P17": return route.params.get("id") ? renderResearchResultDetail(route, context) : renderResearchResultList(route, context);
     case "P18": return renderSources(context);
     case "P19": return renderSourceHealth(route, context);
@@ -1153,7 +1153,7 @@ async function renderOpportunityDetail(route: RouteState, context: ScreenContext
 
 function addOption(selectEl: HTMLSelectElement, value: string, label: string): void { const option = document.createElement("option"); option.value = value; option.textContent = label; selectEl.append(option); }
 function scoreBadge(value: unknown): HTMLElement { return badge(`评分 ${number(value, 1)}`, Number(value) >= 80 ? "success" : Number(value) >= 60 ? "info" : "neutral"); }
-function researchLabel(value: unknown): string { return ({NEW: "未处理", TRIAGED: "已分诊", TRACKING: "跟踪中", DONE: "已完成", DISMISSED: "已忽略"} as Record<string, string>)[String(value)] ?? text(value, "未处理"); }
+function researchLabel(value: unknown): string { return ({NEW: "未处理", REVIEWING: "审阅中", TRIAGED: "已分诊", TRACKING: "跟踪中", DONE: "已完成", DISMISSED: "已忽略", ARCHIVED: "已归档"} as Record<string, string>)[String(value)] ?? text(value, "未处理"); }
 function scoreLabel(value: string): string { return ({demand: "需求", supply: "供给", execution: "执行", cross_source: "跨来源", saturation: "饱和度"} as Record<string, string>)[value] ?? value; }
 function detailSection(title: HTMLElement, body: HTMLElement): HTMLElement { const section = document.createElement("section"); section.className = "r04-detail-section"; section.append(title, body); return section; }
 function detailSectionWithBody(titleValue: string, body: HTMLElement): HTMLElement { const title = document.createElement("h2"); title.textContent = titleValue; return detailSection(title, body); }
@@ -1333,6 +1333,54 @@ function renderResearchResultActivity(data: Row, id: string): HTMLElement {
 }
 
 function resultEvidenceCoverage(data: Row): string { const stored = Number(data.evidence_summary?.stored ?? data.evidence_count ?? 0); const returned = Number(data.evidence_summary?.returned ?? (data.evidence ?? []).length); return stored > 0 ? `${Math.round((returned / stored) * 100)}%（返回 ${returned}/${stored}）` : "未返回"; }
+
+async function renderResearchTaskDetail(route: RouteState, context: ScreenContext): Promise<HTMLElement> {
+  const id = route.params.get("id"); const host = document.createElement("div"); host.className = "r04-research-task-detail";
+  if (!id) { host.append(objectNotFound("研究任务", "缺失")); return host; }
+  try {
+    const data = await api(`/api/v1/opportunities/${encodeURIComponent(id)}?evidence_limit=100`); const requestedTab = route.params.get("tab") ?? "brief"; const activeTab = ["brief", "evidence", "findings", "activity"].includes(requestedTab) ? requestedTab : "brief";
+    const header = document.createElement("header"); header.className = "r04-research-result-header";
+    const breadcrumb = document.createElement("nav"); breadcrumb.className = "r04-result-breadcrumb"; breadcrumb.append(linkTo("P15", "研究"), document.createTextNode(" / "), linkTo("P15", "研究任务"), document.createTextNode(" / "), document.createTextNode(`机会 ${id}`));
+    const title = document.createElement("h1"); title.textContent = text(data.title, `机会 ${id}`);
+    const meta = document.createElement("div"); meta.className = "r04-result-meta"; meta.append(badge(researchLabel(data.research?.status), researchTone(data.research?.status)), data.research?.priority ? badge(`优先级 ${data.research.priority}`, "warning") : document.createTextNode("普通优先级"), document.createTextNode(" · "), linkTo("P13", "关联机会", {id}), document.createTextNode(` · 证据返回覆盖 ${resultEvidenceCoverage(data)} · 研究状态更新时间 ${formatDate(data.research?.updated_at)}`));
+    const actions = document.createElement("div"); actions.className = "r04-result-actions"; const copy = button("复制链接", {onClick: () => { void navigator.clipboard?.writeText(window.location.href).then(() => { copy.textContent = "链接已复制"; }); }}); actions.append(copy);
+    const heading = document.createElement("div"); heading.className = "r04-result-heading-row"; const headingCopy = document.createElement("div"); headingCopy.append(title, meta); heading.append(headingCopy, actions); header.append(breadcrumb, heading);
+    host.append(header, readOnlyNotice("研究任务接口未暴露，本页只读展示机会研究状态、关联证据与已有分析；不提供修改状态、分配、完成或重新执行。", "研究任务只读"), researchTaskTabs(id, activeTab), renderResearchTaskTab(data, id, activeTab));
+  } catch (error) { host.append(errorState(error, context, () => void renderResearchTaskDetail(route, context))); }
+  return host;
+}
+
+function researchTaskTabs(id: string, active: string): HTMLElement {
+  const nav = document.createElement("nav"); nav.className = "r04-result-tabs"; nav.setAttribute("aria-label", "研究任务详情导航"); for (const [tab, label] of [["brief", "任务简报"], ["evidence", "证据"], ["findings", "发现"], ["activity", "活动记录"]]) { const link = linkTo("P16", label, {id, tab}); link.className = active === tab ? "is-active" : ""; link.setAttribute("aria-current", active === tab ? "page" : "false"); nav.append(link); } return nav;
+}
+
+function renderResearchTaskTab(data: Row, id: string, active: string): HTMLElement {
+  if (active === "evidence") return renderResearchTaskEvidence(data, id);
+  if (active === "findings") return renderResearchTaskFindings(data, id);
+  if (active === "activity") return renderResearchTaskActivity(data, id);
+  return renderResearchTaskBrief(data, id);
+}
+
+function renderResearchTaskBrief(data: Row, id: string): HTMLElement {
+  const layout = document.createElement("div"); layout.className = "r04-result-tab-layout"; const main = document.createElement("main"); main.className = "r04-result-tab-main"; const side = document.createElement("aside"); side.className = "r04-result-tab-side";
+  main.append(detailSectionWithBody("当前研究状态", detailList([["状态", researchLabel(data.research?.status)], ["优先级", data.research?.priority], ["重点机会", data.research?.starred ? "是" : "否"], ["标签", (data.research?.tags ?? []).join("、") || "未返回"], ["更新时间", formatDate(data.research?.updated_at)]])));
+  main.append(detailSectionWithBody("研究备注", data.research?.notes ? paragraph(text(data.research.notes)) : statePanel("empty", "当前机会研究状态未返回备注。")));
+  side.append(linkTo("P13", "查看关联机会", {id}), capabilityUnavailableNotice("后端没有 ResearchTask 的任务目标、研究范围、研究问题、负责人、下一步或完成结果字段；不使用 HTML mock 数据补齐任务简报。", "任务简报字段暂不可用")); layout.append(main, side); return layout;
+}
+
+function renderResearchTaskEvidence(data: Row, id: string): HTMLElement {
+  const host = renderResearchResultEvidence(data, id); const links = document.createElement("div"); links.className = "r04-task-related-links"; links.append(linkTo("P13", "查看机会证据", {id, tab: "evidence"}), linkTo("P17", "查看已有分析快照", {id})); const side = host.querySelector<HTMLElement>(".r04-result-tab-side"); (side ?? host).append(links); return host;
+}
+
+function renderResearchTaskFindings(data: Row, id: string): HTMLElement {
+  const layout = document.createElement("div"); layout.className = "r04-result-tab-layout"; const main = document.createElement("main"); main.className = "r04-result-tab-main"; const side = document.createElement("aside"); side.className = "r04-result-tab-side";
+  main.append(detailSectionWithBody("关联机会已有分析", data.analysis?.summary ? paragraph(text(data.analysis.summary)) : statePanel("empty", "关联机会未返回结构化分析摘要。")), detailSectionWithBody("已返回发现字段", detailList([["目标用户", data.analysis?.target_user], ["商业模式", data.analysis?.business_model], ["变现方式", data.analysis?.monetization], ["风险说明", data.analysis?.risk_notes]])));
+  side.append(detailSectionWithBody("分析引用", researchCitationList(data.analysis?.citations ?? [], id)), linkTo("P17", "查看已有分析快照", {id}), capabilityUnavailableNotice("后端没有 ResearchTask findings 资源；本页只读取关联机会的 analysis 字段，不将其标记为任务完成发现。", "任务发现范围")); layout.append(main, side); return layout;
+}
+
+function renderResearchTaskActivity(data: Row, id: string): HTMLElement {
+  const events: Array<[unknown, string, string]> = []; if (data.research?.updated_at) events.push([data.research.updated_at, "研究状态更新时间", "来自 opportunity.research.updated_at 的真实字段。"]); if (data.analysis?.last_attempt_at) events.push([data.analysis.last_attempt_at, "分析最近尝试时间", "来自 opportunity.analysis.last_attempt_at 的真实字段。"]); if (data.analysis?.analyzed_at) events.push([data.analysis.analyzed_at, "分析时间", "来自 opportunity.analysis.analyzed_at 的真实字段。"]); const timeline = document.createElement("div"); timeline.className = "r04-result-timeline"; timeline.append(events.length ? table(["时间", "字段", "已确认内容"], events.map(([when, label, detail]) => [formatDate(when), badge(label, "info"), detail])) : statePanel("empty", "机会详情未返回可展示的研究或分析时间字段。")); const host = document.createElement("div"); host.className = "r04-research-task-activity"; host.append(detailSectionWithBody("可确认的系统时间字段", timeline), capabilityUnavailableNotice("后端没有 ResearchTask 活动事件、操作人或证据处理轨迹资源；此处不拼装任务时间线。", "任务活动记录暂不可用"), linkTo("P13", "返回关联机会", {id})); return host;
+}
 
 function analysisTone(value: unknown): "neutral" | "success" | "warning" | "danger" | "info" {
   return ({READY: "success", PENDING: "info", DEGRADED: "warning", FAILED: "danger"} as Record<string, "neutral" | "success" | "warning" | "danger" | "info">)[String(value)] ?? "neutral";
@@ -1544,7 +1592,7 @@ function installScreenStyles(): void {
     .r04-research-inspector-actions { display: grid; gap: 8px; }
     .r04-research-inspector-actions a { color: var(--or-primary-dark); font-size: 13px; text-decoration: none; }
     .r04-research-inspector-actions a:hover { text-decoration: underline; }
-    .r04-research-result-detail { display: grid; gap: 18px; min-width: 0; }
+    .r04-research-result-detail, .r04-research-task-detail { display: grid; gap: 18px; min-width: 0; }
     .r04-research-result-header { display: grid; gap: 12px; }
     .r04-result-breadcrumb { display: flex; flex-wrap: wrap; gap: 6px; color: var(--or-text-muted); font-size: 12px; }
     .r04-result-breadcrumb a, .r04-result-meta a, .r04-result-tab-side > a, .r04-result-activity-layout > a { color: var(--or-primary-dark); text-decoration: none; }
@@ -1575,6 +1623,10 @@ function installScreenStyles(): void {
     .r04-result-evidence-results a { color: var(--or-primary-dark); text-decoration: none; }
     .r04-result-evidence-results a:hover { text-decoration: underline; }
     .r04-result-activity-layout { max-width: 1000px; }
+    .r04-research-task-activity { display: grid; gap: 20px; max-width: 1000px; }
+    .r04-task-related-links { display: flex; flex-wrap: wrap; gap: 14px; }
+    .r04-task-related-links a { color: var(--or-primary-dark); font-size: 13px; text-decoration: none; }
+    .r04-task-related-links a:hover { text-decoration: underline; }
     .r04-result-timeline { min-width: 0; overflow: hidden; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
     .r04-result-timeline > .r02-table-wrap { border: 0; border-radius: 0; }
     @media (max-width: 1000px) { .r04-result-tab-layout { grid-template-columns: 1fr; } }
