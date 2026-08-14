@@ -948,29 +948,12 @@ async function renderOpportunityOverview(route, context, id) {
     host.className = "r04-opportunity-detail";
     try {
         const data = await api(`/api/v1/opportunities/${encodeURIComponent(id)}`);
-        const header = document.createElement("header");
-        header.className = "r04-entity-header";
-        const crumb = document.createElement("div");
-        crumb.className = "r04-entity-crumb";
-        crumb.append(linkTo("P12", "机会"), document.createTextNode(" / "), document.createTextNode(text(data.opportunity_key ?? id)));
-        const title = document.createElement("h1");
-        title.textContent = text(data.title, "未命名机会");
-        const chips = document.createElement("div");
-        chips.className = "r04-entity-chips";
-        chips.append(scoreBadge(data.score), badge(`阶段：${stageLabel(data.stage)}`, "info"), badge(`风险：${number(data.risk_score, 1)}`, "neutral"), badge(`研究：${researchLabel(data.research?.status)}`, "neutral"));
-        const dates = document.createElement("p");
-        dates.className = "r04-entity-dates";
-        dates.textContent = `首次发现：${formatDate(data.first_seen_at)} · 最近更新：${formatDate(data.last_seen_at)}`;
-        header.append(crumb, title, chips, dates);
-        const tabs = document.createElement("nav");
-        tabs.className = "r04-entity-tabs";
-        tabs.setAttribute("aria-label", "机会详情导航");
         const activeTab = route.params.get("tab") ?? "overview";
-        for (const [tab, label] of [["overview", "概览"], ["evidence", "证据"], ["analysis", "分析与研究"], ["history", "历史"]]) {
-            const link = linkTo("P13", label, { id, tab });
-            link.className = activeTab === tab ? "is-active" : "";
-            link.setAttribute("aria-current", activeTab === tab ? "page" : "false");
-            tabs.append(link);
+        const header = opportunityEntityHeader(data, id);
+        const tabs = opportunityTabs(id, activeTab);
+        if (activeTab !== "overview") {
+            host.append(readOnlyNotice("当前后端未开放安全的机会阶段状态变更接口，本页状态仅供查看。", "机会状态只读"), header, tabs, renderOpportunityTabContent(data, id, activeTab, context));
+            return host;
         }
         const grid = document.createElement("div");
         grid.className = "r04-detail-grid-r04";
@@ -997,6 +980,98 @@ async function renderOpportunityOverview(route, context, id) {
     }
     return host;
 }
+function opportunityEntityHeader(data, id) {
+    const header = document.createElement("header");
+    header.className = "r04-entity-header";
+    const crumb = document.createElement("div");
+    crumb.className = "r04-entity-crumb";
+    crumb.append(linkTo("P12", "机会"), document.createTextNode(" / "), document.createTextNode(text(data.opportunity_key ?? id)));
+    const title = document.createElement("h1");
+    title.textContent = text(data.title, "未命名机会");
+    const chips = document.createElement("div");
+    chips.className = "r04-entity-chips";
+    chips.append(scoreBadge(data.score), badge(`阶段：${stageLabel(data.stage)}`, "info"), badge(`风险：${number(data.risk_score, 1)}`, "neutral"), badge(`研究：${researchLabel(data.research?.status)}`, "neutral"));
+    const dates = document.createElement("p");
+    dates.className = "r04-entity-dates";
+    dates.textContent = `首次发现：${formatDate(data.first_seen_at)} · 最近更新：${formatDate(data.last_seen_at)}`;
+    header.append(crumb, title, chips, dates);
+    return header;
+}
+function opportunityTabs(id, activeTab) {
+    const tabs = document.createElement("nav");
+    tabs.className = "r04-entity-tabs";
+    tabs.setAttribute("aria-label", "机会详情导航");
+    for (const [tab, label] of [["overview", "概览"], ["evidence", "证据"], ["analysis", "分析与研究"], ["history", "历史"]]) {
+        const link = linkTo("P13", label, { id, tab });
+        link.className = activeTab === tab ? "is-active" : "";
+        link.setAttribute("aria-current", activeTab === tab ? "page" : "false");
+        tabs.append(link);
+    }
+    return tabs;
+}
+function renderOpportunityTabContent(data, id, tab, context) {
+    const host = document.createElement("div");
+    host.className = "r04-opportunity-tab-content";
+    if (tab === "evidence") {
+        const note = readOnlyNotice("证据仅用于支持或反对机会判断，不代表机会状态的直接变更。", "证据可追溯性");
+        const search = document.createElement("input");
+        search.type = "search";
+        search.placeholder = "搜索证据内容";
+        search.setAttribute("aria-label", "搜索证据内容");
+        const quality = document.createElement("select");
+        quality.setAttribute("aria-label", "证据质量");
+        addOption(quality, "", "质量：全部");
+        addOption(quality, "A", "高");
+        addOption(quality, "B", "中");
+        addOption(quality, "C", "低");
+        const filter = document.createElement("div");
+        filter.className = "r04-evidence-filter";
+        filter.append(quality, search);
+        const results = document.createElement("div");
+        results.className = "r04-evidence-results";
+        const draw = () => { const q = search.value.trim().toLowerCase(); const selected = quality.value; const rows = (data.evidence ?? []).filter((row) => (!selected || String(row.quality) === selected) && (!q || `${row.title ?? ""} ${row.text ?? ""} ${row.source ?? ""}`.toLowerCase().includes(q))).map((row) => [text(row.evidence_id ?? row.id), text(row.title), text(row.source), formatDate(row.observed_at), badge(qualityLabel(row.quality), row.quality === "A" ? "success" : row.quality === "B" ? "info" : "neutral"), weightLabel(row.weight), row.url ? externalLink(text(row.url)) : "—"]); results.replaceChildren(rows.length ? table(["证据编号", "证据摘要", "来源", "捕获时间", "质量", "支持/反对", "原始来源"], rows) : statePanel("empty", "没有匹配的证据记录。")); };
+        search.addEventListener("input", draw);
+        quality.addEventListener("change", draw);
+        draw();
+        host.append(note, filter, results);
+        return host;
+    }
+    if (tab === "analysis") {
+        host.append(detailSectionWithBody("结构化分析摘要", detailList([["状态", analysisLabel(data.analysis?.status)], ["提供方", text(data.analysis?.provider, "未指定")], ["分析时间", formatDate(data.analysis?.analyzed_at)], ["摘要", data.analysis?.summary], ["目标用户", data.analysis?.target_user], ["商业模式", data.analysis?.business_model], ["变现方式", data.analysis?.monetization], ["风险说明", data.analysis?.risk_notes]])));
+        const citations = (data.analysis?.citations ?? []).map((row) => [linkTo("P13", text(row.evidence_id), { id, tab: "evidence", evidence_id: row.evidence_id }), text(row.source), text(row.title), qualityLabel(row.quality)]);
+        host.append(detailSectionWithBody("分析引用", citations.length ? table(["证据编号", "来源", "标题", "质量"], citations) : statePanel("empty", "当前分析没有返回已绑定的证据引用。")));
+        host.append(detailSectionWithBody("研究状态", detailList([["状态", researchLabel(data.research?.status)], ["重点机会", data.research?.starred ? "是" : "否"], ["优先级", data.research?.priority], ["更新时间", formatDate(data.research?.updated_at)]])));
+        host.append(capabilityUnavailableNotice("后端未暴露研究任务、研究结果和生成/重生成接口；本页只展示已有分析与研究状态，不提供伪造操作。", "研究工作流只读"), linkTo("P15", "查看研究任务列表"));
+        return host;
+    }
+    if (tab === "history") {
+        const loading = statePanel("loading", "正在读取评分历史…");
+        host.append(loading);
+        void loadOpportunityHistory(host, id, context);
+        return host;
+    }
+    host.append(statePanel("error", "未知的机会详情 Tab。", () => navigate("P13", { id, tab: "overview" })));
+    return host;
+}
+async function loadOpportunityHistory(host, id, context) {
+    try {
+        const rows = await api(`/api/v1/scoring/opportunities/${encodeURIComponent(id)}/history?limit=200`);
+        host.replaceChildren();
+        const records = Array.isArray(rows) ? rows : [];
+        if (!records.length) {
+            host.append(statePanel("empty", "后端暂无已持久化的评分历史。"), capabilityUnavailableNotice("机会生命周期事件历史未向 UI 暴露；这里只展示可验证的评分快照。", "历史范围说明"));
+            return;
+        }
+        const tableRows = records.map((row) => [formatDate(row.calculated_at), number(row.score, 1), number(row.risk_score, 1), stageLabel(row.stage), text(row.evidence_count, "0"), text(row.model_version)]);
+        host.append(detailSectionWithBody("评分历史", table(["计算时间", "评分", "风险", "阶段", "证据数", "模型版本"], tableRows)), capabilityUnavailableNotice("后端未暴露完整机会生命周期事件历史；评分快照不等同于状态变更时间线。", "历史范围说明"));
+    }
+    catch (error) {
+        host.replaceChildren(errorState(error, context, () => void loadOpportunityHistory(host, id, context)));
+    }
+}
+function qualityLabel(value) { return { A: "高", B: "中", C: "低" }[String(value)] ?? text(value, "未标注"); }
+function weightLabel(value) { const weight = Number(value); return Number.isFinite(weight) && weight < 0 ? "反对" : "支持"; }
+function analysisLabel(value) { return { READY: "已完成", PENDING: "待处理", DEGRADED: "部分可用", FAILED: "失败" }[String(value)] ?? text(value, "未分析"); }
 async function renderOpportunityDetail(route, context, mode) {
     const id = route.params.get("id");
     if (!id) {
@@ -1404,6 +1479,13 @@ function installScreenStyles() {
     .r04-source-item a:hover { text-decoration: underline; }
     .r04-source-item span { color: var(--or-text); }
     .r04-source-item small { color: var(--or-text-muted); font-size: 11px; }
+    .r04-opportunity-tab-content { display: grid; gap: 20px; min-width: 0; }
+    .r04-evidence-filter { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+    .r04-evidence-filter input, .r04-evidence-filter select { min-height: 36px; border: 1px solid var(--or-outline-strong); border-radius: 6px; padding: 7px 10px; background: var(--or-surface); color: var(--or-text); }
+    .r04-evidence-filter input { width: min(280px, 100%); }
+    .r04-evidence-filter input:focus, .r04-evidence-filter select:focus { border-color: var(--or-primary); outline: 0; }
+    .r04-evidence-results { min-width: 0; overflow: hidden; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); }
+    .r04-evidence-results > .r02-table-wrap { border: 0; border-radius: 0; }
     @media (max-width: 900px) { .r04-detail-grid-r04 { grid-template-columns: 1fr; } }
     @media (max-width: 640px) { .r04-entity-header h1 { font-size: 22px; } .r04-opportunity-filters input[type=search] { min-width: 140px; } }
     .r04-workbench { display: grid; gap: 20px; min-width: 0; }
