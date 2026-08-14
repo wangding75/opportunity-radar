@@ -47,7 +47,7 @@ const LABELS: Record<ScreenId, string> = {
   P13: "机会详情", P14: "结构化分析", P15: "研究任务", P16: "研究任务详情", P17: "研究结果", P18: "数据源",
   P19: "数据源健康", P20: "监控计划", P21: "运行记录", P22: "运行详情", P23: "分析队列", P24: "告警",
   P25: "告警规则", P26: "审计日志", P27: "用户与角色", P28: "个人账户与安全", "P29-A": "系统设置 / 通用",
-  "P29-B": "系统设置 / 安全", "P29-C": "系统设置 / 通知", "P29-D": "系统设置 / 集成", "P29-E": "系统设置 / 来源偏好",
+  "P29-B": "系统设置 / 安全", "P29-C": "系统设置 / 通知", "P29-D": "系统设置 / 集成", "P29-E": "系统设置 / 来源偏好", P26A: "无法登录？",
   P30: "系统诊断",
 };
 
@@ -173,7 +173,7 @@ function createMainFrame(route: ScreenId, content: HTMLElement, userLabel: strin
   const frame = document.createElement("section");
   frame.className = "or-page-frame";
   frame.dataset.component = "PageFrame";
-  frame.append(createPageHeader(route), createRouteOutlet(content));
+  replaceFrameContent(frame, route, content);
   contentArea.append(frame);
   main.append(contentArea);
   return main;
@@ -270,11 +270,15 @@ export function updateAppShell(shell: HTMLElement, route: ScreenId, content: HTM
   const role = shell.dataset.role ?? "VIEWER";
   const sidebar = shell.querySelector<HTMLElement>("[data-component='SidebarNav']");
   if (sidebar) sidebar.replaceWith(createSideNav(route, role));
-  const outlet = frame.querySelector<HTMLElement>("[data-component='RouteOutlet']");
-  if (outlet) outlet.replaceChildren(content);
-  else frame.append(createRouteOutlet(content));
-  const currentHeader = frame.querySelector<HTMLElement>("[data-component='PageHeader']");
-  if (currentHeader) currentHeader.replaceWith(createPageHeader(route));
+  replaceFrameContent(frame, route, content);
+}
+
+function replaceFrameContent(frame: HTMLElement, route: ScreenId, content: HTMLElement): void {
+  frame.replaceChildren();
+  if (route === "P04") frame.classList.add("or-frame-utility");
+  else frame.classList.remove("or-frame-utility");
+  if (route !== "P04") frame.append(createPageHeader(route));
+  frame.append(createRouteOutlet(content));
 }
 
 export function renderFramePlaceholder(route: ScreenId): HTMLElement {

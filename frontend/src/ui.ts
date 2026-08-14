@@ -246,6 +246,68 @@ export function installComponentStyles(): void {
     .r04-notice p { margin: 5px 0 0; color: var(--or-text-muted); font-size: 12px; line-height: 1.6; }
     .r04-capability-unavailable { border-style: dashed; background: var(--or-surface-muted); }
     .r04-capability-unavailable .r04-notice-icon { color: var(--or-text-muted); }
+    .r04-auth-page { min-height: 100vh; display: grid; justify-items: center; align-content: center; gap: 28px; padding: 24px 16px; overflow: auto; background: var(--or-bg); color: var(--or-text); }
+    .r04-auth-card, .r04-help-card { width: min(100%, 400px); padding: 32px 40px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); box-shadow: 0 8px 20px rgba(15,23,42,.04); }
+    .r04-auth-brand { display: grid; gap: 4px; margin-bottom: 28px; }
+    .r04-auth-brand strong { color: var(--or-primary); font-size: 18px; letter-spacing: .01em; }
+    .r04-auth-brand span { color: var(--or-text-muted); font-size: 12px; }
+    .r04-auth-heading { display: grid; gap: 6px; margin-bottom: 24px; }
+    .r04-auth-heading h1, .r04-help-card h1 { margin: 0; font-size: 22px; line-height: 1.3; }
+    .r04-auth-heading p, .r04-help-card > p { margin: 0; color: var(--or-text-muted); font-size: 13px; line-height: 1.6; }
+    .r04-auth-form { display: grid; gap: 16px; }
+    .r04-auth-field { display: grid; gap: 7px; color: var(--or-text); font-size: 13px; font-weight: 600; }
+    .r04-auth-field input { width: 100%; min-height: 40px; box-sizing: border-box; border: 1px solid var(--or-outline); border-radius: 6px; padding: 9px 11px; background: var(--or-surface); color: var(--or-text); font: inherit; font-weight: 400; }
+    .r04-auth-field input:focus { border-color: var(--or-primary); box-shadow: 0 0 0 2px rgba(37,99,235,.14); outline: 0; }
+    .r04-auth-field:has(.r04-password-toggle) { position: relative; }
+    .r04-auth-field:has(.r04-password-toggle) input { padding-right: 42px; }
+    .r04-password-toggle { position: absolute; right: 8px; bottom: 6px; width: 28px; height: 28px; border: 0; background: transparent; color: var(--or-text-muted); cursor: pointer; }
+    .r04-auth-actions { display: flex; justify-content: flex-end; }
+    .r04-auth-actions a, .r04-help-card a, .r04-error-card a, .r04-not-found-card a { color: var(--or-primary-dark); font-size: 13px; text-decoration: none; }
+    .r04-auth-actions a:hover, .r04-help-card a:hover, .r04-error-card a:hover, .r04-not-found-card a:hover { text-decoration: underline; }
+    .r04-auth-submit { min-height: 40px; border: 1px solid var(--or-primary); border-radius: 6px; background: var(--or-primary); color: #fff; cursor: pointer; font: inherit; font-weight: 700; }
+    .r04-auth-submit:hover:not(:disabled) { background: var(--or-primary-dark); }
+    .r04-auth-submit:disabled { cursor: wait; opacity: .65; }
+    .r04-auth-alert { padding: 10px 12px; border-radius: 6px; font-size: 12px; line-height: 1.5; }
+    .r04-auth-alert-error { border: 1px solid var(--or-danger); background: var(--or-danger-soft); color: var(--or-danger); }
+    .r04-auth-specimens { width: min(100%, 400px); padding-top: 20px; border-top: 1px solid var(--or-outline); }
+    .r04-auth-specimens h2 { margin: 0 0 12px; color: var(--or-text-muted); font-size: 12px; font-weight: 700; }
+    .r04-auth-state { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; color: var(--or-text-muted); font-size: 12px; line-height: 1.5; }
+    .r04-auth-state strong, .r04-auth-state span { display: block; }
+    .r04-auth-state-icon { width: 16px; flex: 0 0 16px; text-align: center; font-weight: 700; }
+    .r04-auth-state-validation .r04-auth-state-icon, .r04-auth-state-rate-limit .r04-auth-state-icon { color: var(--or-warning); }
+    .r04-auth-state-failure .r04-auth-state-icon, .r04-auth-state-unavailable .r04-auth-state-icon { color: var(--or-danger); }
+    .r04-help-card { width: min(100%, 460px); display: grid; gap: 20px; }
+    .r04-help-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--or-primary-soft); color: var(--or-primary); font-size: 20px; }
+    .r04-help-notice, .r04-help-safety { padding: 12px 14px; border-radius: 6px; font-size: 13px; line-height: 1.6; }
+    .r04-help-notice { background: var(--or-info-soft); color: var(--or-text); }
+    .r04-help-safety { border: 1px solid var(--or-warning); background: var(--or-warning-soft); color: var(--or-text); }
+    .r04-help-section { display: grid; gap: 6px; }
+    .r04-help-section h2 { margin: 0; font-size: 14px; }
+    .r04-help-section p, .r04-help-section ul { margin: 0; color: var(--or-text-muted); font-size: 13px; line-height: 1.6; }
+    .r04-help-section ul { padding-left: 18px; }
+    .r04-help-footer { display: flex; flex-wrap: wrap; gap: 14px; padding-top: 4px; border-top: 1px solid var(--or-outline); }
+    .r04-error-page, .r04-not-found-page { width: 100%; display: grid; place-items: center; min-height: 100%; padding: 24px; box-sizing: border-box; }
+    .r04-error-card, .r04-not-found-card { width: min(100%, 560px); padding: 32px; border: 1px solid var(--or-outline-strong); border-radius: 8px; background: var(--or-surface); box-shadow: 0 8px 20px rgba(15,23,42,.04); }
+    .r04-error-card { display: grid; gap: 20px; }
+    .r04-error-icon { color: var(--or-warning); font-size: 28px; }
+    .r04-error-card h1, .r04-not-found-card h1 { margin: 0; font-size: 24px; line-height: 1.3; }
+    .r04-error-card p, .r04-not-found-card p { margin: 0; color: var(--or-text-muted); font-size: 13px; line-height: 1.6; }
+    .r04-error-meta { display: grid; gap: 8px; padding: 14px; background: var(--or-surface-muted); border-radius: 6px; }
+    .r04-error-meta div { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 12px; font-size: 12px; line-height: 1.5; }
+    .r04-error-meta dt { color: var(--or-text-muted); }
+    .r04-error-meta dd { min-width: 0; margin: 0; overflow-wrap: anywhere; color: var(--or-text); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .r04-error-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .r04-error-actions button { min-height: 36px; padding: 8px 14px; border: 1px solid var(--or-outline); border-radius: 6px; background: var(--or-surface); color: var(--or-text); cursor: pointer; font: inherit; }
+    .r04-error-actions button:first-child { border-color: var(--or-primary); background: var(--or-primary); color: #fff; }
+    .r04-error-actions button:hover { border-color: var(--or-primary); }
+    .r04-not-found-page { min-height: 100vh; background: var(--or-bg); }
+    .r04-not-found-card { display: grid; justify-items: center; gap: 16px; text-align: center; }
+    .r04-not-found-code { color: var(--or-primary); font-size: 56px; font-weight: 800; line-height: 1; }
+    .r04-not-found-card .r04-error-meta { width: 100%; text-align: left; }
+    .r04-not-found-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+    .or-frame-utility { min-height: calc(100vh - 96px); display: grid; place-items: center; background: var(--or-bg); border-color: transparent; }
+    .or-frame-utility .or-route-outlet { width: min(100%, 640px); padding: 24px; box-sizing: border-box; }
+    @media (max-width: 640px) { .r04-auth-card, .r04-help-card, .r04-error-card, .r04-not-found-card { padding: 24px; } .r04-error-page, .r04-not-found-page { padding: 16px; } .r04-error-meta div { grid-template-columns: 1fr; gap: 2px; } }
     @media (max-width: 640px) { .r02-table { min-width: 650px; } .r02-drawer { width: 100vw; } }
   `;
   document.head.appendChild(style);

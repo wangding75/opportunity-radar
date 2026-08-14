@@ -2,7 +2,7 @@ export type ScreenId =
   | "P01" | "P02" | "P03" | "P04" | "P05" | "P06" | "P07" | "P08" | "P09" | "P10"
   | "P11" | "P12" | "P13" | "P14" | "P15" | "P16" | "P17" | "P18" | "P19" | "P20"
   | "P21" | "P22" | "P23" | "P24" | "P25" | "P26" | "P27" | "P28" | "P29-A" | "P29-B"
-  | "P29-C" | "P29-D" | "P29-E" | "P30";
+  | "P29-C" | "P29-D" | "P29-E" | "P26A" | "P30";
 
 export type RouteState = {screen: ScreenId; params: URLSearchParams};
 
@@ -15,6 +15,7 @@ export const SCREEN_ROUTES: Record<ScreenId, string> = {
   P24: "/alerts", P25: "/alerts/rules", P26: "/audit", P27: "/users", P28: "/account",
   "P29-A": "/settings/general", "P29-B": "/settings/security", "P29-C": "/settings/notifications",
   "P29-D": "/settings/integrations", "P29-E": "/settings/source-preference", P30: "/diagnostics",
+  P26A: "/login/help",
 };
 
 const LEGACY_ALIASES: Record<string, ScreenId> = {

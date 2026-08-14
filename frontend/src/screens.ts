@@ -6,13 +6,14 @@ export type AuthSession = {label: string; role: string};
 export type ScreenContext = {onSessionExpired: () => void; onForbidden?: () => void};
 type Row = Record<string, any>;
 
-export async function renderScreen(route: RouteState, _session: AuthSession, context: ScreenContext): Promise<HTMLElement> {
+export async function renderScreen(route: RouteState, session: AuthSession, context: ScreenContext): Promise<HTMLElement> {
   installScreenStyles();
   switch (route.screen) {
     case "P02": return renderDashboard(context);
     case "P03": return renderSearch(context);
-    case "P04": return renderForbidden();
+    case "P04": return renderForbidden(route, session);
     case "P05": return renderNotFound(route);
+    case "P26A": return renderLoginHelp();
     case "P06": return renderObservations(context);
     case "P07": return renderObservationDetail(route, context);
     case "P08": return renderKeywords(context);
@@ -185,21 +186,147 @@ async function runSearch(query: string, category: string, results: HTMLElement, 
   if (failed) results.prepend(statePanel("partial", "Some search categories could not be loaded; visible results are still live."));
 }
 
-function renderForbidden(): HTMLElement {
-  const host = content("Access restricted", "This route is known, but the current role is not allowed to read it.");
-  const actions = document.createElement("div");
-  appendActionRow(actions, button("Back", {onClick: () => history.back()}), button("Go to dashboard", {variant: "primary", onClick: () => navigate("P02")}));
-  append(host, statePanel("permission", "Ask an administrator for the required capability."), actions);
+function renderLoginHelp(): HTMLElement {
+  const page = document.createElement("main");
+  page.className = "r04-auth-page";
+  const card = document.createElement("section");
+  card.className = "r04-help-card";
+  const brand = document.createElement("div");
+  brand.className = "r04-help-brand-mark";
+  brand.textContent = "@";
+  const title = document.createElement("h1");
+  title.textContent = "无法登录？";
+  const subtitle = document.createElement("p");
+  subtitle.className = "r04-help-subtitle";
+  subtitle.textContent = "Opportunity Radar  |  R04 机会情报平台";
+  const notice = document.createElement("div");
+  notice.className = "r04-help-notice";
+  notice.textContent = "当前平台尚未开放已验证的自助密码重置流程。请联系系统管理员确认账户状态或执行密码恢复。";
+  const sections = document.createElement("div");
+  sections.className = "r04-help-sections";
+  sections.append(
+    helpSection("账户恢复方式", ["管理员协助处理。"]),
+    helpSection("可能原因", ["密码错误", "账户锁定", "MFA 问题", "认证服务不可用"]),
+  );
+  const info = document.createElement("section");
+  info.className = "r04-help-info";
+  const infoTitle = document.createElement("h2");
+  infoTitle.textContent = "需要提供给管理员的信息";
+  const infoList = document.createElement("ul");
+  for (const value of ["用户名/邮箱", "发生时间", "错误提示"]) { const item = document.createElement("li"); item.textContent = value; infoList.append(item); }
+  const safety = document.createElement("p");
+  safety.className = "r04-help-safety";
+  safety.textContent = "安全提示：系统管理员不会要求您提供密码或 MFA 密钥。请勿在任何通信中包含此类敏感凭证。";
+  info.append(infoTitle, infoList, safety);
+  const footer = document.createElement("footer");
+  footer.className = "r04-help-footer";
+  const login = document.createElement("a");
+  login.className = "r04-auth-submit";
+  login.href = routeFor("P01");
+  login.textContent = "返回登录";
+  const status = document.createElement("a");
+  status.className = "r04-help-status-link";
+  status.href = routeFor("P30");
+  status.textContent = "查看系统状态";
+  footer.append(login, status);
+  card.append(brand, title, subtitle, notice, sections, info, footer);
+  page.append(card);
+  return page;
+}
+
+function helpSection(titleValue: string, values: string[]): HTMLElement {
+  const section = document.createElement("section");
+  section.className = "r04-help-section";
+  const title = document.createElement("h2");
+  title.textContent = titleValue;
+  const list = document.createElement("ul");
+  for (const value of values) { const item = document.createElement("li"); item.textContent = value; list.append(item); }
+  section.append(title, list);
+  return section;
+}
+
+function renderForbidden(route: RouteState, session: AuthSession): HTMLElement {
+  const host = document.createElement("main");
+  host.className = "r04-error-page";
+  const card = document.createElement("section");
+  card.className = "r04-error-card";
+  const icon = document.createElement("div");
+  icon.className = "r04-error-icon r04-error-icon-danger";
+  icon.textContent = "▣";
+  const code = document.createElement("strong");
+  code.className = "r04-error-code r04-error-code-danger";
+  code.textContent = "403";
+  const title = document.createElement("h1");
+  title.textContent = "无权访问";
+  const copy = document.createElement("p");
+  copy.textContent = "当前账户没有访问此资源所需的权限。如认为这是错误，请联系管理员。";
+  const meta = document.createElement("dl");
+  meta.className = "r04-error-meta";
+  const requestPath = route.params.get("requested") ?? "当前页面";
+  appendMeta(meta, "请求路径", requestPath);
+  appendMeta(meta, "当前角色", roleLabel(session.role));
+  const primaryActions = document.createElement("div");
+  primaryActions.className = "r04-error-actions r04-error-actions-dual";
+  primaryActions.append(
+    button("返回上一页", {variant: "primary", onClick: () => goBackOr("P02")}),
+    button("返回工作台", {variant: "secondary", onClick: () => navigate("P02")}),
+  );
+  const account = linkTo("P28", "查看个人账户与安全");
+  account.className = "r04-error-link";
+  card.append(icon, code, title, copy, meta, primaryActions, account);
+  host.append(card);
   return host;
 }
 
 function renderNotFound(route: RouteState): HTMLElement {
-  const host = content("Route not found", "The requested path is not part of the R02 screen registry.");
-  const requested = route.params.get("requested") ?? "unknown";
-  const copy = document.createElement("p"); copy.textContent = `Requested path: ${requested}`;
-  const actions = document.createElement("div"); appendActionRow(actions, button("Back", {onClick: () => history.back()}), button("Go to dashboard", {variant: "primary", onClick: () => navigate("P02")}));
-  append(host, statePanel("empty", "Choose a registered workspace screen."), copy, actions);
-  return host;
+  const page = document.createElement("main");
+  page.className = "r04-not-found-page";
+  const card = document.createElement("section");
+  card.className = "r04-not-found-card";
+  const code = document.createElement("span");
+  code.className = "r04-error-code-chip";
+  code.textContent = "404";
+  const title = document.createElement("h1");
+  title.textContent = "对象不存在";
+  const copy = document.createElement("p");
+  copy.textContent = "请求的对象可能已删除、已移动，或当前暂不可用。";
+  const meta = document.createElement("dl");
+  meta.className = "r04-error-meta r04-error-meta-wide";
+  const requested = route.params.get("requested") ?? "/unknown";
+  appendMeta(meta, "对象 ID", objectIdFromPath(requested));
+  appendMeta(meta, "请求路径", requested);
+  const actions = document.createElement("div");
+  actions.className = "r04-error-actions";
+  actions.append(
+    button("返回上一页", {variant: "primary", onClick: () => goBackOr("P02")}),
+    button("全局搜索", {variant: "secondary", onClick: () => navigate("P03")}),
+    button("返回工作台", {variant: "secondary", onClick: () => navigate("P02")}),
+  );
+  const opportunities = linkTo("P12", "查看机会列表");
+  opportunities.className = "r04-error-link";
+  card.append(code, title, copy, meta, actions, opportunities);
+  page.append(card);
+  return page;
+}
+
+function appendMeta(parent: HTMLElement, labelValue: string, value: string): void {
+  const dt = document.createElement("dt"); dt.textContent = labelValue;
+  const dd = document.createElement("dd"); dd.textContent = value;
+  parent.append(dt, dd);
+}
+
+function objectIdFromPath(path: string): string {
+  const value = path.split("/").filter(Boolean).pop();
+  return value || "—";
+}
+
+function roleLabel(role: string): string {
+  return ({VIEWER: "查看者", OPERATOR: "操作员", ADMIN: "管理员", OWNER: "所有者"} as Record<string, string>)[role] ?? role;
+}
+
+function goBackOr(fallback: ScreenId): void {
+  if (window.history.length > 1) window.history.back();
+  else navigate(fallback);
 }
 
 async function renderObservations(context: ScreenContext): Promise<HTMLElement> {

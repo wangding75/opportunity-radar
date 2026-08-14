@@ -7,6 +7,7 @@ export const SCREEN_ROUTES = {
     P24: "/alerts", P25: "/alerts/rules", P26: "/audit", P27: "/users", P28: "/account",
     "P29-A": "/settings/general", "P29-B": "/settings/security", "P29-C": "/settings/notifications",
     "P29-D": "/settings/integrations", "P29-E": "/settings/source-preference", P30: "/diagnostics",
+    P26A: "/login/help",
 };
 const LEGACY_ALIASES = {
     dashboard: "P02", opportunities: "P12", alerts: "P24", watch: "P09", sources: "P18",
