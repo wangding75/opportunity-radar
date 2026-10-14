@@ -7,6 +7,8 @@ import time
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from fastapi.responses import FileResponse
 from fastapi.responses import PlainTextResponse
 from fastapi.staticfiles import StaticFiles
@@ -33,8 +35,8 @@ import uuid
 LOGGER = logging.getLogger("opportunity_radar.audit")
 
 APP_VERSION = "0.8.1"
-DB_SCHEMA_REVISION = "0031_login_rate_limits"
-REQUIRED_TABLES = {"alembic_version", "raw_observations", "keywords", "opportunities", "opportunity_keywords", "probe_tasks", "collection_runs", "source_health_states", "opportunity_research", "alert_rules", "alert_events", "source_preferences", "audit_logs", "seed_keywords", "opportunity_cluster_versions", "opportunity_lineage", "keyword_relation_sources", "keyword_relation_items", "alert_evaluation_queue", "email_delivery_queue", "webhook_endpoints", "webhook_delivery_queue", "worker_heartbeats", "users", "login_rate_limits", "user_sessions", "api_tokens", "opportunity_score_snapshots", "daily_digests", "weekly_trend_reports", "keyword_burst_records", "tool_product_entities", "tool_product_entity_evidence", "tool_product_normalization_runs", "tool_product_occurrences", "hiring_surge_records", "cross_source_confirmations", "score_jump_records", "risk_escalation_records"}
+DB_SCHEMA_REVISION = "0032_user_observation_states"
+REQUIRED_TABLES = {"alembic_version", "raw_observations", "keywords", "opportunities", "opportunity_keywords", "probe_tasks", "collection_runs", "source_health_states", "opportunity_research", "alert_rules", "alert_events", "source_preferences", "audit_logs", "seed_keywords", "opportunity_cluster_versions", "opportunity_lineage", "keyword_relation_sources", "keyword_relation_items", "alert_evaluation_queue", "email_delivery_queue", "webhook_endpoints", "webhook_delivery_queue", "worker_heartbeats", "users", "login_rate_limits", "user_sessions", "api_tokens", "opportunity_score_snapshots", "daily_digests", "weekly_trend_reports", "keyword_burst_records", "tool_product_entities", "tool_product_entity_evidence", "tool_product_normalization_runs", "tool_product_occurrences", "hiring_surge_records", "cross_source_confirmations", "score_jump_records", "risk_escalation_records", "user_observation_states"}
 
 
 def create_app() -> FastAPI:
@@ -52,6 +54,64 @@ def create_app() -> FastAPI:
     app = FastAPI(title=settings.app_name, version=APP_VERSION, lifespan=lifespan)
     app.add_middleware(RequestBodyLimitMiddleware, max_bytes=settings.max_request_body_bytes)
     set_registry(registry)
+
+    def _json_safe_detail(detail):
+        """Drop non-serializable values (e.g. pydantic ctx exceptions) from ``detail``.
+
+        RequestValidationError.errors() embeds the original ``ValueError`` objects
+        inside ``ctx``; JSONResponse cannot encode them, so an invalid payload
+        would turn a clean 422 into an unhandled 500. Stringify those values
+        instead of losing the whole validation report.
+        """
+        if isinstance(detail, list):
+            return [_json_safe_detail(item) for item in detail]
+        if isinstance(detail, dict):
+            return {key: _json_safe_detail(value) for key, value in detail.items()}
+        if isinstance(detail, (str, int, float, bool)) or detail is None:
+            return detail
+        return str(detail)
+
+    def error_payload(request: Request, *, status_code: int, detail, field_errors: list[dict] | None = None) -> dict:
+        """Return the React API error contract while retaining ``detail`` during migration.
+
+        Existing CLI and legacy UI consumers still read FastAPI's ``detail`` key.
+        Keeping it for one compatibility period lets the React client move to the
+        typed fields without a flag-day change for those consumers.
+        """
+        message = detail if isinstance(detail, str) else "request validation failed" if status_code == 422 else "request failed"
+        codes = {
+            400: "BAD_REQUEST", 401: "UNAUTHENTICATED", 403: "FORBIDDEN",
+            404: "NOT_FOUND", 409: "CONFLICT", 413: "PAYLOAD_TOO_LARGE",
+            422: "VALIDATION_FAILED", 429: "RATE_LIMITED",
+        }
+        return {
+            "code": codes.get(status_code, "SERVER_ERROR" if status_code >= 500 else "REQUEST_FAILED"),
+            "message": message,
+            "field_errors": field_errors or [],
+            "request_id": getattr(request.state, "request_id", None),
+            "retryable": status_code == 429 or status_code >= 500,
+            "detail": _json_safe_detail(detail),
+        }
+
+    @app.exception_handler(HTTPException)
+    async def http_exception_handler(request: Request, exc: HTTPException):
+        headers = dict(exc.headers or {})
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=error_payload(request, status_code=exc.status_code, detail=exc.detail),
+            headers=headers,
+        )
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+        field_errors = [
+            {"field": ".".join(str(part) for part in row["loc"] if part != "body"), "message": row["msg"]}
+            for row in exc.errors()
+        ]
+        return JSONResponse(
+            status_code=422,
+            content=error_payload(request, status_code=422, detail=exc.errors(), field_errors=field_errors),
+        )
 
     @app.middleware("http")
     async def request_context_and_audit(request: Request, call_next):
@@ -100,7 +160,9 @@ def create_app() -> FastAPI:
         response.headers["X-Trace-ID"] = trace_id
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "no-referrer"
-        response.headers["Cache-Control"] = "no-store"
+        # Vite asset filenames are content-hashed. Cache only those immutable
+        # files; HTML/API responses continue to avoid stale sessions or data.
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable" if request.url.path.startswith("/assets/") else "no-store"
         response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"
         response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
         elapsed = max(0.0, time.perf_counter() - started)
@@ -121,7 +183,13 @@ def create_app() -> FastAPI:
     app.include_router(router)
     attach_openapi_permissions(app)
     static_dir = Path(__file__).parent / "static"
+    react_static_dir = Path(__file__).parent.parent / "react-static"
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
+    if settings.ui_mode == "react":
+        assets_dir = react_static_dir / "assets"
+        if not assets_dir.is_dir():
+            raise RuntimeError(f"UI_MODE=react requires built assets at {assets_dir}")
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="react-assets")
 
     @app.get("/health")
     def health():
@@ -165,7 +233,13 @@ def create_app() -> FastAPI:
 
     @app.get("/", include_in_schema=False)
     def index():
-        return FileResponse(static_dir / "index.html")
+        return FileResponse((react_static_dir if settings.ui_mode == "react" else static_dir) / "index.html")
+
+    @app.get("/{path:path}", include_in_schema=False)
+    def react_spa_fallback(path: str):
+        if settings.ui_mode != "react" or path.startswith("api/"):
+            raise HTTPException(status_code=404, detail="not found")
+        return FileResponse(react_static_dir / "index.html")
 
     return app
 

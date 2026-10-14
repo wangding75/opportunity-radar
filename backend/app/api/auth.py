@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.security import require_admin_auth, require_read_auth, require_write_auth
 from app.core.request_identity import client_ip_from_request
+from app.core.time import utc_now
 from app.db.models import ApiToken, User
 from app.db.session import get_db
 from app.domain.schemas import ApiTokenCreate, LoginRequest, UserCreate, UserPatch
@@ -149,6 +150,45 @@ def me(principal: Principal | None = Depends(require_read_auth), db: Session = D
         "scopes": sorted(principal.scopes),
         "user": _user_payload(user) if user else None,
         "auth_mode": settings.auth_mode,
+    }
+
+
+@router.get("/bootstrap")
+def bootstrap(principal: Principal | None = Depends(require_read_auth), db: Session = Depends(get_db)):
+    """Return the minimum session and capability context needed to boot React.
+
+    This deliberately does not invent a tenant table. The existing product is a
+    single-workspace deployment, so the workspace identifier is stable until a
+    real multi-workspace model is introduced.
+    """
+    if settings.auth_mode == "disabled":
+        session = {
+            "authenticated": False,
+            "role": "OWNER",
+            "actor": "development-anonymous",
+            "auth_mode": "disabled",
+            "scopes": ["read", "write", "admin"],
+            "user": None,
+        }
+    else:
+        if principal is None:
+            raise HTTPException(status_code=401, detail="authentication required")
+        user = db.get(User, principal.user_id) if principal.user_id else None
+        session = {
+            "authenticated": True,
+            "actor": principal.actor,
+            "role": principal.role,
+            "auth_type": principal.auth_type,
+            "scopes": sorted(principal.scopes),
+            "user": _user_payload(user) if user else None,
+            "auth_mode": settings.auth_mode,
+        }
+    return {
+        "session": session,
+        "workspace": {"id": "default", "name": settings.app_name},
+        "feature_flags": {"react_ui": settings.ui_mode == "react"},
+        "modules": ["intelligence", "opportunities", "research", "operations", "governance"],
+        "server_time": utc_now(),
     }
 
 

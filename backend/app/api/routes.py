@@ -549,6 +549,7 @@ def opportunities(
     return [
         {
             "id": row.id,
+            "public_id": row.opportunity_key,
             "title": row.title,
             "stage": row.stage,
             "score": row.score,
@@ -626,6 +627,7 @@ def opportunities_page(
     state_by_id = research_state_map(db, [row.id for row in rows])
     items = [{
         "id": row.id,
+        "public_id": row.opportunity_key,
         "opportunity_key": row.opportunity_key,
         "title": row.title,
         "stage": row.stage,
@@ -645,15 +647,24 @@ def opportunities_page(
 
 @router.get("/opportunities/{opportunity_id}")
 def opportunity(
-    opportunity_id: int,
+    opportunity_id: str,
     evidence_limit: int = Query(default=50, ge=1, le=100),
     evidence_text_chars: int = Query(default=2000, ge=0, le=5000),
     db: Session = Depends(get_db),
 ):
+    # ``opportunity_key`` is immutable and UUID-backed for product-generated
+    # opportunities. Treat it as the public URL identifier while accepting the
+    # old integer route during the compatibility period.
+    if opportunity_id.isdecimal():
+        row = db.get(Opportunity, int(opportunity_id))
+    else:
+        row = db.scalar(select(Opportunity).where(Opportunity.opportunity_key == opportunity_id))
+    if row is None:
+        raise HTTPException(status_code=404, detail="opportunity not found")
     try:
         return opportunity_detail(
             db,
-            opportunity_id,
+            row.id,
             evidence_limit=evidence_limit,
             evidence_text_chars=evidence_text_chars,
         )

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>审计日志 - Opportunity Radar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "outline-variant": "#c3c6d7",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "surface-container-low": "#f2f4f6",
+                        "inverse-surface": "#2d3133",
+                        "error-container": "#ffdad6",
+                        "background": "#f7f9fb",
+                        "outline": "#737686",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-primary-container": "#eeefff",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#656d84",
+                        "surface-dim": "#d8dadc",
+                        "primary": "#004ac6",
+                        "surface-container-high": "#e6e8ea",
+                        "tertiary-fixed": "#dae2fd",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-tertiary-fixed": "#131b2e",
+                        "on-primary-fixed": "#00174b",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#54647a",
+                        "on-error": "#ffffff",
+                        "on-background": "#191c1e",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed": "#0b1c30",
+                        "surface-variant": "#e0e3e5",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-tertiary-container": "#eef0ff",
+                        "on-surface-variant": "#434655",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "on-surface": "#191c1e",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "primary-fixed": "#dbe1ff",
+                        "inverse-primary": "#b4c5ff",
+                        "surface-container": "#eceef0",
+                        "surface": "#f7f9fb",
+                        "surface-bright": "#f7f9fb",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "surface-tint": "#0053db",
+                        "secondary-container": "#d0e1fb",
+                        "tertiary": "#4d556b",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "primary-container": "#2563eb",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "secondary": "#505f76"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        display: ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        body: ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        label: ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for data tables and inspector */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c3c6d7; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #737686; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface h-screen overflow-hidden flex selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- SideNavBar (from JSON) -->
+<nav class="bg-surface-container-lowest text-primary font-body text-sm font-medium fixed left-0 top-0 h-full w-[216px] border-r border-outline-variant flat no shadows flex flex-col py-4 px-3 gap-2 z-20">
+<!-- Brand Area -->
+<div class="px-3 mb-6 mt-2 flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">radar</span>
+</div>
+<div>
+<div class="text-xl font-headline font-bold text-primary">机会情报系统</div>
+<div class="text-[10px] text-on-surface-variant font-mono mt-0.5 tracking-wider">Opportunity Radar R04</div>
+</div>
+</div>
+<!-- Main Tabs -->
+<div class="flex flex-col gap-1 flex-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span>工作台</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">star</span>
+<span>机会</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">travel_explore</span>
+<span>情报</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">science</span>
+<span>研究</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">settings_input_component</span>
+<span>运行</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span>管理</span>
+</a>
+</div>
+<!-- Divider -->
+<div class="h-px bg-outline-variant mx-3 my-2"></div>
+<!-- Footer Tabs -->
+<div class="flex flex-col gap-1 mb-2">
+<!-- Active Tab: 审计日志 -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary-container text-on-primary-container transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">history_edu</span>
+<span class="font-bold">审计日志</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">switch_account</span>
+<span>系统诊断</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex flex-col flex-1 w-[calc(100%-216px)] ml-[216px] h-screen bg-surface relative">
+<!-- TopNavBar (from JSON) -->
+<header class="bg-surface-bright text-primary font-headline text-on-surface fixed top-0 right-0 h-14 w-[calc(100%-216px)] border-b border-outline-variant flat no shadows flex justify-between items-center px-6 transition-all duration-200 z-10">
+<div class="flex items-center gap-4">
+<!-- Product Name from JSON -->
+<span class="text-lg font-bold text-on-surface">运行</span>
+<div class="h-6 w-px bg-outline-variant"></div>
+<!-- Search Bar (on_left) -->
+<div class="relative flex items-center group">
+<span class="material-symbols-outlined absolute left-2 text-outline group-focus-within:text-primary transition-colors text-[20px]">search</span>
+<input class="h-8 pl-9 pr-4 bg-surface-container-low border border-transparent rounded-lg text-sm focus:bg-surface-container-lowest focus:border-primary focus:ring-0 w-64 transition-all text-on-surface placeholder:text-outline outline-none" placeholder="全局搜索..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center ml-2 border border-outline-variant overflow-hidden cursor-pointer">
+<span class="font-headline font-bold text-sm">U</span>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<main class="flex-1 overflow-hidden mt-14 p-6 flex flex-col gap-6">
+<!-- Page Header -->
+<div class="flex justify-between items-end shrink-0">
+<div>
+<h1 class="text-2xl font-headline font-bold text-on-surface tracking-tight">审计日志</h1>
+<p class="text-sm text-on-surface-variant mt-1.5">查看安全、配置与业务对象操作的系统级追踪记录</p>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container text-on-surface font-medium text-sm rounded-lg border border-outline-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                    导出
+                </button>
+</div>
+<!-- Filter Section -->
+<div class="flex gap-3 items-center shrink-0 flex-wrap">
+<div class="relative w-72">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[18px]">search</span>
+<input class="w-full pl-9 pr-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-sm text-on-surface placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm" placeholder="搜索参与者 / 请求 ID / IP..." type="text"/>
+</div>
+<div class="relative inline-block">
+<select class="appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg text-sm text-on-surface py-2 pl-3 pr-8 focus:border-primary focus:ring-1 focus:ring-primary outline-none shadow-sm cursor-pointer hover:bg-surface-container-low transition-colors">
+<option value="">操作类型 (全部)</option>
+<option value="create">创建 (Create)</option>
+<option value="update">更新 (Update)</option>
+<option value="delete">删除 (Delete)</option>
+<option value="auth">认证 (Auth)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-outline pointer-events-none text-[20px]">arrow_drop_down</span>
+</div>
+<div class="relative inline-block">
+<select class="appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg text-sm text-on-surface py-2 pl-3 pr-8 focus:border-primary focus:ring-1 focus:ring-primary outline-none shadow-sm cursor-pointer hover:bg-surface-container-low transition-colors">
+<option value="">对象类型 (全部)</option>
+<option value="opportunity">机会 (Opportunity)</option>
+<option value="user">用户 (User)</option>
+<option value="system">系统配置 (System)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-outline pointer-events-none text-[20px]">arrow_drop_down</span>
+</div>
+<div class="relative inline-block">
+<select class="appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg text-sm text-on-surface py-2 pl-3 pr-8 focus:border-primary focus:ring-1 focus:ring-primary outline-none shadow-sm cursor-pointer hover:bg-surface-container-low transition-colors">
+<option value="">结果 (全部)</option>
+<option value="success">成功</option>
+<option value="failure">失败</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-outline pointer-events-none text-[20px]">arrow_drop_down</span>
+</div>
+<div class="relative inline-block">
+<select class="appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg text-sm text-on-surface py-2 pl-3 pr-8 focus:border-primary focus:ring-1 focus:ring-primary outline-none shadow-sm cursor-pointer hover:bg-surface-container-low transition-colors">
+<option value="24h">过去 24 小时</option>
+<option value="7d">过去 7 天</option>
+<option value="30d">过去 30 天</option>
+<option value="custom">自定义范围...</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-outline pointer-events-none text-[20px]">arrow_drop_down</span>
+</div>
+<button class="text-primary text-sm font-medium hover:underline ml-2">重置</button>
+</div>
+<!-- Content Area: Table + Side Inspector -->
+<div class="flex gap-4 flex-1 overflow-hidden min-h-0">
+<!-- Main Table Container -->
+<div class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col shadow-sm">
+<div class="flex-1 overflow-auto">
+<table class="w-full text-left border-collapse whitespace-nowrap">
+<thead class="bg-surface-container-low sticky top-0 z-10 border-b border-outline-variant text-xs text-on-surface-variant font-medium uppercase tracking-wider">
+<tr>
+<th class="px-4 py-3 font-medium">时间</th>
+<th class="px-4 py-3 font-medium">参与者</th>
+<th class="px-4 py-3 font-medium">操作</th>
+<th class="px-4 py-3 font-medium">对象</th>
+<th class="px-4 py-3 font-medium">结果</th>
+<th class="px-4 py-3 font-medium">请求 ID</th>
+<th class="px-4 py-3 font-medium">来源 IP/位置</th>
+</tr>
+</thead>
+<tbody class="text-sm text-on-surface divide-y divide-outline-variant">
+<!-- Row 1 (Normal) -->
+<tr class="hover:bg-surface-container transition-colors cursor-pointer group">
+<td class="px-4 py-3 text-on-surface-variant">2023-10-27 14:32:01</td>
+<td class="px-4 py-3">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs font-bold">L</div>
+<span>li.wei@example.com</span>
+</div>
+</td>
+<td class="px-4 py-3 font-medium">UPDATE</td>
+<td class="px-4 py-3">Opportunity [OPP-8921]</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-fixed text-on-secondary-fixed">
+                                            成功
+                                        </span>
+</td>
+<td class="px-4 py-3 font-mono text-xs text-on-surface-variant">req_8f72a1b9</td>
+<td class="px-4 py-3 text-on-surface-variant">192.168.1.42 (内部网络)</td>
+</tr>
+<!-- Row 2 (Active/Selected) -->
+<tr class="bg-primary-fixed/20 hover:bg-primary-fixed/30 transition-colors cursor-pointer border-l-2 border-l-primary relative">
+<td class="px-4 py-3 text-on-surface-variant">2023-10-27 14:15:44</td>
+<td class="px-4 py-3">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-error-container text-on-error-container flex items-center justify-center text-xs font-bold">A</div>
+<span class="text-error font-medium">admin_system</span>
+</div>
+</td>
+<td class="px-4 py-3 font-medium">DELETE</td>
+<td class="px-4 py-3">UserRole [ROLE-009]</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-error-container text-on-error-container">
+<span class="material-symbols-outlined text-[14px]">error</span>
+                                            失败
+                                        </span>
+</td>
+<td class="px-4 py-3 font-mono text-xs text-on-surface-variant">req_92c4f10e</td>
+<td class="px-4 py-3 text-on-surface-variant">203.0.113.5 (外部 IP)</td>
+</tr>
+<!-- Row 3 (Normal) -->
+<tr class="hover:bg-surface-container transition-colors cursor-pointer group">
+<td class="px-4 py-3 text-on-surface-variant">2023-10-27 13:05:12</td>
+<td class="px-4 py-3">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs font-bold">S</div>
+<span>system_cron</span>
+</div>
+</td>
+<td class="px-4 py-3 font-medium">EXECUTE</td>
+<td class="px-4 py-3">DataSyncJob [JOB-551]</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-fixed text-on-secondary-fixed">
+                                            成功
+                                        </span>
+</td>
+<td class="px-4 py-3 font-mono text-xs text-on-surface-variant">req_cron_daily</td>
+<td class="px-4 py-3 text-on-surface-variant">localhost</td>
+</tr>
+<!-- More Rows placeholder -->
+<tr class="hover:bg-surface-container transition-colors cursor-pointer group">
+<td class="px-4 py-3 text-on-surface-variant">2023-10-27 11:42:30</td>
+<td class="px-4 py-3">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs font-bold">Z</div>
+<span>zhang.san@example.com</span>
+</div>
+</td>
+<td class="px-4 py-3 font-medium">AUTH_LOGIN</td>
+<td class="px-4 py-3">Session [SESS-982]</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-fixed text-on-secondary-fixed">
+                                            成功
+                                        </span>
+</td>
+<td class="px-4 py-3 font-mono text-xs text-on-surface-variant">req_login_01</td>
+<td class="px-4 py-3 text-on-surface-variant">10.0.0.15 (北京办公区)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination (Simplified) -->
+<div class="bg-surface-container-lowest border-t border-outline-variant px-4 py-3 flex items-center justify-between text-sm text-on-surface-variant">
+<span>显示 1 到 4 条，共 1,204 条日志</span>
+<div class="flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container text-outline-variant disabled cursor-not-allowed"><span class="material-symbols-outlined text-[20px]">chevron_left</span></button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container text-on-surface bg-surface-container-high font-medium">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container text-on-surface">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container text-on-surface"><span class="material-symbols-outlined text-[20px]">chevron_right</span></button>
+</div>
+</div>
+</div>
+<!-- Side Inspector (Active State) -->
+<div class="w-[400px] bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col shrink-0 shadow-sm overflow-hidden">
+<!-- Inspector Header -->
+<div class="px-5 py-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-lowest sticky top-0 z-10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">history</span>
+<h2 class="text-base font-headline font-bold text-on-surface">事件详情</h2>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Inspector Content (Scrollable) -->
+<div class="flex-1 overflow-y-auto p-5 space-y-6">
+<!-- 1. Event Title & Timestamp -->
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="px-2 py-0.5 rounded text-xs font-bold bg-error-container text-on-error-container border border-error/20">DELETE_FAILED</span>
+<span class="text-sm font-mono text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">req_92c4f10e</span>
+</div>
+<div class="text-sm text-on-surface-variant mt-2 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+                                2023-10-27 14:15:44 UTC+8
+                            </div>
+</div>
+<!-- 2. Participant Context -->
+<div class="bg-surface rounded-lg border border-outline-variant p-4">
+<h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">person</span> 参与者上下文
+                            </h3>
+<div class="grid grid-cols-1 gap-y-3 text-sm">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">用户 ID</span>
+<span class="font-medium text-on-surface">admin_system (USR-001)</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">角色</span>
+<span class="font-medium text-on-surface">System Administrator</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">会话 ID</span>
+<span class="font-mono text-xs text-on-surface">sess_x89a...b12f</span>
+</div>
+</div>
+</div>
+<!-- 3. Network Context -->
+<div class="bg-surface rounded-lg border border-outline-variant p-4">
+<h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">router</span> 网络上下文
+                            </h3>
+<div class="grid grid-cols-1 gap-y-3 text-sm">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">IP 地址</span>
+<span class="font-mono text-xs text-on-surface">203.0.113.5</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">地理位置</span>
+<span class="font-medium text-on-surface">External / Unknown</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">User-Agent</span>
+<span class="text-xs text-on-surface-variant truncate w-48 text-right" title="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36">Mozilla/5.0 (Windows NT 10...</span>
+</div>
+</div>
+</div>
+<!-- 4. Resource Activity -->
+<div class="bg-surface rounded-lg border border-outline-variant p-4">
+<h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">inventory_2</span> 资源活动
+                            </h3>
+<div class="grid grid-cols-1 gap-y-3 text-sm">
+<div class="flex flex-col gap-1">
+<span class="text-on-surface-variant">对象类型</span>
+<span class="font-medium text-on-surface bg-surface-container-low px-2 py-1 rounded w-fit">UserRole</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-on-surface-variant">资源路径</span>
+<span class="font-mono text-xs text-on-surface break-all bg-surface-container-low px-2 py-1 rounded border border-outline-variant">/api/v1/roles/ROLE-009</span>
+</div>
+</div>
+</div>
+<!-- 5. Payload Summary -->
+<div>
+<h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">code</span> 负荷摘要
+                            </h3>
+<div class="bg-inverse-surface text-inverse-on-surface rounded-lg p-3 overflow-x-auto border border-outline shadow-inner">
+<pre class="font-mono text-[11px] leading-relaxed">{
+  "request": {
+    "method": "DELETE",
+    "params": {
+      "force": true
+    }
+  },
+  "response": {
+    "status": 403,
+    "error_code": "ERR_ROLE_IN_USE",
+    "message": "Cannot delete role assigned to active users."
+  }
+}
+</pre>
+</div>
+</div>
+<!-- 6. Related Object Navigation -->
+<div class="pt-4 border-t border-outline-variant">
+<h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3">关联对象</h3>
+<div class="flex gap-2 flex-wrap">
+<a class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface border border-outline-variant rounded-lg text-sm font-medium text-primary hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-[16px]">person</span>
+                                    查看用户 (admin_system)
+                                </a>
+<a class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface border border-outline-variant rounded-lg text-sm font-medium text-primary hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-[16px]">shield</span>
+                                    角色管理设置
+                                </a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

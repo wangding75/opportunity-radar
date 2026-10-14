@@ -1,0 +1,64 @@
+﻿page_or_state,control,condition,action_type,target_page,target_state,static_html_behavior,backend,notes
+GLOBAL,一级导航-今日雷达,always,navigate,P01,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,公共 AppShell 导航
+GLOBAL,一级导航-情报,always,navigate,P02,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,公共 AppShell 导航
+GLOBAL,一级导航-机会,always,navigate,P08,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,公共 AppShell 导航
+GLOBAL,一级导航-研究,always,navigate,P11,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,公共 AppShell 导航
+GLOBAL,一级导航-监控,always,navigate,P17,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,公共 AppShell 导航
+GLOBAL,一级导航-设置,always,navigate,P24,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,公共 AppShell 导航
+P01,新情报/情报卡,click,navigate,P03,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入情报详情
+P01,机会卡,click,navigate,P09,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入机会详情
+P01,研究卡,click,navigate,P12,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入研究详情
+P01,告警卡,click,navigate,P22,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入告警中心
+P02,情报列表行,click,navigate,P03,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入情报详情
+P03,转为机会,click,open_state,P03,P03-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,打开 Drawer
+P03-S01,重复检测,duplicate_found,open_state,P03,P03-S02,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入重复处理
+P03-S01,创建机会,success,open_state,P03,P03-S03,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,显示成功状态
+P03-S01,创建机会,failure,open_state,P03,P03-S04,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,保留输入
+P03-S02,合并到所选机会,success,navigate,P09,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入机会详情
+P03-S02,仍然创建新机会,success,navigate,P09,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入机会详情
+P04,关注关键词,click,navigate,P05,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,加入关注
+P05,关键词行/查看趋势,click,navigate,P06,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入趋势分析
+P06,查看关系图谱,click,navigate,P07,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入图谱
+P07,Opportunity 节点,click,navigate,P09,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入机会详情
+P08,机会列表行,click,navigate,P09,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入机会详情
+P09,修改状态,click,open_state,P09,P09-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Drawer
+P09,分配负责人,click,open_state,P09,P09-S02,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Drawer
+P09,忽略/归档,click,open_state,P09,P09-S03,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Modal/Drawer
+P09,启动结构化分析,click,open_state,P09,P09-S04,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Drawer
+P09-S04,启动分析,success,navigate,P10,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入结构化分析
+P09,创建研究,click,open_state,P09,P09-S05,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Drawer
+P09-S05,创建研究,success,open_state,P11,P11-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,研究创建成功状态
+P11,研究列表行,click,navigate,P12,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入研究详情
+P12,研究阶段异常,error,open_state,P12,P12-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,恢复 Drawer
+P12,查看/生成结论,click,navigate,P13,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入研究结论
+P13,发布结论,click,open_state,P13,P13-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,发布 Drawer
+P14,来源列表行,click,navigate,P15,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入来源详情
+P14,来源健康,click,navigate,P16,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入来源健康
+P17,新建监控计划,click,open_state,P17,P17-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Drawer
+P17,暂停/恢复快捷操作,click,open_state,P17,P17-S02,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Drawer
+P17,监控计划列表行,click,navigate,P18,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入计划详情
+P18,暂停/恢复,click,open_state,P18,P17-S02,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,复用暂停/恢复状态
+P18,手动运行,click,open_state,P18,P17-S03,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Drawer
+P17-S03,立即运行,success,navigate,P20,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入运行详情
+P19,运行记录行,click,navigate,P20,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入运行详情
+P20,失败处理/重试,click,open_state,P20,P20-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Drawer
+P20,查看分析队列,click,navigate,P21,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入分析队列
+P21,异常任务行,click,open_state,P21,P21-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Drawer
+P22,告警行,click,open_state,P22,P22-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Drawer
+P22-S01,查看关联 Run,click,navigate,P20,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入运行详情
+P22-S01,查看关联 Opportunity,click,navigate,P09,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,进入机会详情
+P23,新建告警规则,click,open_state,P23,P23-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Drawer
+P25,邀请成员,click,open_state,P25,P25-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Drawer
+P26,修改成员角色,click,open_state,P26,P26-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Drawer
+P27,启用 MFA,click,open_state,P27,P27-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Step Modal/Drawer
+P27,危险操作,click,open_state,P27,P27-S02,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Large Modal
+P28,异常集成,click,open_state,P28,P28-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Drawer
+P31,搜索无结果,query_zero_result,open_state,P31,P31-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Content State
+P32,登录需要 MFA,mfa_required,open_state,P32,P32-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Auth Content State
+P32-S01,验证并继续,success,navigate,DYNAMIC,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,回到原请求页面
+P33,申请访问权限,click,open_state,P33,P33-S01,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,Drawer
+P33-S01,权限获批,approved,navigate,DYNAMIC,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,刷新并进入受保护资源
+P34,今日雷达,click,navigate,P01,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,恢复入口
+P34,机会池,click,navigate,P08,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,恢复入口
+P34,情报,click,navigate,P02,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,恢复入口
+P34,研究,click,navigate,P11,,Update URL/history; render target page/state; no full reload required.,MOCK_ONLY_STATIC_HTML,恢复入口

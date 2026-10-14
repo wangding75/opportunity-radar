@@ -1,0 +1,64 @@
+ID,Type,Name,Route,Trigger_Action,Expected_Target,Verified_Status,Notes
+P01,Main_Page,今日雷达,/today,Nav Click,P01,PASSED,6 KPIs + 3 middle topic cards + 3 bottom cards
+P02,Main_Page,情报列表,/intelligence,Nav Click,P02,PASSED,High density table + preview drawer
+P03,Main_Page,情报详情,/intelligence/INT-20260819-01842,Row Click,P03,PASSED,Intel dossier + entities + confidence 92%
+P04,Main_Page,关键词发现,/keywords/discovery,Subnav Click,P04,PASSED,1536x1024 layout with sparklines
+P05,Main_Page,关注关键词,/keywords/tracked,Subnav Click,P05,PASSED,Tracked keywords + status toggles
+P06,Main_Page,趋势分析,/trends,Subnav Click,P06,PASSED,Multi-series SVG line chart with anomaly points
+P07,Main_Page,关系图谱,/graph,Subnav Click,P07,PASSED,Interactive SVG force network graph
+P08,Main_Page,机会池,/opportunities,Nav Click,P08,PASSED,Opportunity pool table + star ratings
+P09,Main_Page,机会详情,/opportunities/OPP-20260819-021,Row Click,P09,PASSED,4 KPIs + drivers + milestone timeline
+P10,Main_Page,结构化分析,/opportunities/OPP-20260819-021/analysis,Btn Click,P10,PASSED,Score 85/100 + multi-dim bar chart
+P11,Main_Page,研究工作流,/research,Nav Click,P11,PASSED,5-step pipelines overview
+P12,Main_Page,研究工作流详情,/research/RES-20260819-0011,Row Click,P12,PASSED,5-step stepper + task checklist
+P13,Main_Page,研究结论,/research/RES-20260819-0011/result,Btn Click,P13,PASSED,5 KPIs + donut distributions + ranking
+P14,Main_Page,来源管理,/sources,Nav Click,P14,PASSED,Active nav overridden to 监控
+P15,Main_Page,来源详情,/sources/reuters,Row Click,P15,PASSED,Reuters source profile + 7d stats
+P16,Main_Page,来源健康,/sources/health,Subnav Click,P16,PASSED,Health score 87/100 + 24h health trend
+P17,Main_Page,监控计划,/monitoring,Nav Click,P17,PASSED,Monitoring plans table + manual trigger
+P18,Main_Page,监控计划详情,/monitoring/PLAN-2025-001,Row Click,P18,PASSED,PLAN-2025-001 profile + health donut
+P19,Main_Page,运行记录,/runs,Nav Click,P19,PASSED,12486 runs + status donut
+P20,Main_Page,运行详情,/runs/RUN-20260819-1048,Row Click,P20,PASSED,4 pipeline stages + terminal log
+P21,Main_Page,分析队列,/analysis-queue,Subnav Click,P21,PASSED,Queue table + worker load gauges
+P22,Main_Page,告警中心,/alerts,Nav Click,P22,PASSED,5 KPIs + severity donut + alert table
+P23,Main_Page,告警规则,/alert-rules,Subnav Click,P23,PASSED,Rules table + severity donut + templates
+P24,Main_Page,工作区设置,/settings/workspace,Nav Click,P24,PASSED,Subnav + storage usage 38.6GB + danger zone
+P25,Main_Page,成员管理,/settings/members,Subnav Click,P25,PASSED,5 KPIs + member table + role donut
+P26,Main_Page,角色与权限,/settings/roles,Subnav Click,P26,PASSED,5 role cards + full permissions matrix
+P27,Main_Page,账户安全,/settings/security,Subnav Click,P27,PASSED,Security score 82 + session list
+P28,Main_Page,外部集成,/settings/integrations,Subnav Click,P28,PASSED,Integration cards + status + fix drawer
+P29,Main_Page,审计日志,/settings/audit,Subnav Click,P29,PASSED,Audit logs table + detail drawer
+P30,Main_Page,系统诊断,/settings/diagnostics,Subnav Click,P30,PASSED,Health score 96 + 9 core services
+P31,Main_Page,全局搜索,/search,Top Search,P31,PASSED,Search tabs + donut + category filter
+P32,Main_Page,登录,/login,Direct Route,P32,PASSED,AuthShell split layout
+P33,Main_Page,无权限,/access-denied,Direct Route,P33,PASSED,MinimalAppShell 403 Forbidden
+P34,Main_Page,页面未找到,/404,Direct Route,P34,PASSED,MinimalAppShell 404 Not Found
+P03-S01,State_Drawer,从情报创建机会,/intelligence/INT-20260819-01842?state=P03-S01,Btn Click,Drawer,PASSED,Prefilled opportunity drawer
+P03-S02,State_Drawer,加入监控计划,/intelligence/INT-20260819-01842?state=P03-S02,Btn Click,Drawer,PASSED,Select monitoring plan
+P03-S03,State_Modal,分享/导出情报,/intelligence/INT-20260819-01842?state=P03-S03,Btn Click,Modal,PASSED,Copy link + export options
+P03-S04,State_Modal,忽略情报信号,/intelligence/INT-20260819-01842?state=P03-S04,Btn Click,Modal,PASSED,Discard confirmation
+P09-S01,State_Drawer,修改机会状态,/opportunities/OPP-20260819-021?state=P09-S01,Btn Click,Drawer,PASSED,Stage radio selector
+P09-S02,State_Modal,分配负责人,/opportunities/OPP-20260819-021?state=P09-S02,Btn Click,Modal,PASSED,Member selector
+P09-S03,State_Drawer,关联情报/证据,/opportunities/OPP-20260819-021?state=P09-S03,Btn Click,Drawer,PASSED,Link evidence drawer
+P09-S04,State_Drawer,结构化分析,/opportunities/OPP-20260819-021?state=P09-S04,Btn Click,Drawer,PASSED,Analysis sliders drawer
+P09-S05,State_Drawer,启动研究工作流,/opportunities/OPP-20260819-021?state=P09-S05,Btn Click,Drawer,PASSED,Start workflow drawer
+P11-S01,State_Drawer,新建研究工作流,/research?state=P11-S01,Btn Click,Drawer,PASSED,Create workflow drawer
+P12-S01,State_Drawer,研究异常与恢复,/research/RES-20260819-0011?state=P12-S01,Btn Click,Drawer,PASSED,Step error recovery
+P13-S01,State_Drawer,发布研究结论,/research/RES-20260819-0011/result?state=P13-S01,Btn Click,Drawer,PASSED,Publish conclusion drawer
+P17-S01,State_Drawer,新建监控计划,/monitoring?state=P17-S01,Btn Click,Drawer,PASSED,Create plan drawer
+P17-S02,State_Modal,监控计划模板选择,/monitoring?state=P17-S02,Btn Click,Modal,PASSED,Template grid selector
+P17-S03,State_Drawer,手动运行监控计划,/monitoring?state=P17-S03,Btn Click,Drawer,PASSED,Run trigger -> P20
+P20-S01,State_Drawer,运行失败详情,/runs/RUN-20260819-1048?state=P20-S01,Btn Click,Drawer,PASSED,Error details drawer
+P20-S02,State_Drawer,重试配置,/runs/RUN-20260819-1048?state=P20-S02,Btn Click,Drawer,PASSED,Retry configuration
+P21-S01,State_Drawer,任务详情与日志,/analysis-queue?state=P21-S01,Btn Click,Drawer,PASSED,Task execution log
+P22-S01,State_Drawer,告警详情处理,/alerts?state=P22-S01,Btn Click,Drawer,PASSED,Alert resolution drawer
+P23-S01,State_Drawer,新建/编辑告警规则,/alert-rules?state=P23-S01,Btn Click,Drawer,PASSED,Create rule drawer
+P25-S01,State_Modal,邀请成员,/settings/members?state=P25-S01,Btn Click,Modal,PASSED,Invite email & role
+P25-S02,State_Drawer,修改成员权限,/settings/members?state=P25-S02,Btn Click,Drawer,PASSED,Edit permissions drawer
+P26-S01,State_Drawer,修改角色权限,/settings/roles?state=P26-S01,Btn Click,Drawer,PASSED,Edit role drawer
+P27-S01,State_Modal,开启双重验证 MFA,/settings/security?state=P27-S01,Btn Click,Modal,PASSED,MFA QR Code -> P27
+P27-S02,State_Drawer,账户危险操作,/settings/security?state=P27-S02,Btn Click,Drawer,PASSED,Revoke sessions & reset
+P28-S01,State_Drawer,外部集成授权修复,/settings/integrations?state=P28-S01,Btn Click,Drawer,PASSED,Preserves P28 AppShell
+P31-S01,State_Inline,全局搜索无结果,/search?state=P31-S01,Query trigger,Inline,PASSED,Preserves P31 AppShell
+P32-S01,State_Inline,登录两步验证,/login?state=P32-S01,Form submit,Inline,PASSED,MFA input step
+P33-S01,State_Modal,申请访问权限,/access-denied?state=P33-S01,Btn Click,Modal,PASSED,Access request modal

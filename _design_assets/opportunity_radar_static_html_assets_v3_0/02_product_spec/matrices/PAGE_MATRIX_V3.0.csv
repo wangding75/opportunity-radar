@@ -1,0 +1,35 @@
+﻿id,title_zh,module,purpose,route,shell,active_primary_nav,filename,reference_path,implementation_status
+P01,今日雷达,情报发现,今日市场与机会信号总览,/today,APP_SHELL,今日雷达,P01_Today_Radar.png,01_design_reference/main_pages/P01_Today_Radar.png,FROZEN_REFERENCE
+P02,情报列表,情报发现,情报聚合与筛选,/intelligence,APP_SHELL,情报,P02_Intelligence_List.png,01_design_reference/main_pages/P02_Intelligence_List.png,FROZEN_REFERENCE
+P03,情报详情,情报发现,单条情报研判,/intelligence/INT-20260819-01842,APP_SHELL,情报,P03_Intelligence_Detail.png,01_design_reference/main_pages/P03_Intelligence_Detail.png,FROZEN_REFERENCE
+P04,关键词发现,情报发现,发现值得跟踪的新关键词,/keywords/discovery,APP_SHELL,情报,P04_Keyword_Discovery.png,01_design_reference/main_pages/P04_Keyword_Discovery.png,FROZEN_REFERENCE
+P05,关注关键词,情报发现,管理持续跟踪的关键词,/keywords/tracked,APP_SHELL,情报,P05_Tracked_Keywords.png,01_design_reference/main_pages/P05_Tracked_Keywords.png,FROZEN_REFERENCE
+P06,趋势分析,情报发现,分析关键词和市场信号趋势,/trends,APP_SHELL,情报,P06_Trend_Analysis.png,01_design_reference/main_pages/P06_Trend_Analysis.png,FROZEN_REFERENCE
+P07,关系图谱,机会研判,探索实体与信号关系,/graph,APP_SHELL,情报,P07_Relation_Graph.png,01_design_reference/main_pages/P07_Relation_Graph.png,FROZEN_REFERENCE
+P08,机会池,机会研判,管理候选机会,/opportunities,APP_SHELL,机会,P08_Opportunity_Pool.png,01_design_reference/main_pages/P08_Opportunity_Pool.png,FROZEN_REFERENCE
+P09,机会详情,机会研判,单个机会的完整研判页,/opportunities/OPP-20260819-021,APP_SHELL,机会,P09_Opportunity_Detail.png,01_design_reference/main_pages/P09_Opportunity_Detail.png,FROZEN_REFERENCE
+P10,结构化分析,机会研判,对机会进行结构化拆解,/opportunities/OPP-20260819-021/analysis,APP_SHELL,机会,P10_Structured_Analysis.png,01_design_reference/main_pages/P10_Structured_Analysis.png,FROZEN_REFERENCE
+P11,研究工作流,研究,管理研究任务,/research,APP_SHELL,研究,P11_Research_Workflow.png,01_design_reference/main_pages/P11_Research_Workflow.png,FROZEN_REFERENCE
+P12,研究工作流详情,研究,查看单项研究执行过程,/research/RES-20260819-0011,APP_SHELL,研究,P12_Research_Workflow_Detail.png,01_design_reference/main_pages/P12_Research_Workflow_Detail.png,FROZEN_REFERENCE
+P13,研究结论,研究,沉淀研究结论,/research/RES-20260819-0011/result,APP_SHELL,研究,P13_Research_Result.png,01_design_reference/main_pages/P13_Research_Result.png,FROZEN_REFERENCE
+P14,来源管理,监控与来源,管理信息来源,/sources,APP_SHELL,监控,P14_Sources.png,01_design_reference/main_pages/P14_Sources.png,FROZEN_REFERENCE
+P15,来源详情,监控与来源,查看单一来源运行情况,/sources/reuters,APP_SHELL,监控,P15_Source_Detail.png,01_design_reference/main_pages/P15_Source_Detail.png,FROZEN_REFERENCE
+P16,来源健康,监控与来源,全局来源健康监控,/sources/health,APP_SHELL,监控,P16_Source_Health.png,01_design_reference/main_pages/P16_Source_Health.png,FROZEN_REFERENCE
+P17,监控计划,监控与来源,管理持续监控任务,/monitoring,APP_SHELL,监控,P17_Monitoring_Plans.png,01_design_reference/main_pages/P17_Monitoring_Plans.png,FROZEN_REFERENCE
+P18,监控计划详情,监控与来源,查看监控计划配置与表现,/monitoring/PLAN-2025-001,APP_SHELL,监控,P18_Monitoring_Plan_Detail.png,01_design_reference/main_pages/P18_Monitoring_Plan_Detail.png,FROZEN_REFERENCE
+P19,运行记录,监控与来源,查看全部执行历史,/runs,APP_SHELL,监控,P19_Run_History.png,01_design_reference/main_pages/P19_Run_History.png,FROZEN_REFERENCE
+P20,运行详情,监控与来源,查看单次运行全过程,/runs/RUN-20260819-1048,APP_SHELL,监控,P20_Run_Detail.png,01_design_reference/main_pages/P20_Run_Detail.png,FROZEN_REFERENCE
+P21,分析队列,监控与来源,监控分析任务队列,/analysis-queue,APP_SHELL,监控,P21_Analysis_Queue.png,01_design_reference/main_pages/P21_Analysis_Queue.png,FROZEN_REFERENCE
+P22,告警中心,监控与来源,集中处理告警,/alerts,APP_SHELL,监控,P22_Alert_Center.png,01_design_reference/main_pages/P22_Alert_Center.png,FROZEN_REFERENCE
+P23,告警规则,监控与来源,管理告警触发规则,/alert-rules,APP_SHELL,监控,P23_Alert_Rules.png,01_design_reference/main_pages/P23_Alert_Rules.png,FROZEN_REFERENCE
+P24,工作区设置,设置与治理,配置工作区默认行为,/settings/workspace,APP_SHELL,设置,P24_Workspace_Settings.png,01_design_reference/main_pages/P24_Workspace_Settings.png,FROZEN_REFERENCE
+P25,成员管理,设置与治理,管理工作区成员,/settings/members,APP_SHELL,设置,P25_Member_Management.png,01_design_reference/main_pages/P25_Member_Management.png,FROZEN_REFERENCE
+P26,角色与权限,设置与治理,管理角色权限模型,/settings/roles,APP_SHELL,设置,P26_Roles_Permissions.png,01_design_reference/main_pages/P26_Roles_Permissions.png,FROZEN_REFERENCE
+P27,账户安全,设置与治理,管理个人账户安全,/settings/security,APP_SHELL,设置,P27_Account_Security.png,01_design_reference/main_pages/P27_Account_Security.png,FROZEN_REFERENCE
+P28,外部集成,设置与治理,管理第三方连接,/settings/integrations,APP_SHELL,设置,P28_External_Integrations.png,01_design_reference/main_pages/P28_External_Integrations.png,FROZEN_REFERENCE
+P29,审计日志,设置与治理,追踪关键操作,/settings/audit,APP_SHELL,设置,P29_Audit_Log.png,01_design_reference/main_pages/P29_Audit_Log.png,FROZEN_REFERENCE
+P30,系统诊断,设置与治理,自助系统健康诊断,/settings/diagnostics,APP_SHELL,设置,P30_System_Diagnostics.png,01_design_reference/main_pages/P30_System_Diagnostics.png,FROZEN_REFERENCE
+P31,全局搜索,全局与系统状态,跨产品对象统一检索,/search,APP_SHELL,NONE,P31_Global_Search.png,01_design_reference/main_pages/P31_Global_Search.png,FROZEN_REFERENCE
+P32,登录,全局与系统状态,SaaS 登录入口,/login,AUTH_SHELL,NONE,P32_Login.png,01_design_reference/main_pages/P32_Login.png,FROZEN_REFERENCE
+P33,无权限,全局与系统状态,权限不足恢复页,/access-denied,MINIMAL_APP_SHELL,NONE,P33_Access_Denied.png,01_design_reference/main_pages/P33_Access_Denied.png,FROZEN_REFERENCE
+P34,页面未找到,全局与系统状态,404 恢复页,/404,MINIMAL_APP_SHELL,NONE,P34_Page_Not_Found.png,01_design_reference/main_pages/P34_Page_Not_Found.png,FROZEN_REFERENCE

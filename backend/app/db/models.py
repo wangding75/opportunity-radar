@@ -791,6 +791,30 @@ class UserSession(Base):
     revoked_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True, index=True)
 
 
+class UserObservationState(Base):
+    """Per-user bookmark/dismissal/notes state for a collected observation.
+
+    One row per (user, observation). A missing row means the current user has
+    no state; API responses must surface that as an explicit null instead of
+    inventing default bookmark values.
+    """
+
+    __tablename__ = "user_observation_states"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    observation_id: Mapped[int] = mapped_column(ForeignKey("raw_observations.id"), index=True)
+    bookmarked: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    dismissed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True, index=True)
+    notes: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, index=True)
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "observation_id", name="uq_user_observation_state"),
+    )
+
+
 class ApiToken(Base):
     __tablename__ = "api_tokens"
 

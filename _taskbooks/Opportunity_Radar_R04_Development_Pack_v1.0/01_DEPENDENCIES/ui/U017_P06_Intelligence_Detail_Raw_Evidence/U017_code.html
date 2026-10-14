@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>P06 — 情报详情 / 原始证据 / Canonical</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed": "#dae2fd",
+                    "inverse-on-surface": "#eff1f3",
+                    "primary": "#004ac6",
+                    "on-primary-fixed": "#00174b",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed": "#d3e4fe",
+                    "surface-container-high": "#e6e8ea",
+                    "primary-fixed": "#dbe1ff",
+                    "surface-tint": "#0053db",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#bec6e0",
+                    "surface-bright": "#f7f9fb",
+                    "on-secondary-container": "#54647a",
+                    "surface-container": "#eceef0",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#131b2e",
+                    "on-surface": "#191c1e",
+                    "on-background": "#191c1e",
+                    "tertiary-container": "#656d84",
+                    "secondary-container": "#d0e1fb",
+                    "outline": "#737686",
+                    "on-secondary": "#ffffff",
+                    "surface-container-low": "#f2f4f6",
+                    "inverse-primary": "#b4c5ff",
+                    "outline-variant": "#c3c6d7",
+                    "background": "#f7f9fb",
+                    "on-tertiary-fixed-variant": "#3f465c",
+                    "on-tertiary-container": "#eef0ff",
+                    "on-surface-variant": "#434655",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "tertiary": "#4d556b",
+                    "surface-dim": "#d8dadc",
+                    "error": "#ba1a1a",
+                    "inverse-surface": "#2d3133",
+                    "on-secondary-fixed": "#0b1c30",
+                    "on-primary-container": "#eeefff",
+                    "on-error-container": "#93000a",
+                    "surface": "#f7f9fb",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "secondary": "#505f76",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "primary-container": "#2563eb",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-variant": "#e0e3e5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                    "display": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                    "body": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                    "label": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .icon-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: rgba(115, 118, 134, 0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background-color: rgba(115, 118, 134, 0.4); }
+    </style>
+</head>
+<body class="bg-background text-on-surface h-screen w-screen overflow-hidden flex font-body antialiased">
+<!-- AppShell: SideNavBar -->
+<nav class="bg-surface-container-low border-r border-outline-variant fixed left-0 top-0 h-full w-[216px] flex flex-col py-4 z-20">
+<!-- Brand -->
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined icon-fill">radar</span>
+</div>
+<div>
+<h1 class="text-primary font-display font-bold text-lg tracking-tight">机会情报系统</h1>
+<p class="text-xs text-on-surface-variant font-medium">Opportunity Radar R04</p>
+</div>
+</div>
+<!-- Main Nav Links -->
+<div class="flex-1 px-3 space-y-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body text-label-md font-medium">工作台</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">rocket_launch</span>
+<span class="font-body text-label-md font-medium">机会</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-secondary-container text-on-secondary-fixed-variant font-bold border-r-4 border-primary transition-colors duration-150 ease-in-out opacity-90" href="#">
+<span class="material-symbols-outlined icon-fill">hub</span>
+<span class="font-body text-label-md">情报</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-body text-label-md font-medium">研究</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span class="font-body text-label-md font-medium">运行</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">admin_panel_settings</span>
+<span class="font-body text-label-md font-medium">管理</span>
+</a>
+</div>
+<!-- Footer Nav Links -->
+<div class="px-3 pt-4 border-t border-outline-variant space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-body text-label-md font-medium">审计日志</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body text-label-md font-medium">系统设置</span>
+</a>
+</div>
+</nav>
+<!-- AppShell: TopNavBar -->
+<header class="bg-surface border-b border-outline-variant fixed top-0 right-0 h-[56px] w-[calc(100%-216px)] flex items-center justify-between px-6 z-10">
+<!-- Global Search -->
+<div class="flex-1 max-w-md flex items-center bg-surface-container-low rounded-full px-4 py-1.5 focus-within:ring-2 focus-within:ring-primary focus-within:bg-surface transition-all">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mr-2">search</span>
+<input class="bg-transparent border-none outline-none w-full text-sm text-on-surface placeholder:text-on-surface-variant focus:ring-0 p-0" placeholder="全局搜索情报、机会或任务..." readonly="" type="text"/>
+</div>
+<!-- Sub Nav (Contextual to Active Main Nav) -->
+<div class="hidden lg:flex items-center gap-6 mx-8">
+<a class="text-primary font-bold border-b-2 border-primary pb-4 pt-4 text-sm hover:bg-surface-container-low transition-colors px-2" href="#">最新情报</a>
+<a class="text-on-surface-variant hover:text-primary pb-4 pt-4 text-sm hover:bg-surface-container-low transition-colors px-2" href="#">关键词发现</a>
+<a class="text-on-surface-variant hover:text-primary pb-4 pt-4 text-sm hover:bg-surface-container-low transition-colors px-2" href="#">关注关键词</a>
+<a class="text-on-surface-variant hover:text-primary pb-4 pt-4 text-sm hover:bg-surface-container-low transition-colors px-2" href="#">趋势分析</a>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-all active:scale-95"><span class="material-symbols-outlined">refresh</span></button>
+<button class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-all active:scale-95 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-all active:scale-95"><span class="material-symbols-outlined">help</span></button>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center ml-2 border border-outline-variant cursor-pointer active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Main Canvas Area -->
+<main class="ml-[216px] mt-[56px] w-[calc(100%-216px)] h-[calc(100vh-56px)] bg-surface overflow-y-auto overflow-x-hidden p-6 lg:p-8 flex flex-col gap-6">
+<!-- Entity Header -->
+<div class="flex flex-col gap-4">
+<!-- Breadcrumbs -->
+<div class="flex items-center gap-2 text-xs font-medium text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">情报</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">最新情报</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-on-surface">详情</span>
+</div>
+<!-- Title & Metadata -->
+<div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-2">
+<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-secondary-container text-on-secondary-fixed-variant border border-secondary-fixed-dim">已归一化</span>
+<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-primary-container/10 text-primary-container border border-primary-container/20">质量: 高</span>
+</div>
+<h2 class="text-2xl font-headline font-bold text-on-surface mb-2 tracking-tight">“东南亚港口自动化资本开支预算连续上调”</h2>
+<div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">domain</span>
+<span>来源: 区域港务披露</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">calendar_clock</span>
+<span>捕获时间: 2023-10-24 08:15:33 UTC</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">update</span>
+<span>数据新鲜度: &lt; 2小时</span>
+</div>
+</div>
+</div>
+<!-- Read Only Actions -->
+<div class="flex items-center gap-3 shrink-0">
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg border border-outline-variant bg-surface text-on-surface-variant font-medium text-sm hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">link</span>
+                        复制链接
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg border border-outline-variant bg-surface text-on-surface-variant font-medium text-sm hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                        导出 (只读)
+                    </button>
+</div>
+</div>
+</div>
+<!-- Tabs -->
+<div class="border-b border-outline-variant flex gap-8">
+<a class="pb-3 text-sm font-medium text-on-surface-variant hover:text-primary transition-colors" href="#">摘要</a>
+<a class="pb-3 text-sm font-bold text-primary border-b-2 border-primary" href="#">原始证据</a>
+<a class="pb-3 text-sm font-medium text-on-surface-variant hover:text-primary transition-colors" href="#">关系</a>
+<a class="pb-3 text-sm font-medium text-on-surface-variant hover:text-primary transition-colors" href="#">处理过程</a>
+</div>
+<!-- 2-Column Layout -->
+<div class="flex flex-col lg:flex-row gap-6 h-full pb-12">
+<!-- Left Column: Main Content (2/3 width) -->
+<div class="flex-[2] flex flex-col gap-6 min-w-0">
+<!-- Raw Snippet Card -->
+<div class="bg-surface border border-outline-variant rounded-xl flex flex-col shadow-sm overflow-hidden">
+<div class="px-5 py-4 border-b border-outline-variant flex items-center justify-between bg-surface-container-lowest">
+<h3 class="font-headline font-semibold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">code_blocks</span>
+                            原始正文 / 抓取片段
+                        </h3>
+<span class="text-xs text-on-surface-variant font-mono">ENCODING: UTF-8</span>
+</div>
+<div class="p-0 bg-inverse-surface text-inverse-on-surface font-mono text-xs leading-relaxed overflow-x-auto">
+<div class="p-4 whitespace-pre">
+[2023-10-24 08:15:30.112 UTC] INF | CRAWLER | Target: regional_port_auth_sg
+[2023-10-24 08:15:31.045 UTC] DBG | SELECTOR | Found matching element: .report-highlight-box
+--- BEGIN SNIPPET ---
+<span class="text-tertiary-fixed">According to the revised Q3 fiscal projections released by the Port Authority, automation capital expenditure (CAPEX) for the upcoming fiscal year has been adjusted upwards by 14.5%, reaching a projected $420M. This marks the third consecutive upward revision in automation budgets, primarily driven by the accelerated deployment of autonomous guided vehicles (AGVs) and automated stacking cranes (ASCs) at Terminal 4.</span>
+--- END SNIPPET ---
+[2023-10-24 08:15:32.990 UTC] INF | PARSER | Extracted 1 main block. Hash: a7f8b9...
+                        </div>
+</div>
+</div>
+<!-- Field Mapping Table Card -->
+<div class="bg-surface border border-outline-variant rounded-xl flex flex-col shadow-sm flex-1">
+<div class="px-5 py-4 border-b border-outline-variant bg-surface-container-lowest">
+<h3 class="font-headline font-semibold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">data_object</span>
+                            原始字段 / 规范化字段对照
+                        </h3>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant bg-surface-container-low text-xs text-on-surface-variant font-medium">
+<th class="py-3 px-5 w-1/3">原始数据 (Raw)</th>
+<th class="py-3 px-5 w-1/3">映射实体 (Entity)</th>
+<th class="py-3 px-5 w-1/3">处理逻辑</th>
+</tr>
+</thead>
+<tbody class="text-sm">
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-5 font-mono text-xs text-on-surface-variant break-words">"automation capital expenditure (CAPEX)"</td>
+<td class="py-3 px-5 text-on-surface font-medium flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+                                        资本支出_自动化
+                                    </td>
+<td class="py-3 px-5 text-on-surface-variant text-xs">NLP实体识别，关联标准指标库 [ID: MET-092]</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-5 font-mono text-xs text-on-surface-variant break-words">"upwards by 14.5%"</td>
+<td class="py-3 px-5 text-on-surface font-medium flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+                                        变化率_+14.5%
+                                    </td>
+<td class="py-3 px-5 text-on-surface-variant text-xs">数值提取，方向识别 (upwards -&gt; 增加)</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-5 font-mono text-xs text-on-surface-variant break-words">"projected $420M"</td>
+<td class="py-3 px-5 text-on-surface font-medium flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+                                        金额_420,000,000_USD
+                                    </td>
+<td class="py-3 px-5 text-on-surface-variant text-xs">货币规范化 ($ -&gt; USD, M -&gt; 1,000,000)</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-5 font-mono text-xs text-on-surface-variant break-words">"autonomous guided vehicles (AGVs)"</td>
+<td class="py-3 px-5 text-on-surface font-medium flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+                                        设备_AGV
+                                    </td>
+<td class="py-3 px-5 text-on-surface-variant text-xs">缩写扩展匹配</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right Column: Sidebar Meta (1/3 width) -->
+<div class="flex-1 flex flex-col gap-6 min-w-0">
+<!-- Source Info Card -->
+<div class="bg-surface border border-outline-variant rounded-xl flex flex-col shadow-sm">
+<div class="px-5 py-4 border-b border-outline-variant bg-surface-container-lowest">
+<h3 class="font-headline font-semibold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">info</span>
+                            来源信息
+                        </h3>
+</div>
+<div class="p-5 flex flex-col gap-4 text-sm">
+<div>
+<span class="block text-xs text-on-surface-variant mb-1">来源名称</span>
+<span class="font-medium text-on-surface">区域港务披露 (东南亚节点)</span>
+</div>
+<div>
+<span class="block text-xs text-on-surface-variant mb-1">来源 URL</span>
+<a class="font-mono text-xs text-primary hover:underline break-all truncate block" href="#">https://portauth.region.gov/investors/q3-revisions</a>
+</div>
+<div>
+<span class="block text-xs text-on-surface-variant mb-1">发布时间 (估算)</span>
+<span class="text-on-surface">2023-10-23 18:00:00 UTC</span>
+</div>
+<div>
+<span class="block text-xs text-on-surface-variant mb-1">系统捕获时间</span>
+<span class="text-on-surface">2023-10-24 08:15:33 UTC</span>
+</div>
+<div class="pt-2 border-t border-outline-variant">
+<a class="flex items-center gap-1 text-sm text-primary font-medium hover:underline" href="#">
+                                查看数据源详情
+                                <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Technical Trace Card -->
+<div class="bg-surface border border-outline-variant rounded-xl flex flex-col shadow-sm">
+<div class="px-5 py-4 border-b border-outline-variant bg-surface-container-lowest">
+<h3 class="font-headline font-semibold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">fingerprint</span>
+                            技术溯源
+                        </h3>
+</div>
+<div class="p-5 flex flex-col gap-4 text-sm">
+<div>
+<span class="block text-xs text-on-surface-variant mb-1">内容 Hash (SHA-256)</span>
+<div class="bg-surface-container-low p-2 rounded border border-outline-variant font-mono text-[10px] text-on-surface-variant break-all">
+                                e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+                            </div>
+</div>
+<div>
+<span class="block text-xs text-on-surface-variant mb-1">关联 Run-ID</span>
+<span class="inline-block px-2 py-1 rounded bg-secondary-container text-on-secondary-fixed-variant font-mono text-xs font-bold">RUN-29938</span>
+</div>
+<div class="pt-2 border-t border-outline-variant">
+<a class="flex items-center gap-1 text-sm text-primary font-medium hover:underline" href="#">
+                                查看运行详情
+                                <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Attachments Card -->
+<div class="bg-surface border border-outline-variant rounded-xl flex flex-col shadow-sm">
+<div class="px-5 py-4 border-b border-outline-variant bg-surface-container-lowest">
+<h3 class="font-headline font-semibold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">attachment</span>
+                            附件 / 引用列表
+                        </h3>
+</div>
+<div class="p-2 flex flex-col">
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors group cursor-pointer border border-transparent hover:border-outline-variant">
+<div class="flex items-center gap-3 overflow-hidden">
+<div class="w-8 h-8 rounded bg-error-container text-on-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-medium text-on-surface truncate">Q3_Draft_Report.pdf</p>
+<p class="text-xs text-on-surface-variant">2.4 MB</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">download</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors group cursor-pointer border border-transparent hover:border-outline-variant">
+<div class="flex items-center gap-3 overflow-hidden">
+<div class="w-8 h-8 rounded bg-primary-container/10 text-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">csv</span>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-medium text-on-surface truncate">Capex_Table_3.1.csv</p>
+<p class="text-xs text-on-surface-variant">145 KB</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">download</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

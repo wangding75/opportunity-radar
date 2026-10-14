@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>P17 — 运行记录 - Opportunity Radar R04</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "inverse-on-surface": "#eff1f3",
+                            "surface-dim": "#d8dadc",
+                            "on-error-container": "#93000a",
+                            "tertiary-container": "#656d84",
+                            "on-secondary-container": "#54647a",
+                            "on-primary-fixed-variant": "#003ea8",
+                            "primary-fixed": "#dbe1ff",
+                            "surface-container-high": "#e6e8ea",
+                            "secondary": "#505f76",
+                            "surface-tint": "#0053db",
+                            "surface-container-low": "#f2f4f6",
+                            "on-secondary": "#ffffff",
+                            "secondary-container": "#d0e1fb",
+                            "error": "#ba1a1a",
+                            "tertiary-fixed": "#dae2fd",
+                            "tertiary": "#4d556b",
+                            "inverse-primary": "#b4c5ff",
+                            "surface": "#f7f9fb",
+                            "on-tertiary": "#ffffff",
+                            "primary-container": "#2563eb",
+                            "on-primary-container": "#eeefff",
+                            "surface-container-lowest": "#ffffff",
+                            "on-primary-fixed": "#00174b",
+                            "secondary-fixed-dim": "#b7c8e1",
+                            "background": "#f7f9fb",
+                            "surface-container": "#eceef0",
+                            "surface-variant": "#e0e3e5",
+                            "secondary-fixed": "#d3e4fe",
+                            "primary-fixed-dim": "#b4c5ff",
+                            "surface-bright": "#f7f9fb",
+                            "on-tertiary-fixed-variant": "#3f465c",
+                            "tertiary-fixed-dim": "#bec6e0",
+                            "on-error": "#ffffff",
+                            "on-secondary-fixed": "#0b1c30",
+                            "outline": "#737686",
+                            "on-tertiary-container": "#eef0ff",
+                            "on-surface-variant": "#434655",
+                            "surface-container-highest": "#e0e3e5",
+                            "on-tertiary-fixed": "#131b2e",
+                            "on-background": "#191c1e",
+                            "primary": "#004ac6",
+                            "on-surface": "#191c1e",
+                            "inverse-surface": "#2d3133",
+                            "error-container": "#ffdad6",
+                            "on-secondary-fixed-variant": "#38485d",
+                            "outline-variant": "#c3c6d7",
+                            "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "fontFamily": {
+                            "headline": ["Inter", "PingFang SC", "sans-serif"],
+                            "display": ["Inter", "PingFang SC", "sans-serif"],
+                            "body": ["Inter", "PingFang SC", "sans-serif"],
+                            "label": ["Inter", "PingFang SC", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex w-full overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-lowest text-primary font-body text-label-md font-medium fixed left-0 top-0 h-full w-[216px] border-r border-outline-variant transition-colors duration-200 ease-in-out flex flex-col py-4 px-3 gap-2 z-20">
+<!-- Brand -->
+<div class="px-3 mb-6">
+<h1 class="text-xl font-headline font-bold text-primary">机会情报系统</h1>
+<p class="text-xs text-on-surface-variant mt-1">Opportunity Radar R04</p>
+</div>
+<!-- Main Tabs -->
+<div class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span>工作台</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">star</span>
+<span>机会</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">travel_explore</span>
+<span>情报</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">science</span>
+<span>研究</span>
+</a>
+<!-- Active Nav Group: 运行 -->
+<div class="flex flex-col gap-1 mt-1 mb-1">
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary-container text-on-primary-container font-semibold transition-colors duration-200 ease-in-out">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">settings_input_component</span>
+<span>运行</span>
+<span class="material-symbols-outlined ml-auto text-[16px]">expand_more</span>
+</div>
+<!-- Sub-items -->
+<div class="flex flex-col ml-9 border-l border-outline-variant pl-3 gap-1 mt-1">
+<a class="px-3 py-2 rounded-md text-sm text-on-surface-variant hover:bg-surface-container-high" href="#">数据源</a>
+<a class="px-3 py-2 rounded-md text-sm text-on-surface-variant hover:bg-surface-container-high" href="#">监控计划</a>
+<a class="px-3 py-2 rounded-md text-sm font-semibold text-primary bg-surface-container-low" href="#">运行记录</a>
+<a class="px-3 py-2 rounded-md text-sm text-on-surface-variant hover:bg-surface-container-high" href="#">分析队列</a>
+<a class="px-3 py-2 rounded-md text-sm text-on-surface-variant hover:bg-surface-container-high" href="#">告警</a>
+</div>
+</div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span>管理</span>
+</a>
+</div>
+<!-- Footer Tabs -->
+<div class="mt-auto pt-4 border-t border-outline-variant flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">history_edu</span>
+<span>审计日志</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">switch_account</span>
+<span>系统诊断</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="ml-[216px] flex flex-col w-[calc(100%-216px)] h-screen overflow-hidden bg-background">
+<!-- TopNavBar -->
+<header class="bg-surface-bright text-primary font-headline text-on-surface fixed top-0 right-0 h-14 w-[calc(100%-216px)] border-b border-outline-variant flex justify-between items-center px-6 z-10 transition-all duration-200">
+<div class="flex items-center gap-6">
+<span class="text-lg font-bold text-on-surface">运行</span>
+<!-- Search (on_left) -->
+<div class="relative hidden md:flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">search</span>
+<input class="pl-9 pr-4 py-1.5 bg-surface-container-lowest border border-outline-variant rounded-full text-sm w-64 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" placeholder="全局搜索..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-all duration-200 flex items-center justify-center p-2 rounded-full hover:bg-surface-container-low">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all duration-200 flex items-center justify-center p-2 rounded-full hover:bg-surface-container-low relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all duration-200 flex items-center justify-center p-2 rounded-full hover:bg-surface-container-low">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant flex-shrink-0 cursor-pointer">
+<img alt="用户头像" class="w-full h-full object-cover" data-alt="A professional headshot of a female executive in a modern, brightly lit office environment. She is wearing a dark navy blazer over a crisp white shirt. The background is slightly blurred with soft cool-toned light coming through large glass windows, conveying a high-tech corporate atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaVXA8bvkAbQC-B1YuiOQRyZD_GM8q8EuabJeMJK47ZJwuTDDPHjPTg0X_EGLMmSJltPblLCMDabBjdsw8Fug-cwSTx7hX9OuXQraaCI8bmV5KEdE0xcNPEeWrN-btffrVDkNM7FqH27pk-hHo8mXOlULmS85phMOoKUmT1NxPooO2yd23YVBo1pmyzsXyaTeW1xxSD9F8ShEp1LC1-65a2QYREGoNxY239i6D4X0dRt5SRztzM8YTBtp6nsI1XoONGGJeHEn1qpvU"/>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 overflow-auto pt-14 p-6 px-6 pb-6 w-full">
+<div class="max-w-[2000px] mx-auto w-full flex flex-col gap-5 h-full">
+<!-- PageHeader -->
+<div class="flex flex-col gap-3 flex-shrink-0">
+<div>
+<h2 class="text-2xl font-headline font-bold text-on-surface tracking-tight">运行记录</h2>
+<p class="text-sm text-on-surface-variant mt-1">查看采集、分析与研究后台任务的执行结果和错误信息</p>
+</div>
+<!-- Info Alert -->
+<div class="flex items-start gap-3 bg-secondary-container bg-opacity-30 border border-primary-fixed-dim rounded-lg p-3 w-full">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">info</span>
+<div class="text-sm text-on-secondary-fixed">
+<span class="font-semibold">只读提示：</span>手动运行、取消、重试等调度控制待后端安全接口确认后接入。
+                        </div>
+</div>
+<!-- Warning Banner -->
+<div class="flex items-center justify-between gap-3 bg-[#fff3cd] border border-[#ffeeba] rounded-md py-2 px-4 shadow-sm w-full mt-1">
+<div class="flex items-center gap-2 text-[#856404]">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+<span class="text-sm font-medium">采集节点 Worker-04 心跳延迟 2 分钟</span>
+</div>
+<a class="text-sm text-[#856404] underline hover:text-[#533f03]" href="#">查看节点</a>
+</div>
+</div>
+<!-- FilterBar -->
+<div class="flex flex-wrap items-center gap-3 bg-surface-container-lowest border border-outline-variant rounded-lg p-3 flex-shrink-0">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-2.5 top-2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full pl-8 pr-3 py-1.5 bg-surface border border-outline-variant rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-on-surface" placeholder="搜索运行 ID / 来源..." type="text"/>
+</div>
+<select class="py-1.5 pl-3 pr-8 bg-surface border border-outline-variant rounded-md text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary appearance-none">
+<option value="">所有监控计划</option>
+<option value="p1">SEC EDGAR 每日采集</option>
+<option value="p2">行业新闻 RSS 轮询</option>
+<option value="p3">结构化分析批处理</option>
+</select>
+<select class="py-1.5 pl-3 pr-8 bg-surface border border-outline-variant rounded-md text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary appearance-none">
+<option value="">所有执行类型</option>
+<option value="t1">数据采集</option>
+<option value="t2">AI 分析</option>
+<option value="t3">系统维护</option>
+</select>
+<select class="py-1.5 pl-3 pr-8 bg-surface border border-outline-variant rounded-md text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary appearance-none">
+<option value="">所有工作节点</option>
+<option value="w1">Worker-01</option>
+<option value="w2">Worker-02</option>
+<option value="w4">Worker-04</option>
+</select>
+<select class="py-1.5 pl-3 pr-8 bg-surface border border-outline-variant rounded-md text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary appearance-none">
+<option value="">所有状态</option>
+<option value="s1">运行中</option>
+<option value="s2">已完成</option>
+<option value="s3">失败</option>
+<option value="s4">超时</option>
+</select>
+<div class="flex items-center gap-2 ml-auto">
+<span class="text-sm text-on-surface-variant">时间范围:</span>
+<input class="py-1 px-2 bg-surface border border-outline-variant rounded-md text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" type="date"/>
+<span class="text-sm text-on-surface-variant">-</span>
+<input class="py-1 px-2 bg-surface border border-outline-variant rounded-md text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" type="date"/>
+</div>
+</div>
+<!-- DataTable -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg flex-1 overflow-hidden flex flex-col shadow-sm">
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left text-sm whitespace-nowrap">
+<thead class="bg-surface-container-low text-on-surface-variant font-medium border-b border-outline-variant sticky top-0 z-10">
+<tr>
+<th class="py-3 px-4 w-28">RUN-ID</th>
+<th class="py-3 px-4">来源/计划</th>
+<th class="py-3 px-4 w-32">执行类型</th>
+<th class="py-3 px-4 w-32">工作节点</th>
+<th class="py-3 px-4 w-28">状态</th>
+<th class="py-3 px-4 w-40">开始时间</th>
+<th class="py-3 px-4 w-24">耗时</th>
+<th class="py-3 px-4 w-24 text-right">获取数</th>
+<th class="py-3 px-4 w-28 text-right">写入/更新数</th>
+<th class="py-3 px-4 w-32">触发方式</th>
+<th class="py-3 px-4 min-w-[200px]">错误摘要</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant text-on-surface">
+<!-- Row 1: Running -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-2.5 px-4"><a class="text-primary hover:underline font-mono" href="#">RN-8902</a></td>
+<td class="py-2.5 px-4"><a class="hover:text-primary transition-colors font-medium" href="#">SEC EDGAR 每日采集</a></td>
+<td class="py-2.5 px-4">数据采集</td>
+<td class="py-2.5 px-4"><span class="font-mono text-xs bg-surface-container px-1.5 py-0.5 rounded text-on-surface-variant">Worker-01</span></td>
+<td class="py-2.5 px-4">
+<div class="flex items-center gap-1.5 text-surface-tint">
+<span class="material-symbols-outlined text-[16px] animate-spin">sync</span>
+<span class="text-xs font-semibold">运行中</span>
+</div>
+</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-xs">2023-10-24 10:15:00</td>
+<td class="py-2.5 px-4 font-mono text-xs">12m 45s</td>
+<td class="py-2.5 px-4 text-right">1,452</td>
+<td class="py-2.5 px-4 text-right">890</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-xs">定时计划</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-xs truncate max-w-[200px]">-</td>
+</tr>
+<!-- Row 2: Completed -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-2.5 px-4"><a class="text-primary hover:underline font-mono" href="#">RN-8901</a></td>
+<td class="py-2.5 px-4"><a class="hover:text-primary transition-colors font-medium" href="#">行业新闻 RSS 轮询</a></td>
+<td class="py-2.5 px-4">数据采集</td>
+<td class="py-2.5 px-4"><span class="font-mono text-xs bg-surface-container px-1.5 py-0.5 rounded text-on-surface-variant">Worker-02</span></td>
+<td class="py-2.5 px-4">
+<div class="flex items-center gap-1.5 text-[#0f5132]">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span class="text-xs font-semibold">已完成</span>
+</div>
+</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-xs">2023-10-24 10:00:00</td>
+<td class="py-2.5 px-4 font-mono text-xs">2m 10s</td>
+<td class="py-2.5 px-4 text-right">45</td>
+<td class="py-2.5 px-4 text-right">12</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-xs">定时计划</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-xs truncate max-w-[200px]">-</td>
+</tr>
+<!-- Row 3: Failed -->
+<tr class="hover:bg-surface-container-lowest transition-colors group bg-error-container bg-opacity-10">
+<td class="py-2.5 px-4"><a class="text-primary hover:underline font-mono" href="#">RN-8900</a></td>
+<td class="py-2.5 px-4"><a class="hover:text-primary transition-colors font-medium" href="#">深度研究生成队列</a></td>
+<td class="py-2.5 px-4">AI 分析</td>
+<td class="py-2.5 px-4"><span class="font-mono text-xs bg-surface-container px-1.5 py-0.5 rounded text-on-surface-variant">Worker-03</span></td>
+<td class="py-2.5 px-4">
+<div class="flex items-center gap-1.5 text-error">
+<span class="material-symbols-outlined text-[16px]">error</span>
+<span class="text-xs font-semibold">失败</span>
+</div>
+</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-xs">2023-10-24 09:45:00</td>
+<td class="py-2.5 px-4 font-mono text-xs">45s</td>
+<td class="py-2.5 px-4 text-right">1</td>
+<td class="py-2.5 px-4 text-right">0</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-xs">事件触发</td>
+<td class="py-2.5 px-4 truncate max-w-[200px]">
+<a class="text-error hover:underline text-xs" href="#" title="API Rate Limit Exceeded for Model Provider">API Rate Limit Exceeded for Mo...</a>
+</td>
+</tr>
+<!-- Row 4: Timeout -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-2.5 px-4"><a class="text-primary hover:underline font-mono" href="#">RN-8899</a></td>
+<td class="py-2.5 px-4"><a class="hover:text-primary transition-colors font-medium" href="#">竞品社交媒体监控</a></td>
+<td class="py-2.5 px-4">数据采集</td>
+<td class="py-2.5 px-4"><span class="font-mono text-xs bg-[#ffeeba] px-1.5 py-0.5 rounded text-[#856404]">Worker-04</span></td>
+<td class="py-2.5 px-4">
+<div class="flex items-center gap-1.5 text-[#d39e00]">
+<span class="material-symbols-outlined text-[16px]">timer_off</span>
+<span class="text-xs font-semibold">超时</span>
+</div>
+</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-xs">2023-10-24 09:30:00</td>
+<td class="py-2.5 px-4 font-mono text-xs">30m 00s</td>
+<td class="py-2.5 px-4 text-right">89</td>
+<td class="py-2.5 px-4 text-right">89</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-xs">定时计划</td>
+<td class="py-2.5 px-4 truncate max-w-[200px]">
+<a class="text-[#856404] hover:underline text-xs" href="#" title="Connection reset by peer during paginated fetch">Connection reset by peer durin...</a>
+</td>
+</tr>
+<!-- Row 5: Completed -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-2.5 px-4"><a class="text-primary hover:underline font-mono" href="#">RN-8898</a></td>
+<td class="py-2.5 px-4"><a class="hover:text-primary transition-colors font-medium" href="#">结构化抽取批处理</a></td>
+<td class="py-2.5 px-4">AI 分析</td>
+<td class="py-2.5 px-4"><span class="font-mono text-xs bg-surface-container px-1.5 py-0.5 rounded text-on-surface-variant">Worker-01</span></td>
+<td class="py-2.5 px-4">
+<div class="flex items-center gap-1.5 text-[#0f5132]">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span class="text-xs font-semibold">已完成</span>
+</div>
+</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-xs">2023-10-24 09:15:00</td>
+<td class="py-2.5 px-4 font-mono text-xs">8m 32s</td>
+<td class="py-2.5 px-4 text-right">150</td>
+<td class="py-2.5 px-4 text-right">150</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-xs">事件触发</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-xs truncate max-w-[200px]">-</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination (Simplified for read-only view) -->
+<div class="bg-surface border-t border-outline-variant py-2 px-4 flex items-center justify-between text-xs text-on-surface-variant">
+<div>显示 1 至 5 条，共 1,248 条运行记录</div>
+<div class="flex items-center gap-2">
+<button class="px-2 py-1 border border-outline-variant rounded hover:bg-surface-container-low disabled:opacity-50" disabled="">上一页</button>
+<span class="px-2">1 / 250</span>
+<button class="px-2 py-1 border border-outline-variant rounded hover:bg-surface-container-low text-on-surface">下一页</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

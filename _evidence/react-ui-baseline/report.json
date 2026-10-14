@@ -1,0 +1,388 @@
+{
+  "generatedAt": "2026-09-04T03:47:24.253Z",
+  "sourceCommit": "local-worktree",
+  "targets": [
+    "P01",
+    "P02",
+    "P09",
+    "P24",
+    "P32"
+  ],
+  "results": [
+    {
+      "page": "P01",
+      "route": "/today",
+      "viewport": {
+        "name": "desktop-xl",
+        "width": 1536,
+        "height": 1024
+      },
+      "screenshot": "P01-desktop-xl.png",
+      "documentWidth": 1536,
+      "viewportWidth": 1536,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 310
+    },
+    {
+      "page": "P01",
+      "route": "/today",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 960
+      },
+      "screenshot": "P01-desktop.png",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 310
+    },
+    {
+      "page": "P01",
+      "route": "/today",
+      "viewport": {
+        "name": "laptop",
+        "width": 1280,
+        "height": 800
+      },
+      "screenshot": "P01-laptop.png",
+      "documentWidth": 1280,
+      "viewportWidth": 1280,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 310
+    },
+    {
+      "page": "P01",
+      "route": "/today",
+      "viewport": {
+        "name": "tablet",
+        "width": 1024,
+        "height": 768
+      },
+      "screenshot": "P01-tablet.png",
+      "documentWidth": 1024,
+      "viewportWidth": 1024,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 309
+    },
+    {
+      "page": "P01",
+      "route": "/today",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "P01-mobile.png",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 308
+    },
+    {
+      "page": "P02",
+      "route": "/intelligence",
+      "viewport": {
+        "name": "desktop-xl",
+        "width": 1536,
+        "height": 1024
+      },
+      "screenshot": "P02-desktop-xl.png",
+      "documentWidth": 1536,
+      "viewportWidth": 1536,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 457
+    },
+    {
+      "page": "P02",
+      "route": "/intelligence",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 960
+      },
+      "screenshot": "P02-desktop.png",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 457
+    },
+    {
+      "page": "P02",
+      "route": "/intelligence",
+      "viewport": {
+        "name": "laptop",
+        "width": 1280,
+        "height": 800
+      },
+      "screenshot": "P02-laptop.png",
+      "documentWidth": 1280,
+      "viewportWidth": 1280,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 457
+    },
+    {
+      "page": "P02",
+      "route": "/intelligence",
+      "viewport": {
+        "name": "tablet",
+        "width": 1024,
+        "height": 768
+      },
+      "screenshot": "P02-tablet.png",
+      "documentWidth": 1024,
+      "viewportWidth": 1024,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 455
+    },
+    {
+      "page": "P02",
+      "route": "/intelligence",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "P02-mobile.png",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 454
+    },
+    {
+      "page": "P09",
+      "route": "/opportunities/OPP-20260819-021",
+      "viewport": {
+        "name": "desktop-xl",
+        "width": 1536,
+        "height": 1024
+      },
+      "screenshot": "P09-desktop-xl.png",
+      "documentWidth": 1536,
+      "viewportWidth": 1536,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 240
+    },
+    {
+      "page": "P09",
+      "route": "/opportunities/OPP-20260819-021",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 960
+      },
+      "screenshot": "P09-desktop.png",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 240
+    },
+    {
+      "page": "P09",
+      "route": "/opportunities/OPP-20260819-021",
+      "viewport": {
+        "name": "laptop",
+        "width": 1280,
+        "height": 800
+      },
+      "screenshot": "P09-laptop.png",
+      "documentWidth": 1280,
+      "viewportWidth": 1280,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 240
+    },
+    {
+      "page": "P09",
+      "route": "/opportunities/OPP-20260819-021",
+      "viewport": {
+        "name": "tablet",
+        "width": 1024,
+        "height": 768
+      },
+      "screenshot": "P09-tablet.png",
+      "documentWidth": 1024,
+      "viewportWidth": 1024,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 239
+    },
+    {
+      "page": "P09",
+      "route": "/opportunities/OPP-20260819-021",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "P09-mobile.png",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 238
+    },
+    {
+      "page": "P24",
+      "route": "/settings/workspace",
+      "viewport": {
+        "name": "desktop-xl",
+        "width": 1536,
+        "height": 1024
+      },
+      "screenshot": "P24-desktop-xl.png",
+      "documentWidth": 1536,
+      "viewportWidth": 1536,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 203
+    },
+    {
+      "page": "P24",
+      "route": "/settings/workspace",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 960
+      },
+      "screenshot": "P24-desktop.png",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 203
+    },
+    {
+      "page": "P24",
+      "route": "/settings/workspace",
+      "viewport": {
+        "name": "laptop",
+        "width": 1280,
+        "height": 800
+      },
+      "screenshot": "P24-laptop.png",
+      "documentWidth": 1280,
+      "viewportWidth": 1280,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 203
+    },
+    {
+      "page": "P24",
+      "route": "/settings/workspace",
+      "viewport": {
+        "name": "tablet",
+        "width": 1024,
+        "height": 768
+      },
+      "screenshot": "P24-tablet.png",
+      "documentWidth": 1024,
+      "viewportWidth": 1024,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 202
+    },
+    {
+      "page": "P24",
+      "route": "/settings/workspace",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "P24-mobile.png",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 201
+    },
+    {
+      "page": "P32",
+      "route": "/login",
+      "viewport": {
+        "name": "desktop-xl",
+        "width": 1536,
+        "height": 1024
+      },
+      "screenshot": "P32-desktop-xl.png",
+      "documentWidth": 1536,
+      "viewportWidth": 1536,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 93
+    },
+    {
+      "page": "P32",
+      "route": "/login",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 960
+      },
+      "screenshot": "P32-desktop.png",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 93
+    },
+    {
+      "page": "P32",
+      "route": "/login",
+      "viewport": {
+        "name": "laptop",
+        "width": 1280,
+        "height": 800
+      },
+      "screenshot": "P32-laptop.png",
+      "documentWidth": 1280,
+      "viewportWidth": 1280,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 93
+    },
+    {
+      "page": "P32",
+      "route": "/login",
+      "viewport": {
+        "name": "tablet",
+        "width": 1024,
+        "height": 768
+      },
+      "screenshot": "P32-tablet.png",
+      "documentWidth": 1024,
+      "viewportWidth": 1024,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 93
+    },
+    {
+      "page": "P32",
+      "route": "/login",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "P32-mobile.png",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "horizontalOverflow": false,
+      "minimumComputedFontPx": 12,
+      "visibleElementCount": 92
+    }
+  ]
+}

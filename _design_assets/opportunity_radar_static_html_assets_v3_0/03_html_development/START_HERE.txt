@@ -1,0 +1,1 @@
+解压 `opportunity_radar_static_html_assets_v3_0.zip`，完整读取 `opportunity_radar_static_html_assets_v3_0/03_html_development/HTML_STATIC_HIGH_FIDELITY_DEVELOPMENT_INSTRUCTION.md`，严格按资产包中的图片、页面矩阵、状态矩阵、跳转/交互矩阵和 Implementation Overrides 开发 34 个主体页 + 27 个状态的高保真可点击静态 HTML；先完成 AppShell，再按 HTML_DEVELOPMENT_ORDER.md 逐批开发、截图对比、自测并提交。

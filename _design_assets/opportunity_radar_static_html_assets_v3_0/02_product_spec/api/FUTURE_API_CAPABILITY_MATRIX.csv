@@ -1,0 +1,22 @@
+﻿capability,ui_refs,expected_backend_contract,status
+机会创建/合并,P03-S01~S04,"POST/PUT opportunity, dedupe, evidence links",NEEDS_BACKEND_REVIEW
+机会状态变更,P09-S01,PATCH opportunity status + audit,NEEDS_BACKEND_REVIEW
+负责人分配,P09-S02,PATCH owner / member search,NEEDS_BACKEND_REVIEW
+归档/忽略,P09-S03,PATCH lifecycle + monitoring impact,NEEDS_BACKEND_REVIEW
+结构化分析,P09-S04,POST analysis job / GET progress,NEEDS_BACKEND_REVIEW
+创建研究,P09-S05/P11-S01,POST research / link opportunity/evidence,NEEDS_BACKEND_REVIEW
+研究恢复,P12-S01,retry/skip/log endpoints,NEEDS_BACKEND_REVIEW
+研究发布,P13-S01,publish/version/notify/audit,NEEDS_BACKEND_REVIEW
+监控计划 CRUD,P17-S01/S02,plan create/pause/resume/schedule,NEEDS_BACKEND_REVIEW
+手动 Run,P17-S03,POST run + source scope + time range,NEEDS_BACKEND_REVIEW
+Run 重试,P20-S01,retry failed sources/stages,NEEDS_BACKEND_REVIEW
+分析队列操作,P21-S01,retry/cancel/prioritize/worker/status,NEEDS_BACKEND_REVIEW
+告警生命周期,P22-S01,read/assign/in-progress/resolve/silence,NEEDS_BACKEND_REVIEW
+告警规则,P23-S01,rule builder/test/create/enable,NEEDS_BACKEND_REVIEW
+成员邀请,P25-S01,invite/resend/cancel/seat,NEEDS_BACKEND_REVIEW
+角色权限,P26-S01,role diff/permissions/scope/audit,NEEDS_BACKEND_REVIEW
+MFA,P27-S01/P32-S01,enroll/verify/recovery/passkey/session,NEEDS_BACKEND_REVIEW
+账户危险操作,P27-S02,session revoke/credential revoke/delete,NEEDS_BACKEND_REVIEW
+外部集成,P28-S01,OAuth/re-auth/test/disconnect,NEEDS_BACKEND_REVIEW
+搜索,P31-S01,global search/suggest/saved search,NEEDS_BACKEND_REVIEW
+权限申请,P33-S01,request/approve/reject/expire/audit,NEEDS_BACKEND_REVIEW

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>机会情报系统 - 告警</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-container": "#d0e1fb",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container-high": "#e6e8ea",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-container": "#eef0ff",
+                        "outline-variant": "#c3c6d7",
+                        "on-primary-fixed": "#00174b",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-background": "#191c1e",
+                        "outline": "#737686",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary-fixed": "#131b2e",
+                        "on-primary-container": "#eeefff",
+                        "primary": "#004ac6",
+                        "secondary": "#505f76",
+                        "surface-dim": "#d8dadc",
+                        "secondary-fixed": "#d3e4fe",
+                        "primary-fixed": "#dbe1ff",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "inverse-primary": "#b4c5ff",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-container": "#656d84",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-surface-variant": "#434655",
+                        "tertiary-fixed": "#dae2fd",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#191c1e",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "error-container": "#ffdad6",
+                        "background": "#f7f9fb",
+                        "surface-container": "#eceef0",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "inverse-surface": "#2d3133",
+                        "on-secondary-container": "#54647a",
+                        "surface-tint": "#0053db",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#2563eb",
+                        "tertiary": "#4d556b",
+                        "tertiary-fixed-dim": "#bec6e0"
+                    },
+                    fontFamily: {
+                        headline: ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        display: ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        body: ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        label: ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen">
+<!-- AppShell: SideNavBar -->
+<nav class="bg-surface-container-lowest border-r border-outline-variant fixed left-0 top-0 h-full w-[216px] flex flex-col p-4 gap-2 z-40">
+<div class="mb-6 px-2">
+<h1 class="text-lg font-headline font-bold text-on-surface tracking-tight">机会情报系统</h1>
+<p class="text-xs text-on-surface-variant mt-1">R04 中文业务闭环</p>
+</div>
+<div class="flex-1 overflow-y-auto space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                工作台
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">star</span>
+                机会
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">insights</span>
+                情报
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+                研究
+            </a>
+<!-- Expanded Section -->
+<div class="space-y-1">
+<button class="flex items-center justify-between w-full px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg text-label-md">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px]">play_circle</span>
+                        运行
+                    </div>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+<div class="pl-9 pr-2 space-y-1">
+<a class="block px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg text-label-md" href="#">数据源</a>
+<a class="block px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg text-label-md" href="#">监控计划</a>
+<a class="block px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg text-label-md" href="#">运行记录</a>
+<a class="block px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg text-label-md" href="#">分析队列</a>
+<!-- Active Sub-item -->
+<a class="block px-3 py-2 bg-secondary-container text-on-secondary-container font-bold rounded-lg text-label-md opacity-90" href="#">告警</a>
+</div>
+</div>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+                管理
+            </a>
+</div>
+</nav>
+<!-- AppShell: TopNavBar -->
+<header class="bg-surface-container-lowest border-b border-outline-variant fixed top-0 right-0 h-[56px] left-[216px] flex items-center justify-between px-6 z-30">
+<div class="flex items-center gap-4 flex-1">
+<h2 class="text-label-md font-bold text-on-surface">告警</h2>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<button class="p-2 rounded-full hover:bg-surface-container-high hover:text-primary transition-colors focus:ring-2 focus:ring-primary-container outline-none">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high hover:text-primary transition-colors focus:ring-2 focus:ring-primary-container outline-none">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high hover:text-primary transition-colors focus:ring-2 focus:ring-primary-container outline-none">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high hover:text-primary transition-colors focus:ring-2 focus:ring-primary-container outline-none">
+<span class="material-symbols-outlined text-[20px]">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[216px] mt-[56px] p-6 max-w-[1600px] mx-auto min-h-[calc(100vh-56px)]">
+<!-- Page Header -->
+<div class="mb-6">
+<h1 class="text-2xl font-bold text-on-surface font-headline">告警</h1>
+<p class="text-on-surface-variant text-sm mt-1">查看情报与系统运行触发的异常信号及其关联对象</p>
+</div>
+<!-- Capability Unavailable Notice -->
+<div class="bg-surface-container-high border border-outline-variant rounded-lg p-3 mb-6 flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] mt-0.5">info</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">告警已读、确认、关闭等状态变更接口未确认，本页仅提供浏览与关联对象跳转。</p>
+</div>
+<!-- Local Tabs -->
+<div class="flex border-b border-outline-variant mb-6">
+<button class="px-6 py-3 text-sm font-medium border-b-2 border-primary text-primary">告警列表</button>
+<button class="px-6 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors">规则说明</button>
+</div>
+<!-- Filters -->
+<div class="flex flex-wrap items-center gap-3 mb-6">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full pl-9 pr-3 py-2 text-sm bg-surface-container-lowest border border-outline-variant rounded-md focus:ring-1 focus:ring-primary focus:border-primary outline-none" placeholder="搜索告警内容或规则 ID..." type="text"/>
+</div>
+<select class="px-3 py-2 text-sm bg-surface-container-lowest border border-outline-variant rounded-md text-on-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none">
+<option>严重级别 (全部)</option>
+<option>严重 (Critical)</option>
+<option>高 (High)</option>
+</select>
+<select class="px-3 py-2 text-sm bg-surface-container-lowest border border-outline-variant rounded-md text-on-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none">
+<option>类型 (全部)</option>
+<option>数据源异常</option>
+<option>情报突增</option>
+</select>
+<select class="px-3 py-2 text-sm bg-surface-container-lowest border border-outline-variant rounded-md text-on-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none">
+<option>关联对象 (全部)</option>
+</select>
+<select class="px-3 py-2 text-sm bg-surface-container-lowest border border-outline-variant rounded-md text-on-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none">
+<option>时间范围: 最近 24 小时</option>
+</select>
+<button class="ml-auto flex items-center gap-1 text-sm text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[18px]">sort</span>
+                时间降序
+            </button>
+</div>
+<!-- 2-Column Layout -->
+<div class="flex gap-6 h-[calc(100vh-320px)]">
+<!-- Left Column: High-density list (62%) -->
+<div class="w-[62%] bg-surface-container-lowest rounded-xl border border-outline-variant flex flex-col overflow-hidden">
+<div class="overflow-y-auto flex-1 p-2">
+<table class="w-full text-left text-sm border-collapse">
+<thead class="sticky top-0 bg-surface-container-lowest z-10 border-b border-outline-variant">
+<tr>
+<th class="font-medium text-on-surface-variant py-3 px-4 w-[140px]">触发时间</th>
+<th class="font-medium text-on-surface-variant py-3 px-4 w-[80px]">级别</th>
+<th class="font-medium text-on-surface-variant py-3 px-4">告警摘要</th>
+<th class="font-medium text-on-surface-variant py-3 px-4 w-[120px]">类型</th>
+<th class="font-medium text-on-surface-variant py-3 px-4 w-[140px]">关联对象</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-high">
+<!-- Selected Row -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer bg-secondary-container/20">
+<td class="py-3 px-4 text-on-surface whitespace-nowrap">2023-10-27 14:32:01</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-medium bg-error-container text-on-error-container">严重</span>
+</td>
+<td class="py-3 px-4 text-on-surface truncate max-w-[200px]" title="竞品 A 发布了未经证实的新一代产品参数泄露情报">竞品 A 发布了未经证实的新一代产品参数泄露情报</td>
+<td class="py-3 px-4 text-on-surface-variant whitespace-nowrap">情报突增</td>
+<td class="py-3 px-4 text-on-surface whitespace-nowrap text-primary hover:underline">OPP-2023-001</td>
+</tr>
+<!-- Unselected Row -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer">
+<td class="py-3 px-4 text-on-surface whitespace-nowrap">2023-10-27 12:15:44</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-medium bg-[#FFF3CD] text-[#856404] dark:bg-[#664D03] dark:text-[#FFE69C]">高</span>
+</td>
+<td class="py-3 px-4 text-on-surface truncate max-w-[200px]">数据源 Twitter-Crawler 连续 3 次心跳超时</td>
+<td class="py-3 px-4 text-on-surface-variant whitespace-nowrap">系统异常</td>
+<td class="py-3 px-4 text-on-surface whitespace-nowrap text-primary hover:underline">RUN-TWT-099</td>
+</tr>
+<!-- Unselected Row -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer">
+<td class="py-3 px-4 text-on-surface whitespace-nowrap">2023-10-27 09:05:12</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-medium bg-[#D1ECF1] text-[#0C5460] dark:bg-[#06353D] dark:text-[#9EEAF9]">中</span>
+</td>
+<td class="py-3 px-4 text-on-surface truncate max-w-[200px]">特定研究任务执行时间超过预期阈值 (150%)</td>
+<td class="py-3 px-4 text-on-surface-variant whitespace-nowrap">任务超时</td>
+<td class="py-3 px-4 text-on-surface whitespace-nowrap text-primary hover:underline">RES-TASK-842</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right Column: Reading panel (38%) -->
+<div class="w-[38%] bg-surface-container-lowest rounded-xl border border-outline-variant flex flex-col overflow-hidden">
+<div class="p-5 border-b border-outline-variant bg-surface-container-low">
+<div class="flex items-center gap-3 mb-2">
+<span class="inline-flex items-center justify-center px-2.5 py-1 rounded-md text-sm font-medium bg-error-container text-on-error-container">严重</span>
+<span class="text-sm text-on-surface-variant font-mono">ID: ALM-20231027-A01</span>
+</div>
+<h3 class="text-lg font-bold text-on-surface leading-tight">竞品 A 发布了未经证实的新一代产品参数泄露情报</h3>
+</div>
+<div class="flex-1 overflow-y-auto p-5 space-y-6">
+<!-- Meta Info -->
+<div class="grid grid-cols-2 gap-4 text-sm">
+<div>
+<span class="block text-on-surface-variant mb-1">触发时间</span>
+<span class="text-on-surface font-medium">2023-10-27 14:32:01</span>
+</div>
+<div>
+<span class="block text-on-surface-variant mb-1">触发规则</span>
+<span class="text-on-surface font-medium hover:underline cursor-pointer">RULE-KEYWORD-SPIKE</span>
+</div>
+</div>
+<!-- Trigger Reason -->
+<div>
+<h4 class="text-sm font-bold text-on-surface mb-2 border-l-2 border-primary pl-2">触发原因</h4>
+<div class="bg-surface p-3 rounded-lg border border-outline-variant text-sm text-on-surface leading-relaxed">
+                            监控系统检测到在过去一小时内，包含关键词 "竞品A"、"泄露"、"新一代" 的非结构化情报数量突增了 450%，超过了预设的严重告警阈值 (300%)。
+                        </div>
+</div>
+<!-- Linked Entities -->
+<div>
+<h4 class="text-sm font-bold text-on-surface mb-2 border-l-2 border-primary pl-2">关联对象</h4>
+<div class="space-y-2">
+<div class="flex items-center justify-between bg-surface p-2 rounded border border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">star</span>
+<span class="text-sm text-on-surface font-medium">机会: 新一代处理器市场异动</span>
+</div>
+<span class="text-xs text-on-surface-variant">OPP-2023-001</span>
+</div>
+</div>
+</div>
+<!-- Evidence/Log Snippets -->
+<div>
+<h4 class="text-sm font-bold text-on-surface mb-2 border-l-2 border-primary pl-2">诊断证据 / 日志片段</h4>
+<div class="bg-[#1E1E1E] rounded-lg p-3 overflow-x-auto">
+<pre class="text-xs text-[#D4D4D4] font-mono leading-relaxed">[2023-10-27 14:31:55] INFO AlertEngine - Evaluating rule RULE-KEYWORD-SPIKE
+[2023-10-27 14:31:58] WARN MetricsService - Metric 'keyword_hits_1h' for terms ['竞品A', '泄露'] current value: 1245 (baseline: 220)
+[2023-10-27 14:32:00] ERROR AlertEngine - Rule condition met: (current/baseline - 1) &gt; 3.0. Actual ratio: 4.65.
+[2023-10-27 14:32:01] INFO EventDispatcher - Dispatching ALM-20231027-A01 linked to entity OPP-2023-001
+                            </pre>
+</div>
+</div>
+</div>
+<!-- Action Buttons (Navigation Only) -->
+<div class="p-4 border-t border-outline-variant bg-surface-container-low flex flex-col gap-2">
+<button class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-md text-sm font-medium hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+                        查看机会/情报
+                    </button>
+<div class="flex gap-2">
+<button class="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-outline bg-surface-container-lowest text-on-surface rounded-md text-sm font-medium hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-[18px]">account_tree</span>
+                            查看关联运行
+                        </button>
+<button class="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-outline bg-surface-container-lowest text-on-surface rounded-md text-sm font-medium hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-[18px]">database</span>
+                            查看数据源
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

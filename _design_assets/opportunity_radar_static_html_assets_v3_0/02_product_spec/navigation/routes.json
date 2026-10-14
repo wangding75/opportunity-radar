@@ -1,0 +1,46 @@
+{
+  "pages": {
+    "P01": "/today",
+    "P02": "/intelligence",
+    "P03": "/intelligence/INT-20260819-01842",
+    "P04": "/keywords/discovery",
+    "P05": "/keywords/tracked",
+    "P06": "/trends",
+    "P07": "/graph",
+    "P08": "/opportunities",
+    "P09": "/opportunities/OPP-20260819-021",
+    "P10": "/opportunities/OPP-20260819-021/analysis",
+    "P11": "/research",
+    "P12": "/research/RES-20260819-0011",
+    "P13": "/research/RES-20260819-0011/result",
+    "P14": "/sources",
+    "P15": "/sources/reuters",
+    "P16": "/sources/health",
+    "P17": "/monitoring",
+    "P18": "/monitoring/PLAN-2025-001",
+    "P19": "/runs",
+    "P20": "/runs/RUN-20260819-1048",
+    "P21": "/analysis-queue",
+    "P22": "/alerts",
+    "P23": "/alert-rules",
+    "P24": "/settings/workspace",
+    "P25": "/settings/members",
+    "P26": "/settings/roles",
+    "P27": "/settings/security",
+    "P28": "/settings/integrations",
+    "P29": "/settings/audit",
+    "P30": "/settings/diagnostics",
+    "P31": "/search",
+    "P32": "/login",
+    "P33": "/access-denied",
+    "P34": "/404"
+  },
+  "state_strategy": {
+    "drawer_modal_states": "Use parent route + ?state=<STATE_ID>; do not duplicate AppShell.",
+    "content_states": [
+      "P31-S01",
+      "P32-S01"
+    ],
+    "dynamic_return": "P32-S01 and P33-S01 must preserve returnTo/resource route."
+  }
+}

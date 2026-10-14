@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>结构化分析 - 机会情报 R04</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#dbe1ff",
+                    "surface-container-low": "#f2f4f6",
+                    "on-surface": "#191c1e",
+                    "surface": "#f7f9fb",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#656d84",
+                    "surface-container-highest": "#e0e3e5",
+                    "error-container": "#ffdad6",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed-dim": "#bec6e0",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "secondary-fixed": "#d3e4fe",
+                    "secondary-container": "#d0e1fb",
+                    "on-background": "#191c1e",
+                    "surface-tint": "#0053db",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed": "#131b2e",
+                    "secondary": "#505f76",
+                    "surface-dim": "#d8dadc",
+                    "on-tertiary-fixed-variant": "#3f465c",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-container": "#eceef0",
+                    "surface-variant": "#e0e3e5",
+                    "tertiary-fixed": "#dae2fd",
+                    "on-secondary-container": "#54647a",
+                    "on-error": "#ffffff",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "outline": "#737686",
+                    "on-primary-fixed": "#00174b",
+                    "on-secondary-fixed": "#0b1c30",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "tertiary": "#4d556b",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f7f9fb",
+                    "inverse-surface": "#2d3133",
+                    "primary-container": "#2563eb",
+                    "primary": "#004ac6",
+                    "background": "#f7f9fb",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#e6e8ea",
+                    "outline-variant": "#c3c6d7",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "on-tertiary-container": "#eef0ff",
+                    "inverse-primary": "#b4c5ff",
+                    "on-surface-variant": "#434655",
+                    "on-primary-container": "#eeefff"
+            },
+            "fontFamily": {
+                    "headline": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                    "display": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                    "body": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                    "label": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex antialiased">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-[216px] bg-surface-container-lowest border-r border-outline-variant flex flex-col py-4 z-20">
+<!-- Brand Logo -->
+<div class="px-6 pb-6 pt-2 flex items-center gap-3 border-b border-surface-container-high mb-4">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary font-bold text-lg">
+<span class="material-symbols-outlined" style="font-size: 20px;">radar</span>
+</div>
+<div>
+<h1 class="text-on-surface font-bold text-sm leading-tight tracking-tight">机会情报 R04</h1>
+<p class="text-outline text-xs">业务闭环系统</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 px-3 space-y-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 font-body text-sm font-medium cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-size: 20px;">dashboard</span>
+                工作台
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 font-body text-sm font-medium cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-size: 20px;">star</span>
+                机会
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 font-body text-sm font-medium cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-size: 20px;">insights</span>
+                情报
+            </a>
+<!-- Active Section: 研究 -->
+<div class="pt-2 pb-1">
+<div class="flex items-center justify-between px-3 py-2 text-secondary font-body text-sm font-medium">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined" style="font-size: 20px;">science</span>
+                        研究
+                    </div>
+<span class="material-symbols-outlined" style="font-size: 20px;">expand_more</span>
+</div>
+<div class="pl-9 pr-3 py-1 space-y-1">
+<!-- Active Item -->
+<a class="flex items-center px-3 py-2 rounded-lg bg-secondary-container text-on-secondary-container font-bold font-body text-sm cursor-pointer active:scale-95" href="#">
+                        结构化分析
+                    </a>
+<a class="flex items-center px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 font-body text-sm cursor-pointer active:scale-95" href="#">
+                        研究任务
+                    </a>
+<a class="flex items-center px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 font-body text-sm cursor-pointer active:scale-95" href="#">
+                        研究结果
+                    </a>
+</div>
+</div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 font-body text-sm font-medium cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-size: 20px;">settings_input_component</span>
+                运行
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 font-body text-sm font-medium cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-size: 20px;">settings</span>
+                管理
+            </a>
+</div>
+<!-- Footer Links -->
+<div class="px-3 pt-4 border-t border-surface-container-high space-y-1 mt-auto">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 font-body text-sm font-medium cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-size: 20px;">switch_account</span>
+                系统诊断
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 font-body text-sm font-medium cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-size: 20px;">history</span>
+                审计日志
+            </a>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col ml-[216px] min-h-screen">
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-[216px] h-[56px] bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-6 z-10">
+<!-- Search Bar (Left aligned per JSON) -->
+<div class="flex items-center w-96 bg-surface-container rounded-full px-4 py-1.5 border border-transparent focus-within:border-primary focus-within:bg-surface transition-colors">
+<span class="material-symbols-outlined text-outline mr-2" style="font-size: 20px;">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm font-body text-on-surface w-full p-0 placeholder-outline" placeholder="搜索实体、机会或分析..." type="text"/>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors cursor-pointer">
+<span class="material-symbols-outlined" style="font-size: 24px;">refresh</span>
+</button>
+<button class="p-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors cursor-pointer relative">
+<span class="material-symbols-outlined" style="font-size: 24px;">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border border-surface-container-lowest"></span>
+</button>
+<button class="p-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors cursor-pointer mr-2">
+<span class="material-symbols-outlined" style="font-size: 24px;">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-sm cursor-pointer border border-primary-fixed-dim">
+<span class="material-symbols-outlined" style="font-size: 18px;">person</span>
+</div>
+</div>
+</header>
+<!-- Page Content Canvas -->
+<main class="flex-1 mt-[56px] px-6 py-5 overflow-hidden flex flex-col gap-4">
+<!-- Page Header -->
+<div class="flex items-center justify-between">
+<div>
+<h2 class="text-2xl font-headline font-bold text-on-surface tracking-tight">结构化分析</h2>
+<p class="text-secondary text-sm mt-1">查看和管理已完成的实体研究与维度分析报告。</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-primary font-medium text-sm hover:bg-surface-container-low transition-colors bg-surface-container-lowest">
+<span class="material-symbols-outlined" style="font-size: 18px;">download</span>
+                        导出报告
+                    </button>
+</div>
+</div>
+<!-- Read-Only Notice -->
+<div class="bg-surface-variant rounded-lg p-3 flex items-start gap-3 border border-outline-variant">
+<span class="material-symbols-outlined text-secondary mt-0.5" style="font-size: 20px;">info</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">当前后端分析能力为只读模式，暂不支持手动发起新研究。所有显示的分析结果均为历史运行记录。</p>
+</div>
+<!-- Filter Bar -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-3 flex items-center gap-4 flex-wrap">
+<div class="flex items-center gap-2">
+<span class="text-sm font-medium text-secondary">分析维度:</span>
+<select class="text-sm border-outline-variant rounded-md py-1.5 pl-3 pr-8 bg-surface text-on-surface focus:ring-primary focus:border-primary">
+<option>所有维度</option>
+<option>技术分析 (Tech)</option>
+<option>市场分析 (Market)</option>
+<option>政策法规 (Policy)</option>
+</select>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-sm font-medium text-secondary">时间范围:</span>
+<select class="text-sm border-outline-variant rounded-md py-1.5 pl-3 pr-8 bg-surface text-on-surface focus:ring-primary focus:border-primary">
+<option>过去 30 天</option>
+<option>过去 90 天</option>
+<option>过去 1 年</option>
+<option>全部时间</option>
+</select>
+</div>
+<div class="flex items-center gap-2 ml-auto">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2.5 top-2 text-outline" style="font-size: 18px;">search</span>
+<input class="text-sm border-outline-variant rounded-md py-1.5 pl-9 pr-3 w-64 bg-surface text-on-surface focus:ring-primary focus:border-primary" placeholder="搜索研究对象..." type="text"/>
+</div>
+</div>
+</div>
+<!-- Main Analysis Area (Grid Layout) -->
+<div class="flex-1 flex gap-5 overflow-hidden min-h-0">
+<!-- Left: List -->
+<div class="w-1/2 flex flex-col bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<div class="bg-surface-container-low border-b border-outline-variant px-4 py-3 flex justify-between items-center">
+<h3 class="font-bold text-on-surface text-sm">分析记录 (124)</h3>
+</div>
+<div class="flex-1 overflow-y-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface sticky top-0 border-b border-outline-variant shadow-sm z-10">
+<tr>
+<th class="px-4 py-3 text-xs font-medium text-secondary w-1/4">研究对象</th>
+<th class="px-4 py-3 text-xs font-medium text-secondary w-1/5">分析维度</th>
+<th class="px-4 py-3 text-xs font-medium text-secondary w-1/3">结论简述</th>
+<th class="px-4 py-3 text-xs font-medium text-secondary text-right">状态/日期</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-highest">
+<!-- Row 1 (Selected) -->
+<tr class="bg-primary-container bg-opacity-10 hover:bg-surface-container-high transition-colors cursor-pointer border-l-4 border-l-primary">
+<td class="px-4 py-3">
+<div class="font-medium text-on-surface text-sm">项目 Alpha-X</div>
+<div class="text-xs text-secondary mt-0.5">ID: OPP-8921</div>
+</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-tertiary-container text-on-tertiary">技术</span>
+</td>
+<td class="px-4 py-3">
+<div class="text-sm text-on-surface line-clamp-2">核心架构已具备商业化成熟度，但边缘节点延迟问题需进一步验证。</div>
+</td>
+<td class="px-4 py-3 text-right">
+<span class="inline-flex items-center text-xs font-medium text-primary">
+<span class="material-symbols-outlined mr-1" style="font-size: 14px;">check_circle</span>
+                                            已完成
+                                        </span>
+<div class="text-xs text-secondary mt-1">2023-10-24</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-high transition-colors cursor-pointer border-l-4 border-l-transparent">
+<td class="px-4 py-3">
+<div class="font-medium text-on-surface text-sm">供应商 Beta 评估</div>
+<div class="text-xs text-secondary mt-0.5">ID: OPP-8843</div>
+</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-container text-on-secondary-container">市场</span>
+</td>
+<td class="px-4 py-3">
+<div class="text-sm text-on-surface line-clamp-2">市场份额呈上升趋势，主要竞争对手面临供应链中断风险。</div>
+</td>
+<td class="px-4 py-3 text-right">
+<span class="inline-flex items-center text-xs font-medium text-primary">
+<span class="material-symbols-outlined mr-1" style="font-size: 14px;">check_circle</span>
+                                            已完成
+                                        </span>
+<div class="text-xs text-secondary mt-1">2023-10-22</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right: Preview Panel (Bento-ish layout inside) -->
+<div class="w-1/2 flex flex-col bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<!-- Preview Header -->
+<div class="px-5 py-4 border-b border-outline-variant bg-surface flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-tertiary-container text-on-tertiary">技术维度</span>
+<span class="text-xs text-secondary">OPP-8921</span>
+</div>
+<h3 class="text-lg font-bold text-on-surface">项目 Alpha-X 架构评估报告</h3>
+<p class="text-xs text-secondary mt-1">分析时间: 2023-10-24 14:30 · 来源情报数量: 8 份</p>
+</div>
+<button class="text-primary hover:bg-surface-container-high p-1.5 rounded transition-colors text-sm font-medium">
+                            查看全屏详情
+                        </button>
+</div>
+<!-- Preview Content -->
+<div class="flex-1 overflow-y-auto p-5 space-y-5">
+<!-- Structured Summary -->
+<div>
+<h4 class="text-sm font-bold text-on-surface mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-size: 18px;">summarize</span>
+                                结构化摘要
+                            </h4>
+<div class="bg-surface p-4 rounded-lg border border-outline-variant text-sm text-on-surface-variant leading-relaxed">
+                                基于收集到的技术文档和近期专利申请记录，Alpha-X 项目的核心底层架构已基本定型，具备向商业环境部署的基础条件。其创新的分布式共识算法在内部测试中表现出较高吞吐量。然而，从外部开发者论坛的泄露信息来看，边缘节点在处理高并发请求时仍存在约 150ms 的异常延迟，这可能成为其在对延迟敏感场景（如高频交易）中推广的主要瓶颈。建议持续监控其后续版本发布日志以确认该问题的修复情况。
+                            </div>
+</div>
+<!-- Entities -->
+<div>
+<h4 class="text-sm font-bold text-on-surface mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-size: 18px;">label</span>
+                                关联实体标签
+                            </h4>
+<div class="flex flex-wrap gap-2">
+<span class="px-2.5 py-1 rounded-md bg-secondary-fixed text-on-secondary-fixed text-xs font-medium border border-secondary-fixed-dim">分布式架构</span>
+<span class="px-2.5 py-1 rounded-md bg-secondary-fixed text-on-secondary-fixed text-xs font-medium border border-secondary-fixed-dim">共识算法</span>
+<span class="px-2.5 py-1 rounded-md bg-error-container text-on-error-container text-xs font-medium border border-error">延迟风险</span>
+<span class="px-2.5 py-1 rounded-md bg-surface-container-high text-on-surface text-xs border border-outline-variant">商业化阶段: 早期</span>
+</div>
+</div>
+<!-- Evidence Excerpts -->
+<div>
+<h4 class="text-sm font-bold text-on-surface mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-size: 18px;">fact_check</span>
+                                关键证据摘录
+                            </h4>
+<div class="space-y-3">
+<!-- Evidence 1 -->
+<div class="p-3 border border-outline-variant rounded-lg bg-surface-container-lowest">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs font-medium text-secondary">来源: 专利数据库 (US-2023-XXXX)</span>
+<span class="text-[10px] text-outline">置信度: 高</span>
+</div>
+<p class="text-sm text-on-surface italic">"本发明提供了一种优化的大规模节点同步机制，在百节点规模下达成共识时间缩短至..."</p>
+</div>
+<!-- Evidence 2 -->
+<div class="p-3 border border-outline-variant rounded-lg bg-surface-container-lowest">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs font-medium text-secondary">来源: 开发者社区论坛爬取</span>
+<span class="text-[10px] text-outline">置信度: 中</span>
+</div>
+<p class="text-sm text-on-surface italic">"昨晚压力测试跑的时候，外围节点的 P99 延迟直接飙到了将近 200ms，根本没法用在核心业务链路上。"</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

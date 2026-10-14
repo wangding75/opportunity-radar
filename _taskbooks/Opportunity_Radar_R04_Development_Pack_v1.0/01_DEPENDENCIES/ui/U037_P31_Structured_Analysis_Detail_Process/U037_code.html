@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>处理轨迹 - 结构化分析详情 - 机会情报平台</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "on-secondary-container": "#54647a",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#c3c6d7",
+                        "surface-container-high": "#e6e8ea",
+                        "surface": "#f7f9fb",
+                        "surface-tint": "#0053db",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "outline": "#737686",
+                        "secondary-container": "#d0e1fb",
+                        "surface-container": "#eceef0",
+                        "secondary": "#505f76",
+                        "on-surface": "#191c1e",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#b4c5ff",
+                        "surface-bright": "#f7f9fb",
+                        "tertiary-fixed": "#dae2fd",
+                        "on-tertiary-container": "#eef0ff",
+                        "on-background": "#191c1e",
+                        "primary-container": "#2563eb",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#eeefff",
+                        "inverse-surface": "#2d3133",
+                        "background": "#f7f9fb",
+                        "surface-container-low": "#f2f4f6",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-surface-variant": "#434655",
+                        "surface-dim": "#d8dadc",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-secondary-fixed": "#0b1c30",
+                        "tertiary": "#4d556b",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-primary-fixed": "#00174b",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#656d84",
+                        "primary-fixed": "#dbe1ff",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "on-tertiary-fixed": "#131b2e",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#004ac6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "display": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "body": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "label": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .fill-icon { font-variation-settings: 'FILL' 1; }
+        
+        /* Timeline styling */
+        .timeline-line {
+            position: absolute;
+            top: 24px;
+            bottom: 0;
+            left: 23px; /* 48px circle / 2 - 1px line width */
+            width: 2px;
+            background-color: #e0e3e5; /* surface-variant */
+            z-index: 0;
+        }
+        .timeline-item:last-child .timeline-line {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-lowest dark:bg-surface-container-low fixed left-0 top-0 h-full w-[216px] border-r border-outline-variant flex flex-col p-4 gap-2 z-20">
+<div class="flex items-center gap-3 px-2 py-4 mb-4">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary font-bold">OR</div>
+<div>
+<h1 class="text-lg font-headline font-bold text-on-surface leading-tight">机会情报系统</h1>
+<p class="text-xs text-on-surface-variant">R04 中文业务闭环</p>
+</div>
+</div>
+<div class="flex flex-col gap-1 w-full font-body text-label-md">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span>工作台</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">star</span>
+<span>机会</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">insights</span>
+<span>情报</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary-container text-on-secondary-container font-bold opacity-90 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] fill-icon">analytics</span>
+<span>研究</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">play_circle</span>
+<span>运行</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span>管理</span>
+</a>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-surface-container-low fixed top-0 right-0 h-[56px] left-[216px] border-b border-outline-variant flex items-center justify-between px-6 z-20">
+<!-- Search Bar (on_left) -->
+<div class="flex-1 max-w-md">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-1.5 bg-surface-container-low border border-outline-variant rounded-full text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-shadow h-[36px]" placeholder="搜索机会、情报或研究任务..." type="text"/>
+</div>
+</div>
+<!-- Trailing Icon Actions -->
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary-container" title="刷新">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary-container" title="通知">
+<div class="relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full border border-surface-container-lowest"></span>
+</div>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary-container" title="帮助">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary-container ml-2" title="账户">
+<span class="material-symbols-outlined text-[24px]">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Workspace -->
+<main class="mt-[56px] ml-[216px] w-full h-[calc(100vh-56px)] overflow-y-auto bg-surface relative flex flex-col">
+<!-- EntityHeader -->
+<div class="bg-surface-container-lowest border-b border-outline-variant px-6 pt-6 pb-0 flex-shrink-0">
+<!-- Breadcrumb / Overline -->
+<div class="flex items-center gap-2 text-xs text-on-surface-variant mb-2">
+<a class="hover:text-primary transition-colors" href="#">研究</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">结构化分析</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface">AN-2042</span>
+</div>
+<!-- Title & Status row -->
+<div class="flex items-start justify-between mb-4">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h2 class="text-2xl font-headline font-bold text-on-surface">东南亚港口自动化战略合作结构化分析</h2>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-fixed text-on-secondary-fixed">v1.4</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-tertiary-fixed text-on-tertiary-fixed border border-outline-variant/30 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+                            已完成
+                        </span>
+</div>
+<div class="flex items-center gap-4 text-sm text-on-surface-variant mt-2">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">target</span>
+<span>关联机会: <a class="text-primary hover:underline font-medium" href="#">OR-2026-0042</a></span>
+</div>
+<div class="w-[1px] h-3 bg-outline-variant"></div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">library_add_check</span>
+<span>证据覆盖率: <span class="text-on-surface font-semibold">88%</span></span>
+</div>
+<div class="w-[1px] h-3 bg-outline-variant"></div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span>置信度: <span class="text-[#10B981] font-semibold">高</span></span>
+</div>
+<div class="w-[1px] h-3 bg-outline-variant"></div>
+<div class="flex items-center gap-1.5 text-xs">
+<span class="material-symbols-outlined text-[14px]">update</span>
+<span>更新于 1小时前</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Tab Bar -->
+<div class="flex gap-6 mt-4">
+<a class="pb-3 text-sm font-medium text-on-surface-variant hover:text-on-surface border-b-2 border-transparent transition-colors" href="#">分析结论</a>
+<a class="pb-3 text-sm font-medium text-on-surface-variant hover:text-on-surface border-b-2 border-transparent transition-colors" href="#">证据矩阵</a>
+<a class="pb-3 text-sm font-bold text-primary border-b-2 border-primary transition-colors" href="#">处理轨迹</a>
+</div>
+</div>
+<!-- Content Canvas -->
+<div class="flex-1 overflow-hidden flex flex-row">
+<!-- Left: Pipeline Flow (Scrollable) -->
+<div class="flex-1 overflow-y-auto p-6 bg-surface">
+<div class="max-w-4xl mx-auto">
+<div class="mb-6 flex items-center justify-between">
+<div>
+<h3 class="text-lg font-headline font-bold text-on-surface">分析处理管线</h3>
+<p class="text-sm text-on-surface-variant mt-1">展示生成当前版本 (v1.4) 的计算过程与数据流转路径</p>
+</div>
+<div class="text-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">timer</span>
+<span>总耗时: 2m 45s</span>
+<span class="mx-2 text-outline-variant">|</span>
+<span>Task-ID: <span class="font-mono text-xs">TSK-2042-88B</span></span>
+</div>
+</div>
+<!-- Pipeline Container -->
+<div class="relative mt-8 pb-12 ml-4">
+<!-- Stage 1 -->
+<div class="relative pl-12 pb-10 timeline-item">
+<div class="timeline-line"></div>
+<div class="absolute left-0 top-0 w-12 h-12 rounded-full bg-surface-container-lowest border-2 border-[#10B981] flex items-center justify-center z-10 shadow-sm">
+<span class="material-symbols-outlined text-[#10B981] text-[20px]">check</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-2">
+<h4 class="font-bold text-on-surface text-base">输入证据集快照 (Input Evidence Snapshot)</h4>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-surface-container-high text-on-surface-variant border border-outline-variant/50">SNP-8829-A1</span>
+</div>
+<div class="text-xs text-on-surface-variant flex items-center gap-4">
+<span>耗时: 1.2s</span>
+<span>10:24:01 AM</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 text-sm mb-3">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">input</span>
+<span>原始情报源: 156 项</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">output</span>
+<span>提取证据片段: 42 项</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant bg-surface rounded p-2">
+<span class="material-symbols-outlined text-[14px]">settings_system_daydream</span>
+<span>组件: Evidence-Collector v1.2</span>
+</div>
+</div>
+</div>
+<!-- Stage 2 -->
+<div class="relative pl-12 pb-10 timeline-item">
+<div class="timeline-line"></div>
+<div class="absolute left-0 top-0 w-12 h-12 rounded-full bg-surface-container-lowest border-2 border-[#10B981] flex items-center justify-center z-10 shadow-sm">
+<span class="material-symbols-outlined text-[#10B981] text-[20px]">check</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-2">
+<h4 class="font-bold text-on-surface text-base">预处理 (Preprocessing)</h4>
+</div>
+<div class="text-xs text-on-surface-variant flex items-center gap-4">
+<span>耗时: 12.4s</span>
+<span>10:24:14 AM</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 text-sm mb-3">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">input</span>
+<span>输入: 42 项片段</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">output</span>
+<span>清洗后可用: 38 项</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant bg-surface rounded p-2">
+<span class="material-symbols-outlined text-[14px]">settings_system_daydream</span>
+<span>组件: NLP-Sanitizer v3.1</span>
+<span class="mx-1">|</span>
+<span>RUN-ID: RN-441-PRE</span>
+</div>
+</div>
+</div>
+<!-- Stage 3 -->
+<div class="relative pl-12 pb-10 timeline-item">
+<div class="timeline-line"></div>
+<div class="absolute left-0 top-0 w-12 h-12 rounded-full bg-surface-container-lowest border-2 border-[#10B981] flex items-center justify-center z-10 shadow-sm">
+<span class="material-symbols-outlined text-[#10B981] text-[20px]">check</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-2">
+<h4 class="font-bold text-on-surface text-base">证据分组 (Evidence Grouping)</h4>
+</div>
+<div class="text-xs text-on-surface-variant flex items-center gap-4">
+<span>耗时: 8.7s</span>
+<span>10:24:23 AM</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 text-sm mb-3">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">input</span>
+<span>输入: 38 项清洗数据</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">output</span>
+<span>输出: 4 个语义聚类</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant bg-surface rounded p-2">
+<span class="material-symbols-outlined text-[14px]">settings_system_daydream</span>
+<span>组件: Semantic-Cluster v2.0</span>
+</div>
+</div>
+</div>
+<!-- Stage 4 -->
+<div class="relative pl-12 pb-10 timeline-item">
+<div class="timeline-line"></div>
+<div class="absolute left-0 top-0 w-12 h-12 rounded-full bg-surface-container-lowest border-2 border-[#10B981] flex items-center justify-center z-10 shadow-sm">
+<span class="material-symbols-outlined text-[#10B981] text-[20px]">check</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-2">
+<h4 class="font-bold text-on-surface text-base">支持/反向分类 (Support/Rebuttal Classification)</h4>
+</div>
+<div class="text-xs text-on-surface-variant flex items-center gap-4">
+<span>耗时: 45.2s</span>
+<span>10:25:08 AM</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 text-sm mb-3">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">input</span>
+<span>输入: 4 个聚类 (38 证据)</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">output</span>
+<span>结果: 29 支持, 7 反向, 2 中立</span>
+</div>
+</div>
+<div class="mt-2 mb-3 bg-surface border border-outline-variant/50 rounded p-3 text-sm text-on-surface-variant">
+<p class="font-medium text-on-surface mb-1">执行摘要:</p>
+<p>识别出对“自动化码头协议签署”的强支持证据集群。检测到少量关于“当地工会反对”的反向指标。</p>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant bg-surface rounded p-2">
+<span class="material-symbols-outlined text-[14px]">settings_system_daydream</span>
+<span>规则引擎: Analyst-Core v2.4.1</span>
+<span class="mx-1">|</span>
+<span>AQ-ID: AQ-9912</span>
+</div>
+</div>
+</div>
+<!-- Stage 5 -->
+<div class="relative pl-12 pb-10 timeline-item">
+<div class="timeline-line"></div>
+<div class="absolute left-0 top-0 w-12 h-12 rounded-full bg-surface-container-lowest border-2 border-[#10B981] flex items-center justify-center z-10 shadow-sm">
+<span class="material-symbols-outlined text-[#10B981] text-[20px]">check</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-2">
+<h4 class="font-bold text-on-surface text-base">关键假设抽取 (Key Assumption Extraction)</h4>
+</div>
+<div class="text-xs text-on-surface-variant flex items-center gap-4">
+<span>耗时: 18.5s</span>
+<span>10:25:27 AM</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 text-sm mb-3">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">input</span>
+<span>输入: 分类后证据树</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">output</span>
+<span>输出: 3 个核心假设</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant bg-surface rounded p-2">
+<span class="material-symbols-outlined text-[14px]">settings_system_daydream</span>
+<span>组件: Hypothesis-Extractor v1.8</span>
+</div>
+</div>
+</div>
+<!-- Stage 6 & 7 (Combined visual style for brevity, showing they happened fast) -->
+<div class="relative pl-12 pb-10 timeline-item">
+<div class="timeline-line"></div>
+<div class="absolute left-0 top-0 w-12 h-12 rounded-full bg-surface-container-lowest border-2 border-[#10B981] flex items-center justify-center z-10 shadow-sm">
+<span class="material-symbols-outlined text-[#10B981] text-[20px]">check</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-2">
+<h4 class="font-bold text-on-surface text-base">结论生成 &amp; 置信度计算</h4>
+</div>
+<div class="text-xs text-on-surface-variant flex items-center gap-4">
+<span>耗时: 32.1s</span>
+<span>10:25:59 AM</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 text-sm mb-3">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">input</span>
+<span>输入: 假设集 + 证据矩阵</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">output</span>
+<span>输出: 结构化段落 + 置信度分值</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant bg-surface rounded p-2">
+<span class="material-symbols-outlined text-[14px]">settings_system_daydream</span>
+<span>LLM: Model-Orchestrator v4.0 (Conf: High)</span>
+</div>
+</div>
+</div>
+<!-- Stage 8 -->
+<div class="relative pl-12 pb-10 timeline-item">
+<div class="timeline-line"></div>
+<div class="absolute left-0 top-0 w-12 h-12 rounded-full bg-surface-container-lowest border-2 border-[#10B981] flex items-center justify-center z-10 shadow-sm">
+<span class="material-symbols-outlined text-[#10B981] text-[20px]">check</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-2">
+<h4 class="font-bold text-on-surface text-base">风险/开放问题抽取 (Risk Extraction)</h4>
+</div>
+<div class="text-xs text-on-surface-variant flex items-center gap-4">
+<span>耗时: 14.3s</span>
+<span>10:26:13 AM</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant bg-surface rounded p-2">
+<span class="material-symbols-outlined text-[14px]">settings_system_daydream</span>
+<span>组件: Risk-Identifier v2.1</span>
+</div>
+</div>
+</div>
+<!-- Stage 9 -->
+<div class="relative pl-12 pb-2 timeline-item">
+<div class="timeline-line"></div>
+<div class="absolute left-0 top-0 w-12 h-12 rounded-full bg-surface-container-lowest border-2 border-primary flex items-center justify-center z-10 shadow-sm">
+<span class="material-symbols-outlined text-primary text-[20px] fill-icon">save</span>
+</div>
+<div class="bg-primary-fixed rounded-xl border border-primary-fixed-dim p-4 shadow-sm">
+<div class="flex items-start justify-between mb-2">
+<div class="flex items-center gap-2">
+<h4 class="font-bold text-on-primary-fixed text-base">结果固化 (Result Finalization)</h4>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-primary text-on-primary">v1.4 生成</span>
+</div>
+<div class="text-xs text-on-primary-fixed-variant flex items-center gap-4">
+<span>耗时: 2.1s</span>
+<span>10:26:15 AM</span>
+</div>
+</div>
+<p class="text-sm text-on-primary-fixed-variant mb-2">分析结果已持久化至研究数据库，并同步至关联对象 (OR-2026-0042)。</p>
+<div class="flex items-center gap-2 text-xs text-on-primary-fixed-variant/80 bg-surface-container-lowest/50 rounded p-2">
+<span class="material-symbols-outlined text-[14px]">database</span>
+<span>持久化 ID: RR-1842-FIN</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Sidebar: Context & Metadata -->
+<div class="w-[320px] bg-surface-container-lowest border-l border-outline-variant flex-shrink-0 flex flex-col overflow-y-auto">
+<div class="p-5">
+<h3 class="text-sm font-bold text-on-surface mb-4 uppercase tracking-wider">元数据与上下文</h3>
+<!-- Version Chain -->
+<div class="mb-6">
+<h4 class="text-xs font-semibold text-on-surface-variant mb-3 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">history</span>
+                            版本演进
+                        </h4>
+<div class="flex flex-col gap-2 relative">
+<div class="absolute left-2.5 top-2 bottom-2 w-px bg-outline-variant"></div>
+<div class="flex items-start gap-3 relative z-10">
+<div class="w-5 h-5 rounded-full bg-primary flex items-center justify-center border-2 border-surface-container-lowest mt-0.5 flex-shrink-0">
+<div class="w-1.5 h-1.5 rounded-full bg-on-primary"></div>
+</div>
+<div>
+<p class="text-sm font-medium text-on-surface">v1.4 (当前)</p>
+<p class="text-xs text-on-surface-variant">10:26 AM · 系统自动生成</p>
+</div>
+</div>
+<div class="flex items-start gap-3 relative z-10 opacity-70">
+<div class="w-5 h-5 rounded-full bg-surface-container-highest flex items-center justify-center border-2 border-surface-container-lowest mt-0.5 flex-shrink-0"></div>
+<div>
+<p class="text-sm font-medium text-on-surface">v1.3</p>
+<p class="text-xs text-on-surface-variant">昨天 14:30 · 证据更新触发</p>
+</div>
+</div>
+<div class="flex items-start gap-3 relative z-10 opacity-50">
+<div class="w-5 h-5 rounded-full bg-surface-container-highest flex items-center justify-center border-2 border-surface-container-lowest mt-0.5 flex-shrink-0"></div>
+<div>
+<p class="text-sm font-medium text-on-surface">v1.0</p>
+<p class="text-xs text-on-surface-variant">3天前 · 初始生成</p>
+</div>
+</div>
+</div>
+</div>
+<hr class="border-outline-variant/50 mb-6"/>
+<!-- Components Snapshot -->
+<div class="mb-6">
+<h4 class="text-xs font-semibold text-on-surface-variant mb-3 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">memory</span>
+                            核心组件版本
+                        </h4>
+<div class="bg-surface rounded-lg p-3 border border-outline-variant/30 flex flex-col gap-2 text-sm">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant text-xs">Analyst-Core</span>
+<span class="font-mono text-on-surface text-xs bg-surface-container-high px-1.5 py-0.5 rounded">v2.4.1</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant text-xs">Model-Orchestrator</span>
+<span class="font-mono text-on-surface text-xs bg-surface-container-high px-1.5 py-0.5 rounded">v4.0.0</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant text-xs">Data Snapshot</span>
+<span class="font-mono text-primary text-xs bg-primary-fixed/30 px-1.5 py-0.5 rounded cursor-pointer hover:bg-primary-fixed/50">SNP-8829-A1</span>
+</div>
+</div>
+</div>
+<hr class="border-outline-variant/50 mb-6"/>
+<!-- Related Objects -->
+<div class="mb-6">
+<h4 class="text-xs font-semibold text-on-surface-variant mb-3 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">link</span>
+                            关联对象
+                        </h4>
+<div class="flex flex-col gap-2 text-sm">
+<a class="flex items-center justify-between p-2 rounded hover:bg-surface-container-high transition-colors group" href="#">
+<div class="flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">task</span>
+<span>研究任务</span>
+</div>
+<span class="text-primary group-hover:underline text-xs font-mono">RT-1842</span>
+</a>
+<a class="flex items-center justify-between p-2 rounded hover:bg-surface-container-high transition-colors group" href="#">
+<div class="flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">description</span>
+<span>研究结果库</span>
+</div>
+<span class="text-primary group-hover:underline text-xs font-mono">RR-1842</span>
+</a>
+</div>
+</div>
+<hr class="border-outline-variant/50 mb-6"/>
+<!-- Audit -->
+<div>
+<h4 class="text-xs font-semibold text-on-surface-variant mb-3 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">gavel</span>
+                            审计追踪
+                        </h4>
+<div class="text-xs text-on-surface-variant bg-surface-container p-3 rounded-lg flex items-start gap-2">
+<span class="material-symbols-outlined text-[14px] mt-0.5">lock</span>
+<p>此轨迹记录为不可变只读视图，由系统级调度自动执行并签名。不可重新执行或编辑。</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

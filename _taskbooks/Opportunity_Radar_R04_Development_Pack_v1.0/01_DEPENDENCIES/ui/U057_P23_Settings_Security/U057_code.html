@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>机会情报 R04 - 系统设置</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed": "#dae2fd",
+                      "error": "#ba1a1a",
+                      "surface-dim": "#d8dadc",
+                      "surface-variant": "#e0e3e5",
+                      "outline-variant": "#c3c6d7",
+                      "on-error-container": "#93000a",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "primary-fixed": "#dbe1ff",
+                      "surface-container-low": "#f2f4f6",
+                      "on-error": "#ffffff",
+                      "on-background": "#191c1e",
+                      "inverse-surface": "#2d3133",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "outline": "#737686",
+                      "tertiary-container": "#656d84",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "inverse-on-surface": "#eff1f3",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "on-tertiary-fixed": "#131b2e",
+                      "on-primary": "#ffffff",
+                      "secondary": "#505f76",
+                      "surface-container": "#eceef0",
+                      "on-tertiary-container": "#eef0ff",
+                      "on-primary-container": "#eeefff",
+                      "tertiary": "#4d556b",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed-dim": "#bec6e0",
+                      "on-tertiary-fixed-variant": "#3f465c",
+                      "surface-container-high": "#e6e8ea",
+                      "background": "#f7f9fb",
+                      "primary": "#004ac6",
+                      "on-surface": "#191c1e",
+                      "surface-container-highest": "#e0e3e5",
+                      "on-secondary-fixed": "#0b1c30",
+                      "on-tertiary": "#ffffff",
+                      "primary-container": "#2563eb",
+                      "on-secondary-container": "#54647a",
+                      "inverse-primary": "#b4c5ff",
+                      "secondary-fixed": "#d3e4fe",
+                      "on-surface-variant": "#434655",
+                      "on-secondary": "#ffffff",
+                      "surface-tint": "#0053db",
+                      "surface": "#f7f9fb",
+                      "on-primary-fixed": "#00174b",
+                      "error-container": "#ffdad6",
+                      "secondary-container": "#d0e1fb",
+                      "surface-bright": "#f7f9fb"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Inter", "system-ui", "sans-serif"
+                      ],
+                      "display": [
+                              "Inter", "system-ui", "sans-serif"
+                      ],
+                      "body": [
+                              "Inter", "system-ui", "sans-serif"
+                      ],
+                      "label": [
+                              "Inter", "system-ui", "sans-serif"
+                      ]
+              },
+              "fontSize": {}
+      },
+          },
+        }
+      </script>
+<style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+      </style>
+</head>
+<body class="bg-surface text-on-surface h-screen w-screen overflow-hidden flex font-body">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-[216px] bg-surface-container-lowest border-r border-outline-variant flex flex-col py-4 z-20">
+<div class="px-6 mb-8">
+<h1 class="text-headline-sm font-bold text-on-surface leading-tight tracking-tight">机会情报 R04</h1>
+<p class="text-label-sm font-medium text-secondary mt-1">业务闭环系统</p>
+</div>
+<div class="flex-1 overflow-y-auto px-3 space-y-1">
+<a class="flex items-center px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">dashboard</span>
+<span class="font-body text-label-sm font-medium">工作台</span>
+</a>
+<a class="flex items-center px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">star</span>
+<span class="font-body text-label-sm font-medium">机会</span>
+</a>
+<a class="flex items-center px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">insights</span>
+<span class="font-body text-label-sm font-medium">情报</span>
+</a>
+<a class="flex items-center px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">science</span>
+<span class="font-body text-label-sm font-medium">研究</span>
+</a>
+<a class="flex items-center px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">settings_input_component</span>
+<span class="font-body text-label-sm font-medium">运行</span>
+</a>
+<a class="flex items-center px-3 py-2.5 rounded-lg bg-secondary-container text-on-secondary-container font-bold cursor-pointer active:scale-95 group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-body text-label-sm font-bold">管理</span>
+</a>
+</div>
+<div class="mt-auto px-3 space-y-1 pt-4 border-t border-outline-variant mx-3">
+<a class="flex items-center px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">switch_account</span>
+<span class="font-body text-label-sm font-medium">系统诊断</span>
+</a>
+<a class="flex items-center px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">history</span>
+<span class="font-body text-label-sm font-medium">审计日志</span>
+</a>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-[216px] h-[56px] bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-6 z-10">
+<div class="flex items-center w-96">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-1.5 bg-surface rounded-full border-none focus:ring-2 focus:ring-primary text-sm text-on-surface placeholder:text-on-surface-variant transition-shadow" placeholder="全局搜索..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors duration-200 cursor-pointer">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors duration-200 cursor-pointer relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors duration-200 cursor-pointer">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<div class="ml-2 pl-2 border-l border-outline-variant flex items-center">
+<img class="w-8 h-8 rounded-full border border-outline-variant object-cover cursor-pointer" data-alt="A small circular avatar of a professional user in a light-mode enterprise software interface, featuring a subtle gradient background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhRhXlNRCBaXPbQFVC5kxYovxmCeO6HIyXsHDJ6URktxNV4oxQKV5fQldHzpYKl4zOBGqIb1u3I5OiUXm-5_tulke1jnNg3cyEPy_qM3lbyrJkyXB2wMSS3LbyXH8fAEJEbYvF23cSr7ymqKNlBlwNNdQcU07bEUFmXGcwVcCvk0YAQlMCoaYnhrt_S9kdR1T1TGfymNJ9R3418vTjArK8lfRhfqFvGB4C-2mf_dDLePcZN9VBeZTyQSx7-FFvtCSESGC7GFSPE3HC"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="mt-[56px] ml-[216px] flex-1 overflow-y-auto p-5 pb-[20px] px-[24px]">
+<!-- PageHeader -->
+<div class="mb-6 flex items-start justify-between">
+<div>
+<h2 class="text-2xl font-bold text-on-surface tracking-tight">系统设置</h2>
+<p class="text-sm text-secondary mt-1">查看平台当前配置、策略与尚未开放的配置能力</p>
+</div>
+</div>
+<!-- ReadOnly Notice Banner -->
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-4 flex items-start mb-6">
+<span class="material-symbols-outlined text-secondary mr-3 mt-0.5" style="font-variation-settings: 'FILL' 1;">info</span>
+<p class="text-sm text-on-surface">当前设置写接口未完成统一验证，本页仅展示已生效配置与能力状态，不提供保存操作。</p>
+</div>
+<!-- SettingsFrame -->
+<div class="flex flex-col lg:flex-row gap-6 h-[calc(100vh-220px)] min-h-[600px]">
+<!-- LeftNav -->
+<div class="w-full lg:w-[200px] flex-shrink-0 border-r lg:border-r-0 lg:border-r border-outline-variant lg:pr-4 overflow-y-auto">
+<nav class="space-y-1">
+<a class="flex items-center px-3 py-2 rounded-md text-secondary hover:bg-surface-container-high transition-colors" href="#">
+<span class="text-sm font-medium">通用配置</span>
+</a>
+<a class="flex items-center px-3 py-2 rounded-md bg-secondary-container text-on-secondary-container font-bold" href="#">
+<span class="text-sm font-bold">安全策略</span>
+</a>
+<div class="px-3 py-2 rounded-md flex items-center justify-between opacity-60">
+<span class="text-sm font-medium text-secondary">通知配置</span>
+<span class="text-[10px] bg-surface-container-high text-secondary px-1.5 py-0.5 rounded">暂不可配置</span>
+</div>
+<div class="px-3 py-2 rounded-md flex items-center justify-between opacity-60">
+<span class="text-sm font-medium text-secondary">集成配置</span>
+<span class="text-[10px] bg-surface-container-high text-secondary px-1.5 py-0.5 rounded">暂不可配置</span>
+</div>
+<a class="flex items-center px-3 py-2 rounded-md text-secondary hover:bg-surface-container-high transition-colors" href="#">
+<span class="text-sm font-medium">来源偏好</span>
+</a>
+</nav>
+</div>
+<!-- Right Content Area -->
+<div class="flex-1 overflow-y-auto pr-2">
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+<div class="p-6 border-b border-outline-variant">
+<h3 class="text-lg font-bold text-on-surface">安全策略详情</h3>
+<p class="text-sm text-secondary mt-1">全局生效的安全规则与访问控制限制。</p>
+</div>
+<div class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<div class="p-6 hover:bg-surface-container-low transition-colors duration-150 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+<div class="flex-1">
+<h4 class="text-sm font-semibold text-on-surface flex items-center">
+                                    会话超时
+                                    <span class="ml-2 text-xs font-normal text-secondary bg-surface-container-high px-2 py-0.5 rounded">系统默认</span>
+</h4>
+<p class="text-xs text-secondary mt-1.5 leading-relaxed max-w-2xl">策略：用户无操作超过设定时间将自动登出</p>
+</div>
+<div class="sm:text-right font-medium text-sm text-on-surface">
+                                30分钟
+                            </div>
+</div>
+<!-- Row 2 -->
+<div class="p-6 hover:bg-surface-container-low transition-colors duration-150 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+<div class="flex-1">
+<h4 class="text-sm font-semibold text-on-surface flex items-center">
+                                    密码策略
+                                </h4>
+<p class="text-xs text-secondary mt-1.5 leading-relaxed max-w-2xl">要求：至少12位，包含大小写字母、数字与特殊字符；每90天强制更换</p>
+</div>
+<div class="sm:text-right font-medium text-sm text-on-surface flex items-center sm:justify-end text-primary">
+<span class="material-symbols-outlined text-[16px] mr-1">security</span>
+                                强
+                            </div>
+</div>
+<!-- Row 3 -->
+<div class="p-6 hover:bg-surface-container-low transition-colors duration-150 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+<div class="flex-1">
+<h4 class="text-sm font-semibold text-on-surface flex items-center">
+                                    MFA要求
+                                </h4>
+<p class="text-xs text-secondary mt-1.5 leading-relaxed max-w-2xl">范围：所有具备「系统管理」与「研究」权限的角色</p>
+</div>
+<div class="sm:text-right font-medium text-sm text-on-surface">
+                                强制开启
+                            </div>
+</div>
+<!-- Row 4 -->
+<div class="p-6 hover:bg-surface-container-low transition-colors duration-150 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+<div class="flex-1">
+<h4 class="text-sm font-semibold text-on-surface flex items-center">
+                                    登录失败锁定
+                                </h4>
+<p class="text-xs text-secondary mt-1.5 leading-relaxed max-w-2xl">策略：检测到异常暴力破解行为时自动封锁IP</p>
+</div>
+<div class="sm:text-right font-medium text-sm text-on-surface">
+                                5次失败锁定24小时
+                            </div>
+</div>
+<!-- Row 5 -->
+<div class="p-6 hover:bg-surface-container-low transition-colors duration-150 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+<div class="flex-1">
+<h4 class="text-sm font-semibold text-on-surface flex items-center">
+                                    审计保留期限
+                                </h4>
+<p class="text-xs text-secondary mt-1.5 leading-relaxed max-w-2xl">策略：系统核心操作日志与数据变更轨迹的存储周期</p>
+</div>
+<div class="sm:text-right font-medium text-sm text-on-surface">
+                                365天
+                            </div>
+</div>
+<!-- Row 6 -->
+<div class="p-6 hover:bg-surface-container-low transition-colors duration-150 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+<div class="flex-1">
+<h4 class="text-sm font-semibold text-on-surface flex items-center">
+                                    访问令牌策略
+                                </h4>
+<p class="text-xs text-secondary mt-1.5 leading-relaxed max-w-2xl">默认有效期，支持手动轮转</p>
+</div>
+<div class="sm:text-right font-medium text-sm text-on-surface">
+                                7天
+                            </div>
+</div>
+<!-- Row 7 -->
+<div class="p-6 hover:bg-surface-container-low transition-colors duration-150 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+<div class="flex-1">
+<h4 class="text-sm font-semibold text-on-surface flex items-center">
+                                    IP/网络限制
+                                </h4>
+<p class="text-xs text-secondary mt-1.5 leading-relaxed max-w-2xl">状态：仅允许公司 VPN 与办公网段访问</p>
+</div>
+<div class="sm:text-right font-medium text-sm text-on-surface flex items-center sm:justify-end">
+<span class="w-2 h-2 rounded-full bg-primary mr-2"></span>
+                                已启用白名单模式
+                            </div>
+</div>
+<!-- Row 8 -->
+<div class="p-6 hover:bg-surface-container-low transition-colors duration-150 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+<div class="flex-1">
+<h4 class="text-sm font-semibold text-on-surface flex items-center">
+                                    管理员操作二次验证
+                                </h4>
+<p class="text-xs text-secondary mt-1.5 leading-relaxed max-w-2xl">场景：涉及权限变更与敏感数据导出时触发</p>
+</div>
+<div class="sm:text-right font-medium text-sm text-on-surface flex items-center sm:justify-end">
+<span class="w-2 h-2 rounded-full bg-primary mr-2"></span>
+                                已启用
+                            </div>
+</div>
+</div>
+</div>
+<!-- Footer Section -->
+<div class="mt-6 flex flex-col sm:flex-row items-center justify-between border-t border-outline-variant pt-6">
+<div class="flex items-center text-xs text-secondary">
+<span class="material-symbols-outlined text-[16px] mr-1">check_circle</span>
+                        接口能力状态: 只读模式 (写操作未连接)
+                    </div>
+<a class="text-sm font-medium text-primary hover:text-primary-container flex items-center mt-4 sm:mt-0 transition-colors" href="#">
+                        查看最近策略审计记录
+                        <span class="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>P15 — 数据源详情 | 机会情报 R04</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-container": "#eeefff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "surface-dim": "#d8dadc",
+                        "surface-tint": "#0053db",
+                        "surface-container-high": "#e6e8ea",
+                        "background": "#f7f9fb",
+                        "on-background": "#191c1e",
+                        "secondary-container": "#d0e1fb",
+                        "on-surface-variant": "#434655",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#dae2fd",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-variant": "#e0e3e5",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "primary": "#004ac6",
+                        "on-secondary-container": "#54647a",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "tertiary-container": "#656d84",
+                        "surface-container": "#eceef0",
+                        "on-tertiary-container": "#eef0ff",
+                        "inverse-surface": "#2d3133",
+                        "on-secondary-fixed": "#0b1c30",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-primary-fixed": "#00174b",
+                        "primary-fixed": "#dbe1ff",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "tertiary": "#4d556b",
+                        "surface": "#f7f9fb",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "inverse-primary": "#b4c5ff",
+                        "primary-container": "#2563eb",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#131b2e",
+                        "secondary": "#505f76",
+                        "on-surface": "#191c1e",
+                        "outline": "#737686",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-bright": "#f7f9fb"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "display": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "body": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "label": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased h-screen flex overflow-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar (AppShell) -->
+<nav class="bg-surface-container-lowest text-primary flex flex-col h-full w-[216px] border-r border-outline-variant py-4 flex-shrink-0 z-20">
+<div class="px-6 mb-8">
+<h1 class="text-headline-sm font-bold text-on-surface">机会情报 R04</h1>
+<p class="text-label-sm text-on-surface-variant mt-1">业务闭环系统</p>
+</div>
+<div class="flex-1 overflow-y-auto px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span>工作台</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">star</span>
+<span>机会</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">insights</span>
+<span>情报</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">science</span>
+<span>研究</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary-container text-on-secondary-container font-bold cursor-pointer active:scale-95 text-label-sm" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">settings_input_component</span>
+<span>运行</span>
+</a>
+<!-- Expanded Menu for 运行 -->
+<div class="pl-9 pr-3 py-1 space-y-1">
+<a class="block py-2 text-label-sm font-bold text-primary" href="#">数据源</a>
+<a class="block py-2 text-label-sm text-secondary hover:text-on-surface transition-colors" href="#">监控计划</a>
+<a class="block py-2 text-label-sm text-secondary hover:text-on-surface transition-colors" href="#">运行记录</a>
+<a class="block py-2 text-label-sm text-secondary hover:text-on-surface transition-colors" href="#">分析队列</a>
+<a class="block py-2 text-label-sm text-secondary hover:text-on-surface transition-colors" href="#">告警</a>
+</div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span>管理</span>
+</a>
+</div>
+<div class="px-3 mt-auto pt-4 border-t border-outline-variant space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">switch_account</span>
+<span>系统诊断</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<span>审计日志</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col min-w-0">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest h-[56px] border-b border-outline-variant flex items-center justify-between px-6 flex-shrink-0 z-10">
+<div class="flex-1 flex items-center">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-1.5 pl-10 pr-4 text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:bg-surface-container-lowest transition-all" placeholder="搜索..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<button class="p-2 rounded-full hover:bg-surface-container-high hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<div class="ml-2 w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-label-sm cursor-pointer select-none">
+                    U
+                </div>
+</div>
+</header>
+<!-- Page Content Scrollable Area -->
+<main class="flex-1 overflow-y-auto bg-background p-5 lg:p-6 space-y-6">
+<!-- EntityHeader -->
+<div class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant shadow-sm flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 text-label-sm text-secondary mb-2">
+<a class="hover:text-primary transition-colors" href="#">运行</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">数据源</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-on-surface">SRC-PORT-01</span>
+</div>
+<h2 class="text-[24px] leading-tight font-bold text-on-surface">区域港务披露</h2>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 rounded-lg border border-outline-variant text-on-surface font-medium text-label-sm hover:bg-surface-container-low transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">link</span>
+                            复制链接
+                        </button>
+<button class="px-4 py-2 rounded-lg border border-outline-variant text-on-surface font-medium text-label-sm hover:bg-surface-container-low transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                            导出
+                        </button>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-x-6 gap-y-3 mt-2 pt-4 border-t border-outline-variant/50">
+<div class="flex items-center gap-2 text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">api</span>
+<span>类型：<span class="text-on-surface font-medium">API</span></span>
+</div>
+<div class="flex items-center gap-2 text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">power_settings_new</span>
+<span>状态：</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-fixed text-on-secondary-fixed">已启用</span>
+</div>
+<div class="flex items-center gap-2 text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">monitor_heart</span>
+<span>健康度：</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#ecfdf5] text-[#065f46]">良好</span>
+</div>
+<div class="flex items-center gap-2 text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span>最近成功：<span class="text-on-surface">18 分钟前</span></span>
+</div>
+<div class="flex items-center gap-2 text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span>最近运行：<span class="text-on-surface">18 分钟前</span></span>
+</div>
+<div class="flex items-center gap-2 text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">cable</span>
+<span>连接器：<span class="text-on-surface">v3</span></span>
+</div>
+</div>
+</div>
+<!-- Read-Only Info Alert -->
+<div class="bg-secondary-container/30 border border-secondary-container rounded-lg p-4 flex items-start gap-3 text-on-surface">
+<span class="material-symbols-outlined text-primary mt-0.5">info</span>
+<p class="text-body-sm">当前页面仅展示连接配置与运行状态，不提供编辑连接、启停或立即运行。</p>
+</div>
+<!-- Tabs -->
+<div class="border-b border-outline-variant">
+<nav aria-label="Tabs" class="-mb-px flex space-x-8"><a class="border-transparent text-on-surface-variant hover:text-on-surface hover:border-outline-variant whitespace-nowrap py-4 px-1 border-b-2 font-medium text-body-md" href="#">概览</a><a class="border-transparent text-on-surface-variant hover:text-on-surface hover:border-outline-variant whitespace-nowrap py-4 px-1 border-b-2 font-medium text-body-md" href="#">运行记录</a><a aria-current="page" class="border-primary text-primary whitespace-nowrap py-4 px-1 border-b-2 font-medium text-body-md" href="#">产出</a><a class="border-transparent text-on-surface-variant hover:text-on-surface hover:border-outline-variant whitespace-nowrap py-4 px-1 border-b-2 font-medium text-body-md" href="#">错误</a></nav>
+</div>
+<!-- Main Content Layout (2:1 Bento Style) -->
+<div class="flex flex-col gap-6 pb-12"><div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm flex flex-wrap items-center gap-4"><div class="flex items-center gap-2"><span class="text-label-sm text-secondary">时间范围</span><div class="flex border border-outline-variant rounded overflow-hidden"><button class="px-3 py-1.5 text-label-sm bg-secondary-container text-on-secondary-container font-medium">24小时</button><button class="px-3 py-1.5 text-label-sm text-secondary hover:bg-surface-container-low">7天</button><button class="px-3 py-1.5 text-label-sm text-secondary hover:bg-surface-container-low">30天</button></div></div><div class="flex items-center gap-2"><span class="text-label-sm text-secondary">质量筛选</span><select class="bg-surface-container-low border-outline-variant rounded text-label-sm py-1.5 px-3 focus:ring-primary"><option>全部质量</option><option>高质量 (&gt;=80)</option><option>中等 (60-79)</option><option>低质量 (&lt;60)</option></select></div><div class="ml-auto flex items-center gap-2"><span class="text-label-sm text-secondary">共 1,284 条产出</span></div></div><div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="lg:col-span-2 space-y-6"><div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden"><div class="overflow-x-auto"><table class="min-w-full divide-y divide-outline-variant/30"><thead class="bg-surface-container-low text-label-sm text-secondary"><tr><th class="px-4 py-3 text-left font-medium">情报ID</th><th class="px-4 py-3 text-left font-medium">摘要</th><th class="px-4 py-3 text-left font-medium">产出时间</th><th class="px-4 py-3 text-left font-medium">质量分</th><th class="px-4 py-3 text-left font-medium">关联机会</th><th class="px-4 py-3 text-left font-medium">状态</th></tr></thead><tbody class="divide-y divide-outline-variant/20 text-body-sm"><tr><td class="px-4 py-4 font-mono text-primary">INT-88291</td><td class="px-4 py-4"><div class="font-medium text-on-surface mb-1">鹿特丹港自动化二期扩建细节</div><div class="flex flex-wrap gap-1"> <span class="px-1.5 py-0.5 bg-surface-container-high rounded text-[10px] text-secondary">#自动化</span> <span class="px-1.5 py-0.5 bg-surface-container-high rounded text-[10px] text-secondary">#鹿特丹</span> </div></td><td class="px-4 py-4 text-secondary">10:15:02</td><td class="px-4 py-4"><span class="text-[#065f46] font-bold">92</span></td><td class="px-4 py-4 text-primary">3</td><td class="px-4 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-[#ecfdf5] text-[#065f46]">已入库</span></td></tr><tr><td class="px-4 py-4 font-mono text-primary">INT-88285</td><td class="px-4 py-4"><div class="font-medium text-on-surface mb-1">新加坡港口网络安全新规草案</div><div class="flex flex-wrap gap-1"> <span class="px-1.5 py-0.5 bg-surface-container-high rounded text-[10px] text-secondary">#网络安全</span> </div></td><td class="px-4 py-4 text-secondary">09:30:15</td><td class="px-4 py-4"><span class="text-[#065f46] font-bold">85</span></td><td class="px-4 py-4 text-primary">1</td><td class="px-4 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-[#ecfdf5] text-[#065f46]">已入库</span></td></tr></tbody></table></div></div></div><div class="flex flex-col gap-6"><div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-5 shadow-sm"><h3 class="text-label-lg font-bold text-on-surface mb-4">产出趋势</h3><div class="h-32 w-full bg-surface-container-low rounded flex items-end p-2 gap-1"><div class="flex-1 bg-primary/20 h-1/2 rounded-t"></div><div class="flex-1 bg-primary/40 h-2/3 rounded-t"></div><div class="flex-1 bg-primary h-full rounded-t"></div><div class="flex-1 bg-primary/60 h-3/4 rounded-t"></div><div class="flex-1 bg-primary/30 h-1/3 rounded-t"></div></div><div class="mt-4 flex justify-between text-xs text-secondary"><span>24h 产出: 142</span><span>7d 产出: 892</span></div></div><div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-5 shadow-sm"><h3 class="text-label-lg font-bold text-on-surface mb-4">质量分布</h3><div class="space-y-3"><div class="flex justify-between text-body-sm"><span>高质量 (&gt;=80)</span><span class="font-medium">65%</span></div><div class="w-full bg-surface-container-high h-1.5 rounded-full"><div class="bg-[#10b981] h-full rounded-full" style="width: 65%"></div></div><div class="flex justify-between text-body-sm"><span>中等 (60-79)</span><span class="font-medium">28%</span></div><div class="w-full bg-surface-container-high h-1.5 rounded-full"><div class="bg-primary h-full rounded-full" style="width: 28%"></div></div></div></div><div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-5 shadow-sm"><h3 class="text-label-lg font-bold text-on-surface mb-4">最近关联机会</h3><div class="space-y-3"><a class="block p-3 bg-surface-container-low rounded-lg border border-transparent hover:border-primary transition-colors" href="#"><div class="text-label-sm font-bold text-on-surface">OPP-2024-012</div><div class="text-xs text-secondary mt-1">东南亚自动化码头集成项目</div></a><a class="block p-3 bg-surface-container-low rounded-lg border border-transparent hover:border-primary transition-colors" href="#"><div class="text-label-sm font-bold text-on-surface">OPP-2024-008</div><div class="text-xs text-secondary mt-1">港口网络安全合规咨询</div></a></div></div></div></div></div>
+</main>
+</div>
+</body></html>

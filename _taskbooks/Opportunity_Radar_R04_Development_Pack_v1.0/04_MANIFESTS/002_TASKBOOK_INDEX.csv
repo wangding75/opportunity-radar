@@ -1,0 +1,30 @@
+﻿task_id,title,ui_dependencies,commit_message,taskbook_file,status
+T001,真实后端能力与 UI 契约审计,,docs(ui): audit R04 backend contracts,02_TASKBOOKS/T001_真实后端能力与_UI_契约审计.md,PENDING
+T002,R04 Design Tokens 与唯一 AppShell,U001,refactor(ui): build R04 app shell,02_TASKBOOKS/T002_R04_Design_Tokens_与唯一_AppShell.md,PENDING
+T003,登录、登录帮助与错误页,"U002,U003,U004,U005",feat(ui): rebuild auth and error states,02_TASKBOOKS/T003_登录、登录帮助与错误页.md,PENDING
+T004,全局搜索、通知与帮助抽屉,"U006,U007,U008",feat(ui): add global search and utility drawers,02_TASKBOOKS/T004_全局搜索、通知与帮助抽屉.md,PENDING
+T005,工作台分诊页,U009,feat(ui): rebuild workbench triage,02_TASKBOOKS/T005_工作台分诊页.md,PENDING
+T006,机会列表与详情概览,"U010,U011",feat(ui): add opportunity list and overview,02_TASKBOOKS/T006_机会列表与详情概览.md,PENDING
+T007,机会证据、分析研究与历史,"U012,U013,U014",feat(ui): complete opportunity detail tabs,02_TASKBOOKS/T007_机会证据、分析研究与历史.md,PENDING
+T008,最新情报列表与摘要详情,"U015,U016",feat(ui): add intelligence list and summary,02_TASKBOOKS/T008_最新情报列表与摘要详情.md,PENDING
+T009,情报原始证据、关系与处理过程,"U017,U018,U019",feat(ui): complete intelligence detail tabs,02_TASKBOOKS/T009_情报原始证据、关系与处理过程.md,PENDING
+T010,关键词、趋势与关系图谱,"U020,U021,U022,U023",feat(ui): rebuild keyword trend graph flow,02_TASKBOOKS/T010_关键词、趋势与关系图谱.md,PENDING
+T011,研究三类列表入口,"U024,U025,U026",feat(ui): add research list entry points,02_TASKBOOKS/T011_研究三类列表入口.md,PENDING
+T012,研究结果详情四个 Tab,"U027,U028,U029,U030",feat(ui): complete research result details,02_TASKBOOKS/T012_研究结果详情四个_Tab.md,PENDING
+T013,研究任务详情四个 Tab,"U031,U032,U033,U034",feat(ui): complete research task details,02_TASKBOOKS/T013_研究任务详情四个_Tab.md,PENDING
+T014,结构化分析详情三个 Tab,"U035,U036,U037",feat(ui): complete structured analysis details,02_TASKBOOKS/T014_结构化分析详情三个_Tab.md,PENDING
+T015,数据源列表与详情概览,"U038,U039",feat(ui): add source list and overview,02_TASKBOOKS/T015_数据源列表与详情概览.md,PENDING
+T016,数据源运行记录、产出与错误,"U040,U041,U042",feat(ui): complete source detail tabs,02_TASKBOOKS/T016_数据源运行记录、产出与错误.md,PENDING
+T017,监控计划列表与详情,"U043,U044",feat(ui): add monitoring plan flow,02_TASKBOOKS/T017_监控计划列表与详情.md,PENDING
+T018,运行列表与运行详情摘要,"U045,U046",feat(ui): add run list and summary,02_TASKBOOKS/T018_运行列表与运行详情摘要.md,PENDING
+T019,运行日志、产出与关联对象,"U047,U048,U049",feat(ui): complete run detail diagnostics,02_TASKBOOKS/T019_运行日志、产出与关联对象.md,PENDING
+T020,分析队列与告警,"U050,U051,U052",feat(ui): rebuild queue and alerts,02_TASKBOOKS/T020_分析队列与告警.md,PENDING
+T021,用户与角色,"U053,U054",feat(ui): rebuild users and roles,02_TASKBOOKS/T021_用户与角色.md,PENDING
+T022,审计日志、系统设置通用与安全,"U055,U056,U057",feat(ui): add audit and base settings,02_TASKBOOKS/T022_审计日志、系统设置通用与安全.md,PENDING
+T023,通知、集成与来源偏好设置,"U058,U059,U060",feat(ui): complete system settings,02_TASKBOOKS/T023_通知、集成与来源偏好设置.md,PENDING
+T024,系统诊断,U061,feat(ui): add system diagnostics,02_TASKBOOKS/T024_系统诊断.md,PENDING
+T025,个人账户与安全,"U062,U063,U064,U065",feat(ui): rebuild account security,02_TASKBOOKS/T025_个人账户与安全.md,PENDING
+T026,全量路由与用户闭环接线,U002-U065,feat(ui): wire R04 closed loop navigation,02_TASKBOOKS/T026_全量路由与用户闭环接线.md,PENDING
+T027,视觉一致性、几何与响应式收口,U001-U065,fix(ui): normalize R04 visual geometry,02_TASKBOOKS/T027_视觉一致性、几何与响应式收口.md,PENDING
+T028,后端缺口最终复核与 Deferred 登记,,docs(ui): finalize R04 deferred backend gaps,02_TASKBOOKS/T028_后端缺口最终复核与_Deferred_登记.md,PENDING
+T029,Docker 联调、全量测试与最终交付审计,U001-U065,chore(ui): finalize R04 integration acceptance,02_TASKBOOKS/T029_Docker_联调、全量测试与最终交付审计.md,PENDING

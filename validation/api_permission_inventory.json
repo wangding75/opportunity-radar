@@ -759,6 +759,29 @@
       "methods": [
         "GET"
       ],
+      "path": "/api/v1/auth/bootstrap",
+      "operation_id": null,
+      "route_name": "bootstrap",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
       "path": "/api/v1/auth/config",
       "operation_id": null,
       "route_name": "auth_config",
@@ -1342,6 +1365,100 @@
       "auth_dependency": "require_read_auth",
       "dependency_names": [
         "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/observations/{observation_id}",
+      "operation_id": null,
+      "route_name": "observation_detail",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "DELETE"
+      ],
+      "path": "/api/v1/observations/{observation_id}/state",
+      "operation_id": null,
+      "route_name": "observation_state_delete",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_observation_state_auth",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/observations/{observation_id}/state",
+      "operation_id": null,
+      "route_name": "observation_state",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_read_auth"
+      ],
+      "required_scope": "read",
+      "minimum_role": "VIEWER",
+      "allowed_roles": [
+        "OWNER",
+        "ADMIN",
+        "RESEARCHER",
+        "VIEWER"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "PUT"
+      ],
+      "path": "/api/v1/observations/{observation_id}/state",
+      "operation_id": null,
+      "route_name": "observation_state_put",
+      "auth_dependency": "require_read_auth",
+      "dependency_names": [
+        "get_db",
+        "require_observation_state_auth",
         "require_read_auth"
       ],
       "required_scope": "read",
@@ -2201,13 +2318,30 @@
       ],
       "csrf_required_for_session": false,
       "interactive_session_required": false
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/{path:path}",
+      "operation_id": null,
+      "route_name": "react_spa_fallback",
+      "auth_dependency": null,
+      "dependency_names": [],
+      "required_scope": "public",
+      "minimum_role": null,
+      "allowed_roles": [
+        "ANONYMOUS"
+      ],
+      "csrf_required_for_session": false,
+      "interactive_session_required": false
     }
   ],
   "summary": {
-    "route_count": 99,
-    "protected_route_count": 94,
-    "public_route_count": 5,
-    "read_route_count": 44,
+    "route_count": 105,
+    "protected_route_count": 99,
+    "public_route_count": 6,
+    "read_route_count": 49,
     "write_route_count": 9,
     "admin_route_count": 41,
     "real_data_collected": 0,

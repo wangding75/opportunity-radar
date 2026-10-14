@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>分析队列 - 机会情报系统</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#0053db",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#191c1e",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container": "#eceef0",
+                        "secondary-container": "#d0e1fb",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f7f9fb",
+                        "tertiary-container": "#656d84",
+                        "secondary": "#505f76",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-surface-variant": "#434655",
+                        "surface-container-low": "#f2f4f6",
+                        "on-error": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-fixed": "#131b2e",
+                        "on-primary-fixed": "#00174b",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "primary-container": "#2563eb",
+                        "on-primary-container": "#eeefff",
+                        "inverse-surface": "#2d3133",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "primary": "#004ac6",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#4d556b",
+                        "inverse-primary": "#b4c5ff",
+                        "primary-fixed": "#dbe1ff",
+                        "tertiary-fixed": "#dae2fd",
+                        "outline-variant": "#c3c6d7",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-bright": "#f7f9fb",
+                        "on-secondary-container": "#54647a",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "error": "#ba1a1a",
+                        "outline": "#737686",
+                        "on-tertiary-container": "#eef0ff",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-background": "#191c1e",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter", "system-ui", "sans-serif"],
+                        "display": ["Inter", "system-ui", "sans-serif"],
+                        "body": ["Inter", "system-ui", "sans-serif"],
+                        "label": ["Inter", "system-ui", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased flex h-screen overflow-hidden">
+<!-- AppShell SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-[216px] bg-surface-container-low border-r border-outline-variant flex flex-col py-4 z-20">
+<div class="px-6 mb-8">
+<h1 class="text-primary font-display font-bold text-lg leading-tight">机会情报系统</h1>
+<p class="text-on-surface-variant text-xs mt-1">Opportunity Radar R04</p>
+</div>
+<div class="flex-1 overflow-y-auto px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                工作台
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">rocket_launch</span>
+                机会
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">hub</span>
+                情报
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">psychology</span>
+                研究
+            </a>
+<!-- Expanded 运行 Section -->
+<div class="space-y-1 mt-2">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-medium text-sm">
+<span class="material-symbols-outlined text-[20px]">settings_input_component</span>
+                    运行
+                </div>
+<div class="pl-9 pr-3 space-y-1">
+<a class="block py-1.5 text-sm text-on-surface-variant hover:text-on-surface" href="#">数据源</a>
+<a class="block py-1.5 text-sm text-on-surface-variant hover:text-on-surface" href="#">监控计划</a>
+<a class="block py-1.5 text-sm text-on-surface-variant hover:text-on-surface" href="#">运行记录</a>
+<a class="block py-1.5 text-sm bg-secondary-container text-on-secondary-fixed-variant font-bold border-r-4 border-primary rounded-l-sm -mr-3 pr-3" href="#">分析队列</a>
+<a class="block py-1.5 text-sm text-on-surface-variant hover:text-on-surface" href="#">告警</a>
+</div>
+</div>
+<a class="flex items-center gap-3 px-3 py-2.5 mt-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+                管理
+            </a>
+</div>
+<div class="px-3 mt-auto pt-4 border-t border-outline-variant/30 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high text-sm" href="#">
+<span class="material-symbols-outlined text-[18px]">history_edu</span>
+                审计日志
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high text-sm" href="#">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+                系统设置
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 ml-[216px] flex flex-col h-full bg-background relative z-10">
+<!-- AppShell TopNavBar (Hidden on this specific page as per instruction to use a specific Top Banner, but keeping standard structure if needed, or blending) -->
+<!-- Since instruction says "Top Banner (Read-only Info)", we'll place it below the header -->
+<header class="bg-surface border-b border-outline-variant px-6 py-4 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<h2 class="text-2xl font-headline font-semibold text-on-surface tracking-tight">分析队列</h2>
+<p class="text-sm text-on-surface-variant mt-1">查看后台分析任务的排队、处理、重试与工作节点租约状态</p>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">refresh</span></button>
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+</div>
+</div>
+<!-- Read-only Warning Banner -->
+<div class="bg-surface-container-low border-l-4 border-secondary p-3 rounded text-sm flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px] mt-0.5">info</span>
+<p class="text-on-surface-variant">当前队列仅供观测，强制重试、取消或调整优先级能力待后端接口确认。</p>
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex-1 overflow-hidden flex">
+<!-- List Section -->
+<div class="flex-1 flex flex-col min-w-0 border-r border-outline-variant">
+<!-- FilterBar -->
+<div class="p-4 border-b border-outline-variant bg-surface flex flex-wrap gap-3 items-center">
+<div class="relative flex-1 min-w-[200px] max-w-xs">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full pl-9 pr-3 py-1.5 bg-surface-container-low border-transparent focus:border-primary focus:ring-1 focus:ring-primary rounded-md text-sm text-on-surface placeholder:text-on-surface-variant/60" placeholder="AQ-ID / 对象 ID / 机会" type="text"/>
+</div>
+<select class="py-1.5 pl-3 pr-8 bg-surface-container-low border-transparent rounded-md text-sm text-on-surface focus:ring-1 focus:ring-primary">
+<option value="">状态: 全部</option>
+<option value="pending">排队中</option>
+<option value="processing">处理中</option>
+<option value="failed">重试待续</option>
+</select>
+<select class="py-1.5 pl-3 pr-8 bg-surface-container-low border-transparent rounded-md text-sm text-on-surface focus:ring-1 focus:ring-primary">
+<option value="">分析器节点</option>
+<option value="n1">Worker-Node-Alpha</option>
+<option value="n2">Worker-Node-Beta</option>
+</select>
+<button class="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:bg-surface-container-low rounded-md border border-outline-variant transition-colors">
+<span class="material-symbols-outlined text-[18px]">sort</span>
+                        入队时间降序
+                    </button>
+</div>
+<!-- DataTable -->
+<div class="flex-1 overflow-auto bg-surface">
+<table class="w-full text-left text-sm whitespace-nowrap">
+<thead class="bg-surface-container-low text-on-surface-variant sticky top-0 z-10 border-b border-outline-variant">
+<tr>
+<th class="px-4 py-3 font-medium">AQ-ID</th>
+<th class="px-4 py-3 font-medium">对象 / 关联机会</th>
+<th class="px-4 py-3 font-medium">状态</th>
+<th class="px-4 py-3 font-medium">分析器</th>
+<th class="px-4 py-3 font-medium">入队时间</th>
+<th class="px-4 py-3 font-medium">重试/耗时</th>
+<th class="px-4 py-3 font-medium text-right">优先级</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant text-on-surface">
+<!-- Row 1: Processing -->
+<tr class="hover:bg-surface-container-lowest cursor-pointer transition-colors group">
+<td class="px-4 py-3 font-mono text-xs text-on-surface-variant group-hover:text-primary">AQ-8492</td>
+<td class="px-4 py-3">
+<div class="font-medium">Raw-Intel-892</div>
+<div class="text-xs text-on-surface-variant">OPP-394 (Tech Sector)</div>
+</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-secondary-container text-on-secondary-container">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                                        处理中
+                                    </span>
+</td>
+<td class="px-4 py-3 text-xs text-on-surface-variant">Worker-Node-Alpha</td>
+<td class="px-4 py-3 text-xs text-on-surface-variant">10:42:15<br/><span class="opacity-70">等待 2m 14s</span></td>
+<td class="px-4 py-3 text-xs">0 次 / 14s</td>
+<td class="px-4 py-3 text-right">
+<span class="text-xs font-medium px-2 py-1 rounded bg-surface-container text-on-surface-variant border border-outline-variant/30">P2-高</span>
+</td>
+</tr>
+<!-- Row 2: Failed/Retry (Selected) -->
+<tr class="bg-primary-fixed/20 hover:bg-primary-fixed/30 cursor-pointer transition-colors border-l-2 border-primary">
+<td class="px-4 py-3 font-mono text-xs text-primary font-semibold">AQ-8488</td>
+<td class="px-4 py-3">
+<div class="font-medium">Evidence-Gen-44</div>
+<div class="text-xs text-on-surface-variant">OPP-112 (Merger Alert)</div>
+</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-error-container text-on-error-container">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                                        重试待续
+                                    </span>
+</td>
+<td class="px-4 py-3 text-xs text-on-surface-variant">Worker-Node-Beta</td>
+<td class="px-4 py-3 text-xs text-on-surface-variant">10:15:00<br/><span class="opacity-70">总计 27m</span></td>
+<td class="px-4 py-3 text-xs text-error">2 次 / 失败</td>
+<td class="px-4 py-3 text-right">
+<span class="text-xs font-medium px-2 py-1 rounded bg-surface-container text-on-surface-variant border border-outline-variant/30">P1-极高</span>
+</td>
+</tr>
+<!-- Row 3: Pending -->
+<tr class="hover:bg-surface-container-lowest cursor-pointer transition-colors group">
+<td class="px-4 py-3 font-mono text-xs text-on-surface-variant group-hover:text-primary">AQ-8495</td>
+<td class="px-4 py-3">
+<div class="font-medium">Run-Analyze-99</div>
+<div class="text-xs text-on-surface-variant">-</div>
+</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-surface-container-high text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                                        排队中
+                                    </span>
+</td>
+<td class="px-4 py-3 text-xs text-on-surface-variant">-</td>
+<td class="px-4 py-3 text-xs text-on-surface-variant">10:45:00<br/><span class="opacity-70">等待 12s</span></td>
+<td class="px-4 py-3 text-xs">-</td>
+<td class="px-4 py-3 text-right">
+<span class="text-xs font-medium px-2 py-1 rounded bg-surface-container text-on-surface-variant border border-outline-variant/30">P3-中</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right Sidebar Inspector (For selected AQ-8488) -->
+<aside class="w-[360px] bg-surface flex flex-col h-full border-l border-outline-variant shrink-0">
+<div class="p-4 border-b border-outline-variant flex justify-between items-start bg-surface-container-lowest">
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-semibold text-lg text-on-surface">AQ-8488</h3>
+<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-error/10 text-error uppercase tracking-wide">异常重试</span>
+</div>
+<p class="text-sm text-on-surface-variant mt-1">Evidence-Gen-44</p>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface p-1 rounded-md hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-6 hide-scrollbar">
+<!-- Error State Card -->
+<div class="bg-error-container/30 border border-error/20 rounded-lg p-4">
+<h4 class="text-sm font-medium text-on-error-container flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-[18px]">error</span>
+                            最近失败原因
+                        </h4>
+<div class="font-mono text-xs text-on-surface-variant bg-surface-container-lowest p-2 rounded border border-outline-variant/50 overflow-x-auto whitespace-pre-wrap">TimeoutError: LLM Generation API failed to respond within 120s limit. Tenant concurrency quota reached.</div>
+<p class="text-xs text-on-surface-variant mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">timer</span>
+                            下次重试预估: <span class="font-medium text-on-surface">11:00:00 (Backoff: 15m)</span>
+</p>
+</div>
+<!-- Meta Info -->
+<div class="space-y-4">
+<h4 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">执行上下文</h4>
+<div class="grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
+<div>
+<p class="text-xs text-on-surface-variant mb-1">分配节点</p>
+<p class="font-medium text-on-surface">Worker-Node-Beta</p>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant mb-1">租约状态</p>
+<p class="font-medium text-on-surface flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-outline"></span> 已释放
+                                </p>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant mb-1">重试策略</p>
+<p class="font-medium text-on-surface">指数退避 (Max 5)</p>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant mb-1">已尝试次数</p>
+<p class="font-medium text-error">2 / 5</p>
+</div>
+</div>
+</div>
+<hr class="border-outline-variant/50"/>
+<!-- Relation Links -->
+<div class="space-y-3">
+<h4 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">关联追踪</h4>
+<a class="flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:border-primary/50 hover:bg-surface-container-low transition-all group" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px]">terminal</span>
+<div>
+<p class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">来源运行</p>
+<p class="text-xs text-on-surface-variant font-mono">RUN-20231012-A9</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:border-primary/50 hover:bg-surface-container-low transition-all group" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px]">rocket_launch</span>
+<div>
+<p class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">关联机会</p>
+<p class="text-xs text-on-surface-variant font-mono">OPP-112</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:border-primary/50 hover:bg-surface-container-low transition-all group" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px]">data_object</span>
+<div>
+<p class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">原始对象</p>
+<p class="text-xs text-on-surface-variant font-mono">Evidence-Gen-44</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">chevron_right</span>
+</a>
+</div>
+</div>
+<!-- Action Footer (Read Only State) -->
+<div class="p-4 border-t border-outline-variant bg-surface-container-lowest">
+<button class="w-full py-2.5 rounded-lg bg-surface-container text-on-surface-variant/50 font-medium text-sm flex items-center justify-center gap-2 cursor-not-allowed border border-outline-variant/30" disabled="">
+<span class="material-symbols-outlined text-[18px]">block</span>
+                        强制操作已禁用
+                    </button>
+<p class="text-[10px] text-center text-on-surface-variant mt-2">如需干预队列，请联系系统管理员通过控制台操作</p>
+</div>
+</aside>
+</main>
+</div>
+</body></html>

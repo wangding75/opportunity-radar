@@ -1,0 +1,10 @@
+.login-page__form { border: 1px solid var(--border-default); }
+.login-page__form-panel .btn:disabled { cursor: not-allowed; opacity: .62; }
+.login-page__error { padding: var(--space-3); border: 1px solid var(--color-danger-border); border-radius: var(--radius-md); color: #b91c1c; background: var(--color-danger-light); font-size: var(--font-size-sm); line-height: var(--line-height-normal); }
+
+@media (max-width: 768px) {
+  .login-page { display: block !important; width: 100% !important; }
+  .login-page__brand { display: none !important; }
+  .login-page__form-panel { min-height: 100vh; padding: var(--space-5) !important; }
+  .login-page__form { max-width: 440px; padding: var(--space-6) !important; box-shadow: none !important; }
+}

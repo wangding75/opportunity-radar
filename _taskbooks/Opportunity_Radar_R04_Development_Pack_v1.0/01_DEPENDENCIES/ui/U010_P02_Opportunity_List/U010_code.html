@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>机会情报 R04 - 机会列表</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#0b1c30",
+                    "on-background": "#191c1e",
+                    "surface-variant": "#e0e3e5",
+                    "on-primary-container": "#eeefff",
+                    "surface-container-high": "#e6e8ea",
+                    "on-secondary-container": "#54647a",
+                    "primary": "#004ac6",
+                    "secondary-fixed": "#d3e4fe",
+                    "on-tertiary-container": "#eef0ff",
+                    "on-error-container": "#93000a",
+                    "surface-container-highest": "#e0e3e5",
+                    "tertiary-fixed-dim": "#bec6e0",
+                    "tertiary-container": "#656d84",
+                    "on-secondary": "#ffffff",
+                    "primary-container": "#2563eb",
+                    "tertiary": "#4d556b",
+                    "surface-dim": "#d8dadc",
+                    "surface-container": "#eceef0",
+                    "surface-bright": "#f7f9fb",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-primary-fixed": "#00174b",
+                    "outline": "#737686",
+                    "background": "#f7f9fb",
+                    "on-tertiary-fixed": "#131b2e",
+                    "on-surface": "#191c1e",
+                    "on-error": "#ffffff",
+                    "inverse-primary": "#b4c5ff",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-tertiary-fixed-variant": "#3f465c",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "on-tertiary": "#ffffff",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed": "#dbe1ff",
+                    "outline-variant": "#c3c6d7",
+                    "surface-container-low": "#f2f4f6",
+                    "inverse-surface": "#2d3133",
+                    "error": "#ba1a1a",
+                    "surface": "#f7f9fb",
+                    "on-surface-variant": "#434655",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed": "#dae2fd",
+                    "secondary": "#505f76",
+                    "secondary-container": "#d0e1fb",
+                    "inverse-on-surface": "#eff1f3",
+                    "on-primary": "#ffffff",
+                    "surface-tint": "#0053db"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {},
+            "fontFamily": {
+                    "headline": [
+                            "Inter"
+                    ],
+                    "display": [
+                            "Inter"
+                    ],
+                    "body": [
+                            "Inter"
+                    ],
+                    "label": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {}
+    },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0; }
+        .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+        /* Hide scrollbar for cleaner look, handle internally */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface h-screen w-screen overflow-hidden flex font-body">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-lowest dark:bg-surface-container-lowest fixed left-0 top-0 h-full w-[216px] border-r border-outline-variant dark:border-outline flex flex-col py-4 z-20">
+<!-- Brand -->
+<div class="px-6 pb-6 pt-2">
+<h1 class="text-headline-sm font-bold text-on-surface dark:text-on-surface leading-tight tracking-tight">机会情报 R04</h1>
+<p class="text-xs text-secondary mt-1">业务闭环系统</p>
+</div>
+<!-- Main Nav -->
+<div class="flex-1 flex flex-col gap-1 px-3">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary dark:text-secondary-fixed hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                工作台
+            </a>
+<!-- Active State: 机会 -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary-container dark:bg-primary-container text-on-secondary-container dark:text-on-primary-container font-bold cursor-pointer active:scale-95 text-label-sm" href="#">
+<span class="material-symbols-outlined fill text-[20px]">star</span>
+                机会
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary dark:text-secondary-fixed hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">insights</span>
+                情报
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary dark:text-secondary-fixed hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">science</span>
+                研究
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary dark:text-secondary-fixed hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">settings_input_component</span>
+                运行
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary dark:text-secondary-fixed hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+                管理
+            </a>
+</div>
+<!-- Footer Nav -->
+<div class="px-3 pt-4 border-t border-surface-variant flex flex-col gap-1 mt-auto">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary dark:text-secondary-fixed hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]">switch_account</span>
+                系统诊断
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary dark:text-secondary-fixed hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]">history</span>
+                审计日志
+            </a>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-surface-container-lowest fixed top-0 right-0 left-[216px] h-[56px] border-b border-outline-variant dark:border-outline flex items-center justify-between px-6 z-10 font-body text-body-md">
+<!-- Search Bar (Left aligned per JSON) -->
+<div class="flex-1 flex items-center max-w-md">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-1.5 bg-surface-container rounded-full text-sm border-none focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all" placeholder="搜索系统资源..." type="text"/>
+</div>
+</div>
+<!-- Right Actions -->
+<div class="flex items-center gap-2">
+<button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<div class="ml-2 w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-sm cursor-pointer ml-2 shrink-0 border border-outline-variant/30">
+                U
+            </div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[216px] mt-[56px] w-[calc(100vw-216px)] h-[calc(100vh-56px)] overflow-hidden flex flex-col bg-surface p-6">
+<!-- PageHeader -->
+<div class="flex-none mb-6">
+<h2 class="text-2xl font-bold text-on-surface tracking-tight">机会</h2>
+<p class="text-sm text-secondary mt-1">按价值、置信度与时效性查看系统识别出的机会</p>
+</div>
+<!-- FilterBar (Compact Single Line) -->
+<div class="flex-none bg-surface-container-lowest rounded-lg border border-outline-variant p-2 mb-4 flex items-center gap-2 overflow-x-auto">
+<!-- Search -->
+<div class="relative min-w-[200px]">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full pl-8 pr-3 py-1.5 text-sm bg-surface rounded-md border border-outline-variant focus:ring-1 focus:ring-primary focus:border-primary" placeholder="搜索机会" type="text"/>
+</div>
+<div class="w-px h-5 bg-outline-variant mx-1 shrink-0"></div>
+<!-- Status Dropdown -->
+<div class="relative min-w-[120px] shrink-0">
+<select class="w-full appearance-none pl-3 pr-8 py-1.5 text-sm bg-surface rounded-md border border-outline-variant focus:ring-1 focus:ring-primary text-on-surface">
+<option value="">状态: 所有</option>
+<option value="pending">待分析</option>
+<option value="active">活跃中</option>
+<option value="archived">已归档</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] pointer-events-none">expand_more</span>
+</div>
+<!-- Score Dropdown -->
+<div class="relative min-w-[140px] shrink-0">
+<select class="w-full appearance-none pl-3 pr-8 py-1.5 text-sm bg-surface rounded-md border border-outline-variant focus:ring-1 focus:ring-primary text-on-surface">
+<option value="">评分范围: 所有</option>
+<option value="90+">90分以上</option>
+<option value="70-90">70-90分</option>
+<option value="&lt;70">70分以下</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] pointer-events-none">expand_more</span>
+</div>
+<!-- Confidence Dropdown -->
+<div class="relative min-w-[130px] shrink-0">
+<select class="w-full appearance-none pl-3 pr-8 py-1.5 text-sm bg-surface rounded-md border border-outline-variant focus:ring-1 focus:ring-primary text-on-surface">
+<option value="">置信度: 所有</option>
+<option value="high">高</option>
+<option value="medium">中</option>
+<option value="low">低</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] pointer-events-none">expand_more</span>
+</div>
+<!-- Category Dropdown -->
+<div class="relative min-w-[120px] shrink-0">
+<select class="w-full appearance-none pl-3 pr-8 py-1.5 text-sm bg-surface rounded-md border border-outline-variant focus:ring-1 focus:ring-primary text-on-surface">
+<option value="">类别: 所有</option>
+<option value="strategic">战略合作</option>
+<option value="market">市场扩张</option>
+<option value="tech">技术引进</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] pointer-events-none">expand_more</span>
+</div>
+<!-- Source Dropdown -->
+<div class="relative min-w-[120px] shrink-0">
+<select class="w-full appearance-none pl-3 pr-8 py-1.5 text-sm bg-surface rounded-md border border-outline-variant focus:ring-1 focus:ring-primary text-on-surface">
+<option value="">来源: 所有</option>
+<option value="auto">系统生成</option>
+<option value="manual">人工录入</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] pointer-events-none">expand_more</span>
+</div>
+<div class="w-px h-5 bg-outline-variant mx-1 shrink-0"></div>
+<!-- Sort -->
+<button class="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-surface rounded-md border border-outline-variant hover:bg-surface-container-high shrink-0">
+<span class="material-symbols-outlined text-[18px]">sort</span>
+                排序: 更新时间
+            </button>
+<!-- Clear Filters -->
+<button class="ml-auto text-sm text-primary hover:underline shrink-0 px-2">清除过滤</button>
+</div>
+<!-- DataTable Container (Fills remaining space) -->
+<div class="flex-1 bg-surface-container-lowest rounded-lg border border-outline-variant flex flex-col overflow-hidden min-h-0">
+<!-- Table Wrapper (Scrollable body) -->
+<div class="flex-1 overflow-auto">
+<table class="w-full text-left border-collapse text-sm whitespace-nowrap">
+<thead class="sticky top-0 bg-surface-container-low text-secondary font-medium z-10 border-b border-outline-variant shadow-sm">
+<tr>
+<th class="py-3 px-4 font-medium w-[280px]">机会</th>
+<th class="py-3 px-4 font-medium w-[100px] text-center">综合评分</th>
+<th class="py-3 px-4 font-medium w-[100px] text-center">置信度</th>
+<th class="py-3 px-4 font-medium w-[100px]">当前状态</th>
+<th class="py-3 px-4 font-medium w-[120px]">类别</th>
+<th class="py-3 px-4 font-medium min-w-[300px]">为什么现在</th>
+<th class="py-3 px-4 font-medium w-[100px] text-right">证据数</th>
+<th class="py-3 px-4 font-medium w-[100px] text-right">关联研究</th>
+<th class="py-3 px-4 font-medium w-[120px] text-right">更新时间</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-high cursor-pointer transition-colors group">
+<td class="py-3 px-4">
+<div class="font-medium text-on-surface group-hover:text-primary transition-colors truncate">东南亚物流基础设施合作窗口</div>
+<div class="text-xs text-secondary mt-0.5 font-mono">OR-2026-0042</div>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary-container text-on-primary-container font-bold text-xs ring-2 ring-surface-container-lowest">92</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-tertiary-container/10 text-tertiary">高</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="text-on-surface">待分析</span>
+</div>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">战略合作</td>
+<td class="py-3 px-4">
+<div class="truncate max-w-[400px] text-on-surface italic text-sm text-secondary">
+                                    “港口投资与跨境电商需求在 30 天内同时上升”
+                                </div>
+</td>
+<td class="py-3 px-4 text-right">
+<a class="text-primary hover:underline font-medium" href="#">18 条证据</a>
+</td>
+<td class="py-3 px-4 text-right">
+<a class="text-primary hover:underline font-medium" href="#">2 项研究</a>
+</td>
+<td class="py-3 px-4 text-right text-secondary text-xs">12 分钟前</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-high cursor-pointer transition-colors group">
+<td class="py-3 px-4">
+<div class="font-medium text-on-surface group-hover:text-primary transition-colors truncate">欧洲环保新规供应链替代机会</div>
+<div class="text-xs text-secondary mt-0.5 font-mono">OR-2026-0039</div>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-variant text-on-surface font-bold text-xs ring-2 ring-surface-container-lowest">85</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-tertiary-container/10 text-tertiary">高</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="text-on-surface">评估中</span>
+</div>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">市场扩张</td>
+<td class="py-3 px-4">
+<div class="truncate max-w-[400px] text-on-surface italic text-sm text-secondary">
+                                    “主要竞争对手未能通过 Q3 排放审核标准”
+                                </div>
+</td>
+<td class="py-3 px-4 text-right">
+<a class="text-primary hover:underline font-medium" href="#">42 条证据</a>
+</td>
+<td class="py-3 px-4 text-right">
+<a class="text-primary hover:underline font-medium" href="#">1 项研究</a>
+</td>
+<td class="py-3 px-4 text-right text-secondary text-xs">3 小时前</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-high cursor-pointer transition-colors group">
+<td class="py-3 px-4">
+<div class="font-medium text-on-surface group-hover:text-primary transition-colors truncate">固态电池材料核心专利到期窗口</div>
+<div class="text-xs text-secondary mt-0.5 font-mono">OR-2026-0035</div>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-variant text-on-surface font-bold text-xs ring-2 ring-surface-container-lowest">78</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-surface-variant text-on-surface-variant">中</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="text-on-surface">待分析</span>
+</div>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">技术引进</td>
+<td class="py-3 px-4">
+<div class="truncate max-w-[400px] text-on-surface italic text-sm text-secondary">
+                                    “基础配方专利将在 6 个月后进入公共领域”
+                                </div>
+</td>
+<td class="py-3 px-4 text-right">
+<a class="text-primary hover:underline font-medium" href="#">9 条证据</a>
+</td>
+<td class="py-3 px-4 text-right">
+<span class="text-secondary">无研究</span>
+</td>
+<td class="py-3 px-4 text-right text-secondary text-xs">昨天</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-high cursor-pointer transition-colors group opacity-75">
+<td class="py-3 px-4">
+<div class="font-medium text-on-surface group-hover:text-primary transition-colors truncate">中东地区云服务基础设施竞标</div>
+<div class="text-xs text-secondary mt-0.5 font-mono">OR-2026-0012</div>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-variant text-on-surface font-bold text-xs ring-2 ring-surface-container-lowest">65</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-surface-variant text-on-surface-variant">低</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+<span class="text-on-surface-variant">已归档</span>
+</div>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">市场扩张</td>
+<td class="py-3 px-4">
+<div class="truncate max-w-[400px] text-on-surface italic text-sm text-secondary">
+                                    “当地政策变动导致准入门槛大幅提升”
+                                </div>
+</td>
+<td class="py-3 px-4 text-right">
+<a class="text-primary hover:underline font-medium" href="#">105 条证据</a>
+</td>
+<td class="py-3 px-4 text-right">
+<a class="text-primary hover:underline font-medium" href="#">4 项研究</a>
+</td>
+<td class="py-3 px-4 text-right text-secondary text-xs">上周</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="flex-none border-t border-outline-variant bg-surface-container-lowest px-4 py-3 flex items-center justify-between">
+<div class="text-sm text-secondary">
+                    显示 1 到 4，共 128 条记录
+                </div>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface-variant hover:bg-surface-container-high disabled:opacity-50 disabled:cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-primary bg-primary-container text-on-primary-container font-medium text-sm">
+                        1
+                    </button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:bg-surface-container-high font-medium text-sm">
+                        2
+                    </button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:bg-surface-container-high font-medium text-sm">
+                        3
+                    </button>
+<span class="text-on-surface-variant">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:bg-surface-container-high font-medium text-sm">
+                        10
+                    </button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface-variant hover:bg-surface-container-high">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

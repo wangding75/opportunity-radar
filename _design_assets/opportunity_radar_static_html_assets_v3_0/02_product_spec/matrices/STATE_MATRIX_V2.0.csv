@@ -1,0 +1,28 @@
+﻿id,title_zh,parent_page,secondary_entry_page,entry_action,exit_or_next,implementation_mode,filename,reference_path,status
+P03-S01,情报转为机会,P03,,创建机会,P03/P09,OVERLAY_OR_CONTENT_STATE,P03_S01_Convert_To_Opportunity.png,01_design_reference/state_designs/P03_S01_Convert_To_Opportunity.png,FROZEN
+P03-S02,重复机会处理,P03,,检测到重复机会,P09,OVERLAY_OR_CONTENT_STATE,P03_S02_Duplicate_Opportunity_Resolution.png,01_design_reference/state_designs/P03_S02_Duplicate_Opportunity_Resolution.png,FROZEN
+P03-S03,机会创建 / 合并成功,P03,,创建/合并成功,P09/P10,OVERLAY_OR_CONTENT_STATE,P03_S03_Opportunity_Create_Success.png,01_design_reference/state_designs/P03_S03_Opportunity_Create_Success.png,FROZEN
+P03-S04,机会创建 / 合并失败,P03,,创建/合并失败,P03-S01,OVERLAY_OR_CONTENT_STATE,P03_S04_Opportunity_Create_Failed.png,01_design_reference/state_designs/P03_S04_Opportunity_Create_Failed.png,FROZEN
+P09-S01,机会状态变更,P09,,修改状态,P09,OVERLAY_OR_CONTENT_STATE,P09_S01_Opportunity_Status_Change.png,01_design_reference/state_designs/P09_S01_Opportunity_Status_Change.png,FROZEN
+P09-S02,分配负责人,P09,,分配负责人,P09/P25,OVERLAY_OR_CONTENT_STATE,P09_S02_Assign_Owner.png,01_design_reference/state_designs/P09_S02_Assign_Owner.png,FROZEN
+P09-S03,忽略 / 归档机会,P09,,忽略/归档,P08/P09,OVERLAY_OR_CONTENT_STATE,P09_S03_Archive_Or_Ignore.png,01_design_reference/state_designs/P09_S03_Archive_Or_Ignore.png,FROZEN
+P09-S04,启动结构化分析,P09,,启动结构化分析,P10,OVERLAY_OR_CONTENT_STATE,P09_S04_Start_Structured_Analysis.png,01_design_reference/state_designs/P09_S04_Start_Structured_Analysis.png,FROZEN
+P09-S05,创建研究任务,P09,,创建研究,P11,OVERLAY_OR_CONTENT_STATE,P09_S05_Create_Research.png,01_design_reference/state_designs/P09_S05_Create_Research.png,FROZEN
+P11-S01,研究任务创建成功,P11,,研究创建成功,P11/P12,OVERLAY_OR_CONTENT_STATE,P11_S01_Research_Create_Success.png,01_design_reference/state_designs/P11_S01_Research_Create_Success.png,FROZEN
+P12-S01,研究执行异常与恢复,P12,,研究阶段异常,P12,OVERLAY_OR_CONTENT_STATE,P12_S01_Research_Execution_Recovery.png,01_design_reference/state_designs/P12_S01_Research_Execution_Recovery.png,FROZEN
+P13-S01,发布研究结论,P13,,发布研究结论,P13/P09,OVERLAY_OR_CONTENT_STATE,P13_S01_Publish_Research_Conclusion.png,01_design_reference/state_designs/P13_S01_Publish_Research_Conclusion.png,FROZEN
+P17-S01,新建监控计划,P17,,新建监控计划,P17/P18,OVERLAY_OR_CONTENT_STATE,P17_S01_Create_Monitoring_Plan.png,01_design_reference/state_designs/P17_S01_Create_Monitoring_Plan.png,FROZEN
+P17-S02,暂停 / 恢复监控计划,P17,P18,暂停/恢复,P17/P18,OVERLAY_OR_CONTENT_STATE,P17_S02_Pause_Resume_Monitoring.png,01_design_reference/state_designs/P17_S02_Pause_Resume_Monitoring.png,FROZEN
+P17-S03,手动运行监控计划,P18,,手动运行,P20,OVERLAY_OR_CONTENT_STATE,P17_S03_Manual_Run_Monitoring.png,01_design_reference/state_designs/P17_S03_Manual_Run_Monitoring.png,FROZEN
+P20-S01,运行失败与重试,P20,,运行失败,P20/P21,OVERLAY_OR_CONTENT_STATE,P20_S01_Run_Failure_Retry.png,01_design_reference/state_designs/P20_S01_Run_Failure_Retry.png,FROZEN
+P21-S01,分析队列任务处理,P21,,队列任务异常,P20/P21,OVERLAY_OR_CONTENT_STATE,P21_S01_Analysis_Queue_Task.png,01_design_reference/state_designs/P21_S01_Analysis_Queue_Task.png,FROZEN
+P22-S01,告警详情与处理,P22,,打开告警,P20/P22,OVERLAY_OR_CONTENT_STATE,P22_S01_Alert_Detail_Resolution.png,01_design_reference/state_designs/P22_S01_Alert_Detail_Resolution.png,FROZEN
+P23-S01,新建告警规则,P23,,新建规则,P23,OVERLAY_OR_CONTENT_STATE,P23_S01_Create_Alert_Rule.png,01_design_reference/state_designs/P23_S01_Create_Alert_Rule.png,FROZEN
+P25-S01,邀请成员,P25,,邀请成员,P25,OVERLAY_OR_CONTENT_STATE,P25_S01_Invite_Member.png,01_design_reference/state_designs/P25_S01_Invite_Member.png,FROZEN
+P26-S01,修改成员角色与权限,P26,,修改角色/权限,P25/P26,OVERLAY_OR_CONTENT_STATE,P26_S01_Modify_Role_Permissions.png,01_design_reference/state_designs/P26_S01_Modify_Role_Permissions.png,FROZEN
+P27-S01,启用双重验证,P27,,启用 MFA,P27,OVERLAY_OR_CONTENT_STATE,P27_S01_Enable_MFA.png,01_design_reference/state_designs/P27_S01_Enable_MFA.png,FROZEN
+P27-S02,账户危险操作,P27,,危险操作,P27,OVERLAY_OR_CONTENT_STATE,P27_S02_Account_Danger_Actions.png,01_design_reference/state_designs/P27_S02_Account_Danger_Actions.png,FROZEN
+P28-S01,外部集成授权与修复,P28,,集成异常,P28,OVERLAY_OR_CONTENT_STATE,P28_S01_Integration_Authorization_Repair.png,01_design_reference/state_designs/P28_S01_Integration_Authorization_Repair.png,FROZEN
+P31-S01,全局搜索无结果,P31,,搜索无结果,P31/P17,OVERLAY_OR_CONTENT_STATE,P31_S01_Global_Search_No_Results.png,01_design_reference/state_designs/P31_S01_Global_Search_No_Results.png,FROZEN
+P32-S01,登录二次验证,P32,,登录需二次验证,原请求页面,OVERLAY_OR_CONTENT_STATE,P32_S01_Login_MFA.png,01_design_reference/state_designs/P32_S01_Login_MFA.png,FROZEN
+P33-S01,申请访问权限,P33,,申请访问权限,P33/受保护资源,OVERLAY_OR_CONTENT_STATE,P33_S01_Access_Request.png,01_design_reference/state_designs/P33_S01_Access_Request.png,FROZEN

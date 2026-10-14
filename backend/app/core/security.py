@@ -84,6 +84,42 @@ def require_read_auth(
     return _require("read", request, authorization, x_opportunity_radar_key, None)
 
 
+def require_observation_state_auth(
+    request: Request = None,
+    authorization: str | None = Header(default=None),
+    x_opportunity_radar_key: str | None = Header(default=None),
+    x_csrf_token: str | None = Header(default=None),
+) -> Principal | None:
+    """Authenticate a user for their own observation bookmark/dismiss state.
+
+    Personal observation state is a per-user capability: VIEWER may maintain
+    their own bookmarks, dismissals and notes, so the check requires a real
+    user identity plus session-write semantics (CSRF for session auth) but
+    not the RESEARCHER-level product write scope. Legacy API-key principals
+    have no user identity and are rejected by the route, not here.
+    """
+    if isinstance(request, str):
+        x_opportunity_radar_key = request
+        request = None
+    if not isinstance(authorization, str):
+        authorization = None
+    if not isinstance(x_opportunity_radar_key, str):
+        x_opportunity_radar_key = None
+    if not isinstance(x_csrf_token, str):
+        x_csrf_token = None
+    if settings.auth_mode == "disabled":
+        return None
+    principal = _authenticate(request, authorization=authorization, legacy_key=x_opportunity_radar_key)
+    if principal is None or principal.user_id is None:
+        raise HTTPException(status_code=401 if principal is None else 403, detail="authenticated user required for observation state")
+    if principal.auth_type == "session":
+        assert principal.session_id is not None
+        with SessionLocal() as db:
+            if not validate_csrf(db, principal.session_id, x_csrf_token):
+                raise HTTPException(status_code=403, detail="valid CSRF token required")
+    return principal
+
+
 def require_write_auth(
     request: Request = None,
     authorization: str | None = Header(default=None),

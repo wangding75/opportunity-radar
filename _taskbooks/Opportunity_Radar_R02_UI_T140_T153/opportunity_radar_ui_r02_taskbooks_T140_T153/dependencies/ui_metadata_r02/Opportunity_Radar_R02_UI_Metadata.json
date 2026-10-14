@@ -1,0 +1,2632 @@
+{
+  "schema_version": "1.0",
+  "stitch_project": {
+    "title": "Opportunity Radar · Complete UI Prototype R02",
+    "id": "15618650520496122485",
+    "resource": "projects/15618650520496122485",
+    "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+    "main_screen_count": 34
+  },
+  "principles": {
+    "ui_only": true,
+    "backend_change_allowed": false,
+    "api_contract_change_allowed": false,
+    "db_change_allowed": false,
+    "unsupported_action_policy": "HIDE_IF_UNSUPPORTED",
+    "exact_endpoint_policy": "Do not invent method/path; bind against latest source before implementation.",
+    "exact_paths_confirmed": [
+      "GET /health",
+      "GET /ready"
+    ],
+    "binding_statuses": [
+      "CONFIRMED_CAPABILITY",
+      "VERIFY_LATEST",
+      "UI_ONLY",
+      "EXTERNAL",
+      "HIDE_IF_UNSUPPORTED"
+    ]
+  },
+  "pages": [
+    {
+      "id": "P01",
+      "title": "登录",
+      "group": "认证与全局入口",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "6e1f72c8cdc944e4929adaae6affd73b",
+      "stitch_resource": "projects/15618650520496122485/screens/6e1f72c8cdc944e4929adaae6affd73b",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "默认",
+        "输入错误",
+        "登录中",
+        "认证错误",
+        "429限流",
+        "服务异常"
+      ],
+      "actions": [
+        {
+          "label": "登录",
+          "action_type": "API",
+          "target_or_capability": "auth.login",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "成功->P02；精确method/path VERIFY_LATEST",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "显示/隐藏密码",
+          "action_type": "UI_ONLY",
+          "target_or_capability": "toggle-password",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P02",
+      "title": "Dashboard 总览",
+      "group": "认证与全局入口",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "721146f092ba449599cbc55e508916cd",
+      "stitch_resource": "projects/15618650520496122485/screens/721146f092ba449599cbc55e508916cd",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Loading",
+        "Normal",
+        "Empty",
+        "Partial",
+        "Error",
+        "Refreshing"
+      ],
+      "actions": [
+        {
+          "label": "刷新",
+          "action_type": "API",
+          "target_or_capability": "dashboard.read/aggregate",
+          "binding_status": "VERIFY_LATEST",
+          "notes": "不为UI新增聚合后端",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "查看全部机会",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P12",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "机会行",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "来源健康",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P19",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "最近运行",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P22",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "最近告警",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P24",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "全局搜索",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P03",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P03",
+      "title": "全局搜索",
+      "group": "认证与全局入口",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "0ad90df2dfb0462ab34c790f5bd26d21",
+      "stitch_resource": "projects/15618650520496122485/screens/0ad90df2dfb0462ab34c790f5bd26d21",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Initial",
+        "Loading",
+        "Normal",
+        "No Result",
+        "Error"
+      ],
+      "actions": [
+        {
+          "label": "提交搜索",
+          "action_type": "API",
+          "target_or_capability": "global_search_or_frontend_aggregate",
+          "binding_status": "VERIFY_LATEST",
+          "notes": "无统一搜索API时前端聚合现有查询，不新增后端",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "清空/分类筛选",
+          "action_type": "UI_ONLY",
+          "target_or_capability": "local-search-state",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Opportunity结果",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Observation结果",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P07",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Keyword结果",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P10/P09",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Research结果",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P16/P17",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P04",
+      "title": "403 无权限",
+      "group": "认证与全局入口",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "f95504c1f6594644869c58a07066c704",
+      "stitch_resource": "projects/15618650520496122485/screens/f95504c1f6594644869c58a07066c704",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Forbidden"
+      ],
+      "actions": [
+        {
+          "label": "返回总览",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P02",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "返回上一页",
+          "action_type": "UI_ONLY",
+          "target_or_capability": "history.back",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P05",
+      "title": "404 / 对象不存在",
+      "group": "认证与全局入口",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "a9c5ad0f8d144a188ee6892237540268",
+      "stitch_resource": "projects/15618650520496122485/screens/a9c5ad0f8d144a188ee6892237540268",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Not Found",
+        "Object Deleted"
+      ],
+      "actions": [
+        {
+          "label": "返回总览",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P02",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "返回上一页",
+          "action_type": "UI_ONLY",
+          "target_or_capability": "history.back",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "返回列表",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "CONTEXT_LIST",
+          "binding_status": "UI_ONLY",
+          "notes": "按来源上下文 P06/P12/P15/P21 等",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P06",
+      "title": "原始情报 Observation 列表",
+      "group": "机会情报",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "062c515c6d57447fbade5af202c9a3b1",
+      "stitch_resource": "projects/15618650520496122485/screens/062c515c6d57447fbade5af202c9a3b1",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Loading",
+        "Normal",
+        "Empty",
+        "No Result",
+        "Stale",
+        "Partial",
+        "Error",
+        "Refreshing"
+      ],
+      "actions": [
+        {
+          "label": "刷新",
+          "action_type": "API",
+          "target_or_capability": "observation.list",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "path VERIFY_LATEST",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "筛选/排序/分页",
+          "action_type": "API",
+          "target_or_capability": "observation.list.query",
+          "binding_status": "VERIFY_LATEST",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Observation行",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P07",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Source",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P19",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Keyword",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P10/P09",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "关联机会",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "打开原始来源",
+          "action_type": "EXTERNAL",
+          "target_or_capability": "source_url",
+          "binding_status": "EXTERNAL",
+          "notes": "Raw数据只读",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P07",
+      "title": "Observation 详情",
+      "group": "机会情报",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "e69878066b9149eba3665a08ca5c037e",
+      "stitch_resource": "projects/15618650520496122485/screens/e69878066b9149eba3665a08ca5c037e",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Normal",
+        "Raw Partial",
+        "Source Unavailable",
+        "URL Unreachable",
+        "Stale",
+        "Processing",
+        "Analysis Failed"
+      ],
+      "actions": [
+        {
+          "label": "查看来源",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P19",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Keyword",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P10/P09",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "关联机会",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "原始来源",
+          "action_type": "EXTERNAL",
+          "target_or_capability": "source_url",
+          "binding_status": "EXTERNAL",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "返回列表",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P06",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P08",
+      "title": "关键词发现",
+      "group": "机会情报",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "57346fbcd8e04ee79322ce1719d2bb4f",
+      "stitch_resource": "projects/15618650520496122485/screens/57346fbcd8e04ee79322ce1719d2bb4f",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Discovery Running",
+        "Normal",
+        "Empty",
+        "No Result",
+        "Insufficient Data",
+        "Partial",
+        "Error"
+      ],
+      "actions": [
+        {
+          "label": "刷新",
+          "action_type": "API",
+          "target_or_capability": "keyword.discovery.read",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Keyword",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P10",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "查看证据",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P06?keyword=...",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "加入/取消关注",
+          "action_type": "API",
+          "target_or_capability": "watch_keyword.write",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "必须先核最新API",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "关联机会",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P12/P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P09",
+      "title": "关注关键词",
+      "group": "机会情报",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "80c5171c27d644a59ef9a222a12c0cbd",
+      "stitch_resource": "projects/15618650520496122485/screens/80c5171c27d644a59ef9a222a12c0cbd",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Active",
+        "Disabled",
+        "No Signal",
+        "Running",
+        "Warning",
+        "Failed",
+        "Empty",
+        "Saving",
+        "Validation Error"
+      ],
+      "actions": [
+        {
+          "label": "添加/编辑",
+          "action_type": "DRAWER",
+          "target_or_capability": "Watch Keyword Editor",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "保存",
+          "action_type": "API",
+          "target_or_capability": "watch_keyword.write",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "字段按现有schema",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "启用/停用",
+          "action_type": "API",
+          "target_or_capability": "watch_keyword.enable_disable",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "查看趋势",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P10",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "查看证据",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P06",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "运行记录",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P21",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P10",
+      "title": "趋势分析",
+      "group": "机会情报",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "54f882be4ee14ee38d30911a18b40b12",
+      "stitch_resource": "projects/15618650520496122485/screens/54f882be4ee14ee38d30911a18b40b12",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Loading",
+        "Normal",
+        "Insufficient Data",
+        "No Trend",
+        "Partial",
+        "Stale",
+        "Error"
+      ],
+      "actions": [
+        {
+          "label": "时间范围",
+          "action_type": "API",
+          "target_or_capability": "trend.read.window",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "实际窗口以API为准",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "查看证据",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P06",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "关系图谱",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P11",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "查看机会",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P12/P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "关注关键词",
+          "action_type": "API",
+          "target_or_capability": "watch_keyword.write",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P11",
+      "title": "关系图谱",
+      "group": "机会情报",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "ad561de9f108498fa59eb36d83372ea5",
+      "stitch_resource": "projects/15618650520496122485/screens/ad561de9f108498fa59eb36d83372ea5",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Loading",
+        "Normal",
+        "No Relation",
+        "Insufficient Data",
+        "Graph Error"
+      ],
+      "actions": [
+        {
+          "label": "读取图谱",
+          "action_type": "API",
+          "target_or_capability": "graph.read",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "缩放/平移",
+          "action_type": "UI_ONLY",
+          "target_or_capability": "graph-canvas",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "点击节点",
+          "action_type": "DRAWER",
+          "target_or_capability": "Graph Node Detail",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "节点筛选",
+          "action_type": "UI_ONLY",
+          "target_or_capability": "filter-returned-data",
+          "binding_status": "UI_ONLY",
+          "notes": "后端不支持的筛选仅前端处理",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Observation",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P07",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "趋势",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P10",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "机会",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "来源",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P19",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P12",
+      "title": "Opportunity 列表",
+      "group": "机会情报",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "1c9cbf41fe4c4fca88f1113abde76751",
+      "stitch_resource": "projects/15618650520496122485/screens/1c9cbf41fe4c4fca88f1113abde76751",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Loading",
+        "Normal",
+        "Empty",
+        "No Result",
+        "New",
+        "Analysis Pending",
+        "Analysis Failed",
+        "Partial",
+        "Error"
+      ],
+      "actions": [
+        {
+          "label": "刷新",
+          "action_type": "API",
+          "target_or_capability": "opportunity.list",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "筛选/排序/分页",
+          "action_type": "API",
+          "target_or_capability": "opportunity.list.query",
+          "binding_status": "VERIFY_LATEST",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Opportunity行",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "趋势",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P10",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "证据/来源",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P06/P19",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "导出",
+          "action_type": "API",
+          "target_or_capability": "opportunity.export",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "归档/忽略/状态变更",
+          "action_type": "API",
+          "target_or_capability": "opportunity.state_write",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "不得新增批量状态API",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P13",
+      "title": "Opportunity 详情",
+      "group": "机会情报",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "bec8b94c93e04162a01d5e752e2646e7",
+      "stitch_resource": "projects/15618650520496122485/screens/bec8b94c93e04162a01d5e752e2646e7",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Analysis Pending",
+        "Running",
+        "Success",
+        "Failed",
+        "Evidence Partial",
+        "Stale",
+        "Research Not Started",
+        "Research Running",
+        "Research Completed",
+        "Error"
+      ],
+      "actions": [
+        {
+          "label": "查看证据",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P06/P07",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "查看趋势",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P10",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "打开图谱",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P11",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "完整分析",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P14",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "开始研究",
+          "action_type": "API",
+          "target_or_capability": "research.start",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "成功->P15/P16",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "研究任务",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P16/P15",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "研究结果",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P17",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "业务状态操作",
+          "action_type": "API",
+          "target_or_capability": "opportunity.state_write",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P14",
+      "title": "结构化分析",
+      "group": "分析与研究",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "16885e1ecb8e4eb3b38b3fc7422a579a",
+      "stitch_resource": "projects/15618650520496122485/screens/16885e1ecb8e4eb3b38b3fc7422a579a",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Not Generated",
+        "Queued",
+        "Running",
+        "Completed",
+        "Failed",
+        "Partial",
+        "Provider Unavailable"
+      ],
+      "actions": [
+        {
+          "label": "返回机会",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "查看证据",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P06/P07",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "开始/重新分析",
+          "action_type": "API",
+          "target_or_capability": "analysis.enqueue_or_trigger",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "开始研究",
+          "action_type": "API",
+          "target_or_capability": "research.start",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "成功->P15/P16",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P15",
+      "title": "Research Workflow 列表",
+      "group": "分析与研究",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "207ed97119ee4d9bbd6b5ab0b1448685",
+      "stitch_resource": "projects/15618650520496122485/screens/207ed97119ee4d9bbd6b5ab0b1448685",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Queued",
+        "Running",
+        "Completed",
+        "Failed",
+        "Cancelled",
+        "Empty",
+        "Loading",
+        "Error"
+      ],
+      "actions": [
+        {
+          "label": "Workflow",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P16",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Opportunity",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Result",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P17",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "重试",
+          "action_type": "API",
+          "target_or_capability": "research.retry",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "取消",
+          "action_type": "API",
+          "target_or_capability": "research.cancel",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P16",
+      "title": "Research Workflow 详情",
+      "group": "分析与研究",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "4e8888bfbe474fe79ce2bc3596f827d9",
+      "stitch_resource": "projects/15618650520496122485/screens/4e8888bfbe474fe79ce2bc3596f827d9",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Pending",
+        "Running",
+        "Step Failed",
+        "Completed",
+        "Partial"
+      ],
+      "actions": [
+        {
+          "label": "返回列表",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P15",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Opportunity",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "证据",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P06/P07",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "结果",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P17",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "重试失败步骤",
+          "action_type": "API",
+          "target_or_capability": "research.retry_step",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "Pause/Export Logs 禁止默认显示",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P17",
+      "title": "Research Result",
+      "group": "分析与研究",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "b662a241ad154a52b50daa0e0862b264",
+      "stitch_resource": "projects/15618650520496122485/screens/b662a241ad154a52b50daa0e0862b264",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Completed",
+        "Partial Result",
+        "Stale Evidence",
+        "Unavailable"
+      ],
+      "actions": [
+        {
+          "label": "返回Workflow",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P16",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Opportunity",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "原始证据",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P06/P07",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "导出",
+          "action_type": "API",
+          "target_or_capability": "research.export",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "默认隐藏",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P18",
+      "title": "来源管理",
+      "group": "采集与监控",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "24dd5d3664c34c78a4a26cc287c74579",
+      "stitch_resource": "projects/15618650520496122485/screens/24dd5d3664c34c78a4a26cc287c74579",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Healthy",
+        "Warning",
+        "Failed",
+        "Disabled",
+        "Never Run",
+        "Running",
+        "Loading",
+        "Empty",
+        "Saving",
+        "Validation Error",
+        "Test Running",
+        "Test Success",
+        "Test Failed"
+      ],
+      "actions": [
+        {
+          "label": "添加/编辑",
+          "action_type": "DRAWER",
+          "target_or_capability": "Source Editor",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "保存",
+          "action_type": "API",
+          "target_or_capability": "source.write",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "字段严格按Source schema",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "测试连接",
+          "action_type": "API",
+          "target_or_capability": "source.connection_test",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "启用/停用",
+          "action_type": "API",
+          "target_or_capability": "source.enable_disable",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "详情",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P19",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "运行记录",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P21",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P19",
+      "title": "来源详情 / Source Health",
+      "group": "采集与监控",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "445f1293d5054a64ba2e3288048f096a",
+      "stitch_resource": "projects/15618650520496122485/screens/445f1293d5054a64ba2e3288048f096a",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Healthy",
+        "Degraded",
+        "Failed",
+        "Disabled",
+        "Circuit Open",
+        "Recovering",
+        "Never Run",
+        "Loading",
+        "Error"
+      ],
+      "actions": [
+        {
+          "label": "编辑来源",
+          "action_type": "DRAWER",
+          "target_or_capability": "Source Editor",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "测试连接",
+          "action_type": "API",
+          "target_or_capability": "source.connection_test",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "启用/停用",
+          "action_type": "API",
+          "target_or_capability": "source.enable_disable",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "运行记录",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P21",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Run",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P22",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "返回来源",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P18",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P20",
+      "title": "监控计划",
+      "group": "采集与监控",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "eded87322e0a405bb82ab006dd5cf7a6",
+      "stitch_resource": "projects/15618650520496122485/screens/eded87322e0a405bb82ab006dd5cf7a6",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Scheduled",
+        "Running",
+        "Healthy",
+        "Paused",
+        "Failed",
+        "Circuit Open",
+        "Empty",
+        "Loading",
+        "Error"
+      ],
+      "actions": [
+        {
+          "label": "查看",
+          "action_type": "DRAWER",
+          "target_or_capability": "Monitoring Plan Detail",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "运行记录",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P21",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "最近Run",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P22",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Watch Target",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P09",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "暂停/恢复",
+          "action_type": "API",
+          "target_or_capability": "planner.pause_resume",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "立即运行",
+          "action_type": "API",
+          "target_or_capability": "planner.run_now",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P21",
+      "title": "运行记录",
+      "group": "采集与监控",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "ba402ddace5e40ea87ccae18a225939e",
+      "stitch_resource": "projects/15618650520496122485/screens/ba402ddace5e40ea87ccae18a225939e",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Queued",
+        "Running",
+        "Success",
+        "Failed",
+        "Retrying",
+        "Cancelled",
+        "Loading",
+        "Empty",
+        "No Result",
+        "Error"
+      ],
+      "actions": [
+        {
+          "label": "刷新",
+          "action_type": "API",
+          "target_or_capability": "runs.list",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "筛选/分页",
+          "action_type": "API",
+          "target_or_capability": "runs.list.query",
+          "binding_status": "VERIFY_LATEST",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Run行",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P22",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Source",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P19",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Opportunity",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Research",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P16",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "重试",
+          "action_type": "API",
+          "target_or_capability": "run.retry",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P22",
+      "title": "运行详情",
+      "group": "采集与监控",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "f33c6758520a4db2a64a4125e9c51f9b",
+      "stitch_resource": "projects/15618650520496122485/screens/f33c6758520a4db2a64a4125e9c51f9b",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Queued",
+        "Running",
+        "Success",
+        "Failed",
+        "Retrying",
+        "Recovering",
+        "Partial"
+      ],
+      "actions": [
+        {
+          "label": "返回运行记录",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P21",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Source",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P19",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Opportunity",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Research",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P16",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Observation",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P07",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "重试运行",
+          "action_type": "API",
+          "target_or_capability": "run.retry",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "复制ID",
+          "action_type": "UI_ONLY",
+          "target_or_capability": "clipboard.copy",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P23",
+      "title": "Analysis Queue",
+      "group": "分析与研究",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "490a0582b94440c7bf5396977ea654bd",
+      "stitch_resource": "projects/15618650520496122485/screens/490a0582b94440c7bf5396977ea654bd",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Healthy",
+        "Backlogged",
+        "Worker Unavailable",
+        "Failed Jobs",
+        "Empty",
+        "Loading",
+        "Error"
+      ],
+      "actions": [
+        {
+          "label": "刷新",
+          "action_type": "API",
+          "target_or_capability": "analysis_queue.read",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Opportunity",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "Result",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P14",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "关联Run",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P22",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "重试",
+          "action_type": "API",
+          "target_or_capability": "analysis_queue.retry",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "禁止清空队列/删除Job/改状态",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P24",
+      "title": "告警收件箱",
+      "group": "告警",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "34f75d30372a4315bf5dcf1b2c969397",
+      "stitch_resource": "projects/15618650520496122485/screens/34f75d30372a4315bf5dcf1b2c969397",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Unread",
+        "Read",
+        "Pending",
+        "Delivered",
+        "Delivery Failed",
+        "Empty",
+        "Loading",
+        "No Result",
+        "Error"
+      ],
+      "actions": [
+        {
+          "label": "刷新",
+          "action_type": "API",
+          "target_or_capability": "alert_inbox.read",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "告警行",
+          "action_type": "DRAWER",
+          "target_or_capability": "Alert Detail",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "查看机会",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P13",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "查看规则",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P25",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "标记已读/未读",
+          "action_type": "API",
+          "target_or_capability": "alert_inbox.read_state_write",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "全部已读",
+          "action_type": "API",
+          "target_or_capability": "alert_inbox.mark_all_read",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P25",
+      "title": "告警规则",
+      "group": "告警",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "462f8e09e73f499ab8f3419a15a60b52",
+      "stitch_resource": "projects/15618650520496122485/screens/462f8e09e73f499ab8f3419a15a60b52",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Enabled",
+        "Disabled",
+        "Invalid Configuration",
+        "Channel Warning",
+        "Saving",
+        "Validation Error",
+        "Channel Unavailable"
+      ],
+      "actions": [
+        {
+          "label": "新建/编辑",
+          "action_type": "DRAWER",
+          "target_or_capability": "Alert Rule Editor",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "保存",
+          "action_type": "API",
+          "target_or_capability": "alert_rule.write",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "按现有Rule schema",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "启用/停用",
+          "action_type": "API",
+          "target_or_capability": "alert_rule.enable_disable",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "测试通知",
+          "action_type": "API",
+          "target_or_capability": "alert_rule.test_notification",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "删除",
+          "action_type": "MODAL",
+          "target_or_capability": "Delete Rule Confirm",
+          "binding_status": "UI_ONLY",
+          "notes": "确认后才API",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "确认删除",
+          "action_type": "API",
+          "target_or_capability": "alert_rule.delete",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "触发记录",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P24?rule=...",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P26",
+      "title": "审计日志",
+      "group": "管理",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "46364c5fee0741ed8e4cd9078bbceac9",
+      "stitch_resource": "projects/15618650520496122485/screens/46364c5fee0741ed8e4cd9078bbceac9",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Loading",
+        "Normal",
+        "No Result",
+        "Error",
+        "Partial"
+      ],
+      "actions": [
+        {
+          "label": "刷新",
+          "action_type": "API",
+          "target_or_capability": "audit.read",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "筛选",
+          "action_type": "API",
+          "target_or_capability": "audit.read.query",
+          "binding_status": "VERIFY_LATEST",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "审计行",
+          "action_type": "DRAWER",
+          "target_or_capability": "Audit Detail",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "复制ID",
+          "action_type": "UI_ONLY",
+          "target_or_capability": "clipboard.copy",
+          "binding_status": "UI_ONLY",
+          "notes": "只读，禁止编辑/删除",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P27",
+      "title": "用户与角色",
+      "group": "管理",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "0423092160144335a1941c2f10f895bd",
+      "stitch_resource": "projects/15618650520496122485/screens/0423092160144335a1941c2f10f895bd",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Active",
+        "Disabled",
+        "Saving",
+        "Saved",
+        "Conflict",
+        "Last OWNER Blocked",
+        "Loading",
+        "Error"
+      ],
+      "actions": [
+        {
+          "label": "编辑",
+          "action_type": "DRAWER",
+          "target_or_capability": "User Edit",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "OWNER风险确认",
+          "action_type": "MODAL",
+          "target_or_capability": "OWNER Risk Confirm",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "保存角色/状态",
+          "action_type": "API",
+          "target_or_capability": "admin.user.patch",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "精确route/method VERIFY_LATEST；last-owner以服务端为准",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "创建用户",
+          "action_type": "API",
+          "target_or_capability": "admin.user.create",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P28",
+      "title": "账户与安全",
+      "group": "管理",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "ae25511ff98a4b618da646b268092c7c",
+      "stitch_resource": "projects/15618650520496122485/screens/ae25511ff98a4b618da646b268092c7c",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Loading",
+        "Password Changing",
+        "Password Success",
+        "Password Error",
+        "Session Active",
+        "Session Revoked",
+        "Token Active",
+        "Token Revoked",
+        "Error"
+      ],
+      "actions": [
+        {
+          "label": "修改密码",
+          "action_type": "API",
+          "target_or_capability": "auth.password_change",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "撤销其他会话",
+          "action_type": "API",
+          "target_or_capability": "auth.session.revoke",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "创建API Token",
+          "action_type": "API",
+          "target_or_capability": "auth.api_token.create",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "成功打开一次性Secret Modal",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "复制Token",
+          "action_type": "UI_ONLY",
+          "target_or_capability": "clipboard.copy",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "我已保存",
+          "action_type": "UI_ONLY",
+          "target_or_capability": "close-and-discard-secret",
+          "binding_status": "UI_ONLY",
+          "notes": "关闭后不可重新显示",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "撤销Token",
+          "action_type": "MODAL",
+          "target_or_capability": "Revoke Token Confirm",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "确认撤销",
+          "action_type": "API",
+          "target_or_capability": "auth.api_token.revoke",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "退出登录",
+          "action_type": "API",
+          "target_or_capability": "auth.logout/session_end",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "成功->P01",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P29-A",
+      "title": "设置 / 常规",
+      "group": "系统设置",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "42a4488869204a0f8bda07ddef1a8030",
+      "stitch_resource": "projects/15618650520496122485/screens/42a4488869204a0f8bda07ddef1a8030",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Saved",
+        "Dirty",
+        "Saving",
+        "Validation Error",
+        "Save Error"
+      ],
+      "actions": [
+        {
+          "label": "二级导航",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P29-B/P29-C/P29-D/P29-E",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "保存",
+          "action_type": "API",
+          "target_or_capability": "settings.general.write",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "只渲染现有General Settings schema",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "离开未保存页",
+          "action_type": "MODAL",
+          "target_or_capability": "Unsaved Changes",
+          "binding_status": "UI_ONLY",
+          "notes": "部署项不可写",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P29-B",
+      "title": "设置 / 安全",
+      "group": "系统设置",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "38ceba67ee6043e7b38be362a4f4e868",
+      "stitch_resource": "projects/15618650520496122485/screens/38ceba67ee6043e7b38be362a4f4e868",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Saved",
+        "Dirty",
+        "Saving",
+        "Validation Error",
+        "Conflict",
+        "Error"
+      ],
+      "actions": [
+        {
+          "label": "二级导航",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P29-A/P29-C/P29-D/P29-E",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "保存",
+          "action_type": "API",
+          "target_or_capability": "settings.security.write",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "AUTH_MODE/cookie/keys/trusted proxy/DB只读或隐藏",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "离开未保存页",
+          "action_type": "MODAL",
+          "target_or_capability": "Unsaved Changes",
+          "binding_status": "UI_ONLY",
+          "notes": "Stitch示例锁定值不是仓库事实",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P29-C",
+      "title": "设置 / 通知",
+      "group": "系统设置",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "a9e40f14556a46a3ad2286f0203955f7",
+      "stitch_resource": "projects/15618650520496122485/screens/a9e40f14556a46a3ad2286f0203955f7",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Enabled",
+        "Disabled",
+        "Configured",
+        "Not Configured",
+        "Testing",
+        "Healthy",
+        "Failed",
+        "Saving",
+        "Saved",
+        "Validation Error"
+      ],
+      "actions": [
+        {
+          "label": "二级导航",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P29-A/P29-B/P29-D/P29-E",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "保存",
+          "action_type": "API",
+          "target_or_capability": "settings.notification.write",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "测试",
+          "action_type": "API",
+          "target_or_capability": "notification.channel.test",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "启用/停用",
+          "action_type": "API",
+          "target_or_capability": "notification.channel.enable_disable",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "Email/Webhook/Enterprise Messaging具体支持度需复核；Secret不回显",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P29-D",
+      "title": "设置 / Integrations",
+      "group": "系统设置",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "f2a7e1bfc752439ea47776acafdc5bbc",
+      "stitch_resource": "projects/15618650520496122485/screens/f2a7e1bfc752439ea47776acafdc5bbc",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Configured",
+        "Missing Credential",
+        "Connected",
+        "Failed",
+        "Testing",
+        "Saving",
+        "Saved"
+      ],
+      "actions": [
+        {
+          "label": "二级导航",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P29-A/P29-B/P29-C/P29-E",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "保存",
+          "action_type": "API",
+          "target_or_capability": "settings.integration.write",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "测试连接",
+          "action_type": "API",
+          "target_or_capability": "integration.connection_test",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "启用/停用",
+          "action_type": "API",
+          "target_or_capability": "integration.enable_disable",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "仅真实存在provider；Secret不回显",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P29-E",
+      "title": "设置 / Source Preference",
+      "group": "系统设置",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "0403d8cde45049a39f4a631d5f0405c1",
+      "stitch_resource": "projects/15618650520496122485/screens/0403d8cde45049a39f4a631d5f0405c1",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Saved",
+        "Dirty",
+        "Saving",
+        "Validation Error",
+        "Conflict",
+        "Error",
+        "Empty"
+      ],
+      "actions": [
+        {
+          "label": "二级导航",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P29-A/P29-B/P29-C/P29-D",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "保存",
+          "action_type": "API",
+          "target_or_capability": "source_preference.write",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "具体schema/route VERIFY_LATEST",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "恢复默认",
+          "action_type": "API",
+          "target_or_capability": "source_preference.restore_default",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        },
+        {
+          "label": "排序/拖拽",
+          "action_type": "API",
+          "target_or_capability": "source_preference.persist_order",
+          "binding_status": "HIDE_IF_UNSUPPORTED",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": true
+        }
+      ],
+      "backend_change": false
+    },
+    {
+      "id": "P30",
+      "title": "系统诊断",
+      "group": "管理",
+      "stitch_project_id": "15618650520496122485",
+      "stitch_screen_id": "bc6128c031404977ae3091932582a9ff",
+      "stitch_resource": "projects/15618650520496122485/screens/bc6128c031404977ae3091932582a9ff",
+      "design_system": "assets/02cc745e832d4c89bd705650673b1210",
+      "route_binding": "VERIFY_LATEST",
+      "states": [
+        "Loading",
+        "Healthy",
+        "Warning",
+        "Failed",
+        "Unknown",
+        "Partial"
+      ],
+      "actions": [
+        {
+          "label": "API Health",
+          "action_type": "API",
+          "target_or_capability": "GET /health",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "精确路径已确认",
+          "api_method": "GET",
+          "api_path": "/health",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "API Readiness",
+          "action_type": "API",
+          "target_or_capability": "GET /ready",
+          "binding_status": "CONFIRMED_CAPABILITY",
+          "notes": "精确路径已确认",
+          "api_method": "GET",
+          "api_path": "/ready",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "刷新",
+          "action_type": "API",
+          "target_or_capability": "diagnostics.read",
+          "binding_status": "VERIFY_LATEST",
+          "notes": "",
+          "api_method": "VERIFY_LATEST",
+          "api_path": "VERIFY_LATEST",
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "运行记录",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P21",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "来源健康",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P18/P19",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "分析队列",
+          "action_type": "NAVIGATE",
+          "target_or_capability": "P23",
+          "binding_status": "UI_ONLY",
+          "notes": "",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        },
+        {
+          "label": "复制ID",
+          "action_type": "UI_ONLY",
+          "target_or_capability": "clipboard.copy",
+          "binding_status": "UI_ONLY",
+          "notes": "严格只读；禁止DB/migration/清队列/重启worker/改环境",
+          "api_method": null,
+          "api_path": null,
+          "hide_if_unsupported": false
+        }
+      ],
+      "backend_change": false
+    }
+  ],
+  "flows": {
+    "F01 认证与权限": [
+      "P01 --成功--> P02",
+      "任意认证页 --Session Expired--> P01",
+      "任意认证页 --403--> P04",
+      "不存在/已删除对象 --> P05"
+    ],
+    "F02 机会发现主链": [
+      "P18 Source -> 后台采集",
+      "P06 -> P07",
+      "P07/P06 -> P08",
+      "P08/P09 -> P10",
+      "P10 -> P11",
+      "P10/P11/P06 -> P12",
+      "P12 -> P13"
+    ],
+    "F03 分析与研究": [
+      "P13 -> P14",
+      "P13/P14 --现有能力--> P15/P16",
+      "P15 -> P16",
+      "P16 -> P17",
+      "P17 -> P13/P06/P07",
+      "P23 -> P13/P14/P22"
+    ],
+    "F04 采集与运行": [
+      "P18 -> P19",
+      "P18/P19 -> P20",
+      "P19/P20 -> P21",
+      "P21 -> P22",
+      "P22 -> P19/P13/P16/P07"
+    ],
+    "F05 告警": [
+      "P25 规则 -> 后台评估 -> P24 Inbox",
+      "P24 Drawer -> P13/P25",
+      "P25 触发记录 -> P24"
+    ],
+    "F06 管理": [
+      "P27 -> OWNER Risk Modal -> 现有Admin User API",
+      "P27变更 -> P26可审计",
+      "P28密码/Session/API Token",
+      "P29-A~E仅现有Settings schema/API",
+      "P30 -> P21/P18/P19/P23"
+    ],
+    "F07 全局搜索": [
+      "TopBar -> P03",
+      "P03 Opportunity -> P13",
+      "P03 Observation -> P07",
+      "P03 Keyword -> P10/P09",
+      "P03 Research -> P16/P17"
+    ]
+  }
+}

@@ -35,6 +35,7 @@ class Settings:
     analysis_http_max_response_bytes: int = int(os.getenv("ANALYSIS_HTTP_MAX_RESPONSE_BYTES", "1000000"))
     discovery_feeds_json: str = os.getenv("DISCOVERY_FEEDS_JSON", "").strip()
     app_env: str = os.getenv("APP_ENV", "development").strip().lower()
+    ui_mode: str = os.getenv("UI_MODE", "legacy").strip().lower()
     auth_mode: str = os.getenv("AUTH_MODE", "disabled").strip().lower()
     api_key: str | None = os.getenv("API_KEY")
     session_cookie_name: str = os.getenv("SESSION_COOKIE_NAME", "or_session").strip() or "or_session"
@@ -94,6 +95,8 @@ def validate_runtime_settings(value: Settings = settings) -> None:
         raise ValueError("MAX_REQUEST_BODY_BYTES must be between 1 MiB and 100 MiB")
     if value.app_env not in {"development", "production", "test"}:
         raise ValueError("APP_ENV must be development, production or test")
+    if value.ui_mode not in {"legacy", "react"}:
+        raise ValueError("UI_MODE must be legacy or react")
     if value.auth_mode not in {"disabled", "write", "all", "rbac"}:
         raise ValueError("AUTH_MODE must be disabled, write, all or rbac")
     if value.app_env == "production":

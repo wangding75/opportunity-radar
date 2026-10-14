@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>P13 — 研究结果详情 - Opportunity Radar R04</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#f7f9fb",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "surface-variant": "#e0e3e5",
+                        "surface-tint": "#0053db",
+                        "surface": "#f7f9fb",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed": "#00174b",
+                        "surface-container-high": "#e6e8ea",
+                        "primary-container": "#2563eb",
+                        "on-secondary-container": "#54647a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "tertiary": "#4d556b",
+                        "on-tertiary-container": "#eef0ff",
+                        "tertiary-fixed": "#dae2fd",
+                        "on-surface-variant": "#434655",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-dim": "#d8dadc",
+                        "surface-container": "#eceef0",
+                        "inverse-surface": "#2d3133",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary": "#505f76",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#737686",
+                        "on-secondary-fixed": "#0b1c30",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-surface": "#191c1e",
+                        "surface-bright": "#f7f9fb",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-primary-container": "#eeefff",
+                        "secondary-container": "#d0e1fb",
+                        "on-tertiary-fixed": "#131b2e",
+                        "on-background": "#191c1e",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#b4c5ff",
+                        "tertiary-container": "#656d84",
+                        "primary": "#004ac6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter", "system-ui", "sans-serif"],
+                        "display": ["Inter", "system-ui", "sans-serif"],
+                        "body": ["Inter", "system-ui", "sans-serif"],
+                        "label": ["Inter", "system-ui", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface flex min-h-screen">
+<!-- SideNavBar (AppShell) -->
+<aside class="fixed left-0 top-0 h-full w-[216px] bg-surface-container-low dark:bg-surface-container-lowest text-primary dark:text-primary-fixed-dim font-body text-label-md font-medium border-r border-outline-variant flex flex-col h-screen py-4 z-20">
+<!-- Brand Logo -->
+<div class="px-6 mb-8 flex flex-col">
+<span class="text-primary font-display font-bold text-lg text-primary font-display font-bold text-lg">机会社情系统</span>
+<span class="text-xs text-on-surface-variant mt-1">Opportunity Radar R04</span>
+</div>
+<!-- Main Navigation -->
+<nav class="flex-1 px-3 space-y-1">
+<a class="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+                工作台
+            </a>
+<a class="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">rocket_launch</span>
+                机会
+            </a>
+<a class="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">hub</span>
+                情报
+            </a>
+<!-- Active Section: 研究 -->
+<div class="space-y-1">
+<a class="bg-secondary-container text-on-secondary-fixed-variant font-bold border-r-4 border-primary transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg opacity-90" href="#">
+<span class="material-symbols-outlined mr-3" style="font-variation-settings: 'FILL' 1;">psychology</span>
+                    研究
+                </a>
+<!-- Sub-navigation for 研究 -->
+<div class="ml-9 pl-3 border-l border-outline-variant space-y-1 py-1">
+<a class="block py-1.5 text-sm text-on-surface-variant hover:text-primary transition-colors" href="#">结构化分析</a>
+<a class="block py-1.5 text-sm text-on-surface-variant hover:text-primary transition-colors" href="#">研究任务</a>
+<a class="block py-1.5 text-sm font-semibold text-primary transition-colors" href="#">研究结果</a>
+</div>
+</div>
+<a class="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">settings_input_component</span>
+                运行
+            </a>
+<a class="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">admin_panel_settings</span>
+                管理
+            </a>
+</nav>
+<!-- Footer Navigation -->
+<div class="px-3 mt-auto space-y-1">
+<a class="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">history_edu</span>
+                审计日志
+            </a>
+<a class="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+                系统设置
+            </a>
+</div>
+</aside>
+<!-- TopNavBar (AppShell) -->
+<header class="fixed top-0 right-0 h-[56px] w-[calc(100%-216px)] bg-surface dark:bg-surface-bright text-primary dark:text-primary-fixed-dim font-body text-body-medium border-b border-outline-variant flex items-center justify-between px-6 z-10">
+<!-- Global Search -->
+<div class="flex items-center w-96 relative">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary focus:bg-surface transition-all" placeholder="搜索研究报告、机会或情报..." type="text"/>
+</div>
+<!-- Top Nav Actions -->
+<div class="flex items-center space-x-4">
+<button class="text-on-surface-variant hover:text-primary hover:bg-surface-container-low p-2 rounded-full transition-colors Click: scale-95 transition-transform">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary hover:bg-surface-container-low p-2 rounded-full transition-colors Click: scale-95 transition-transform relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary hover:bg-surface-container-low p-2 rounded-full transition-colors Click: scale-95 transition-transform">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary hover:bg-surface-container-low p-2 rounded-full transition-colors Click: scale-95 transition-transform">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[216px] mt-[56px] w-[calc(100%-216px)] min-h-[calc(100vh-56px)] p-6 pb-20">
+<!-- Breadcrumbs & Page Header -->
+<div class="mb-6">
+<nav class="flex items-center text-sm text-on-surface-variant mb-3">
+<a class="hover:text-primary transition-colors" href="#">研究</a>
+<span class="material-symbols-outlined text-[16px] mx-1">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">研究结果</a>
+<span class="material-symbols-outlined text-[16px] mx-1">chevron_right</span>
+<span class="text-on-surface font-medium">RR-1842</span>
+</nav>
+<div class="flex justify-between items-start">
+<div>
+<h1 class="text-2xl font-bold font-headline text-on-surface mb-2">东南亚物流基础设施合作可行性研究</h1>
+<!-- Metadata Row -->
+<div class="flex items-center space-x-4 text-sm text-on-surface-variant">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-[18px] mr-1">check_circle</span>
+<span class="text-primary-container font-medium">已完成</span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center">
+<span class="mr-1">关联机会:</span>
+<a class="text-primary hover:underline font-medium" href="#">OR-2026-0042</a>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center">
+<span class="mr-1">源任务:</span>
+<span>RT-1842</span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center">
+<span class="mr-1">证据覆盖:</span>
+<span class="font-medium text-on-surface">92%</span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] mr-1">schedule</span>
+<span>2 小时前</span>
+</div>
+</div>
+</div>
+<!-- Header Actions -->
+<div class="flex space-x-3">
+<button class="flex items-center px-4 py-2 bg-surface-container border border-outline-variant rounded-lg text-sm font-medium hover:bg-surface-container-high transition-colors text-on-surface">
+<span class="material-symbols-outlined text-[18px] mr-2">ios_share</span>
+                        导出
+                    </button>
+<button class="flex items-center px-4 py-2 bg-surface-container border border-outline-variant rounded-lg text-sm font-medium hover:bg-surface-container-high transition-colors text-on-surface">
+<span class="material-symbols-outlined text-[18px] mr-2">link</span>
+                        复制链接
+                    </button>
+</div>
+</div>
+</div>
+<!-- Read-Only Notice -->
+<div class="bg-surface-container-low border-l-4 border-outline p-4 rounded-r-lg mb-6 flex items-start">
+<span class="material-symbols-outlined text-outline mr-3 mt-0.5">info</span>
+<p class="text-sm text-on-surface-variant">本页展示已有研究结果，不提供重新生成或修改研究状态。</p>
+</div>
+<!-- Tab Navigation -->
+<div class="border-b border-outline-variant mb-6">
+<nav class="flex space-x-8"><button class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-3 px-1 text-sm transition-colors">结论</button>
+<button class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-3 px-1 text-sm transition-colors">证据</button>
+<button class="text-primary font-bold border-b-2 border-primary pb-3 px-1 text-sm transition-colors">方法</button>
+<button class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-3 px-1 text-sm transition-colors">活动记录</button></nav>
+</div>
+<!-- Main Grid Layout (2:1) -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><!-- Left Column (Main Content) -->
+<div class="lg:col-span-2 space-y-6">
+<!-- 研究背景与问题 -->
+<section class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant shadow-sm">
+<h2 class="text-lg font-bold text-on-surface mb-4 flex items-center">
+<span class="material-symbols-outlined mr-2 text-primary">psychology</span>
+            研究背景与问题
+        </h2>
+<div class="space-y-3">
+<p class="text-sm text-on-surface font-semibold">核心目标</p>
+<p class="text-sm text-on-surface-variant leading-relaxed">评估东南亚核心五国物流基础设施的数字化转型潜力，识别我方技术输出的切入点与商业闭环路径。</p>
+<p class="text-sm text-on-surface font-semibold mt-4">待答问题</p>
+<ul class="list-disc list-inside text-sm text-on-surface-variant space-y-1">
+<li>各国冷链物流的缺口规模与政策准入门槛？</li>
+<li>跨境陆路运输中关务数字化的核心痛点？</li>
+<li>本地企业对联合运营实体的接受度与合作模式？</li>
+</ul>
+</div>
+</section>
+<!-- 研究范围与时间窗口 -->
+<section class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant shadow-sm">
+<h2 class="text-lg font-bold text-on-surface mb-4 flex items-center">
+<span class="material-symbols-outlined mr-2 text-primary">travel_explore</span>
+            研究范围与时间窗口
+        </h2>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-xs text-on-surface-variant mb-1">地理范围</p>
+<p class="text-sm font-medium">印尼、越南、泰国、马来西亚、菲律宾</p>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant mb-1">技术领域</p>
+<p class="text-sm font-medium">冷链仓储、跨境干线、关务数字化、IoT 追踪</p>
+</div>
+<div class="col-span-2">
+<p class="text-xs text-on-surface-variant mb-1">证据采集时间区间</p>
+<p class="text-sm font-medium">2023-01-01 至 2023-09-30 (Q1-Q3)</p>
+</div>
+</div>
+</section>
+<!-- 纳入/排除标准 & 证据选择规则 -->
+<section class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant shadow-sm">
+<h2 class="text-lg font-bold text-on-surface mb-4 flex items-center">
+<span class="material-symbols-outlined mr-2 text-primary">rule</span>
+            分析框架与标准
+        </h2>
+<div class="space-y-4">
+<div>
+<h3 class="text-sm font-semibold text-on-surface mb-2">纳入/排除标准</h3>
+<p class="text-sm text-on-surface-variant">纳入：官方政策文件、行业协会研报、实时港口监测数据。排除：非实名社交媒体评论、超过 24 个月的过时统计数据。</p>
+</div>
+<div>
+<h3 class="text-sm font-semibold text-on-surface mb-2">证据选择规则与分析模型</h3>
+<p class="text-sm text-on-surface-variant">采用 R04-G3 推理模型，优先选择具备交叉验证（Cross-Validation）的证据。通过「政策-需求-技术」三角模型进行机会可行性评分。</p>
+</div>
+</div>
+</section>
+<!-- 置信度与限制 -->
+<section class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant shadow-sm">
+<h2 class="text-lg font-bold text-on-surface mb-4 flex items-center">
+<span class="material-symbols-outlined mr-2 text-primary">verified</span>
+            置信度计算与限制说明
+        </h2>
+<div class="space-y-4">
+<div class="p-4 bg-surface-container-low rounded-lg">
+<p class="text-sm font-medium mb-2">置信度评分逻辑</p>
+<p class="text-xs text-on-surface-variant">来源可靠性 (40%) + 证据时效性 (30%) + 交叉验证强度 (30%)。当前综合置信度：高。</p>
+</div>
+<div>
+<h3 class="text-sm font-semibold text-on-surface mb-2">限制与偏差说明</h3>
+<p class="text-sm text-on-surface-variant">由于部分国家统计局数据发布延迟，Q3 末期的部分宏观指标采用行业预测值替代，可能存在 ±5% 的统计偏差。</p>
+</div>
+</div>
+</section>
+<!-- 版本信息 -->
+<div class="flex items-center space-x-4 text-xs text-on-surface-variant opacity-50">
+<span>分析版本: v1.4</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>规则版本: R04-G3</span>
+</div>
+</div>
+<!-- Right Column (Sidebar) -->
+<div class="space-y-6">
+<!-- 核心指标统计 -->
+<div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant shadow-sm">
+<h3 class="font-bold text-on-surface mb-4 text-sm">核心指标统计</h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="text-center p-3 bg-surface-container-low rounded-lg">
+<p class="text-2xl font-bold text-primary">12</p>
+<p class="text-xs text-on-surface-variant">来源数量</p>
+</div>
+<div class="text-center p-3 bg-surface-container-low rounded-lg">
+<p class="text-2xl font-bold text-primary">42</p>
+<p class="text-xs text-on-surface-variant">证据总数</p>
+</div>
+</div>
+</div>
+<!-- 关联对象元数据 -->
+<div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant shadow-sm">
+<h3 class="font-bold text-on-surface mb-3 text-sm">关联元数据</h3>
+<div class="space-y-3">
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">任务 ID</span>
+<span class="font-medium">RT-1842</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">完成时间</span>
+<span class="font-medium">2023-10-15</span>
+</div>
+</div>
+</div>
+<!-- 关联链接 -->
+<div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant shadow-sm">
+<h3 class="font-bold text-on-surface mb-3 text-sm">相关资源</h3>
+<div class="space-y-3">
+<a class="flex items-center text-sm text-primary hover:underline" href="#">
+<span class="material-symbols-outlined text-[18px] mr-2">task</span>
+                查看关联研究任务
+            </a>
+<a class="flex items-center text-sm text-primary hover:underline" href="#">
+<span class="material-symbols-outlined text-[18px] mr-2">analytics</span>
+                结构化分析详情
+            </a>
+</div>
+</div>
+</div></div>
+</main>
+</body></html>

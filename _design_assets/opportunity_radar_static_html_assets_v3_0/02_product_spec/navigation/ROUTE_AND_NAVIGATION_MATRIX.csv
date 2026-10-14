@@ -1,0 +1,64 @@
+﻿source,control_or_trigger,condition,target_page,target_state,params,back_behavior,notes
+GLOBAL,一级导航-今日雷达,always,P01,,,browser/history,公共 AppShell 导航
+GLOBAL,一级导航-情报,always,P02,,,browser/history,公共 AppShell 导航
+GLOBAL,一级导航-机会,always,P08,,,browser/history,公共 AppShell 导航
+GLOBAL,一级导航-研究,always,P11,,,browser/history,公共 AppShell 导航
+GLOBAL,一级导航-监控,always,P17,,,browser/history,公共 AppShell 导航
+GLOBAL,一级导航-设置,always,P24,,,browser/history,公共 AppShell 导航
+P01,新情报/情报卡,click,P03,,INT id,P01,进入情报详情
+P01,机会卡,click,P09,,OPP id,P01,进入机会详情
+P01,研究卡,click,P12,,RES id,P01,进入研究详情
+P01,告警卡,click,P22,,alert filter,P01,进入告警中心
+P02,情报列表行,click,P03,,INT id,P02,进入情报详情
+P03,转为机会,click,P03,P03-S01,INT id,P03,打开 Drawer
+P03-S01,重复检测,duplicate_found,P03,P03-S02,candidate id,P03-S01,进入重复处理
+P03-S01,创建机会,success,P03,P03-S03,OPP id,P03,显示成功状态
+P03-S01,创建机会,failure,P03,P03-S04,error code,P03-S01,保留输入
+P03-S02,合并到所选机会,success,P09,,OPP id,P03,进入机会详情
+P03-S02,仍然创建新机会,success,P09,,new OPP id,P03,进入机会详情
+P04,关注关键词,click,P05,,keyword,P04,加入关注
+P05,关键词行/查看趋势,click,P06,,keyword,P05,进入趋势分析
+P06,查看关系图谱,click,P07,,keyword/entity,P06,进入图谱
+P07,Opportunity 节点,click,P09,,OPP id,P07,进入机会详情
+P08,机会列表行,click,P09,,OPP id,P08,进入机会详情
+P09,修改状态,click,P09,P09-S01,OPP id,P09,Drawer
+P09,分配负责人,click,P09,P09-S02,OPP id,P09,Drawer
+P09,忽略/归档,click,P09,P09-S03,OPP id,P09,Modal/Drawer
+P09,启动结构化分析,click,P09,P09-S04,OPP id,P09,Drawer
+P09-S04,启动分析,success,P10,,OPP id,P09,进入结构化分析
+P09,创建研究,click,P09,P09-S05,OPP id,P09,Drawer
+P09-S05,创建研究,success,P11,P11-S01,RES id,P09,研究创建成功状态
+P11,研究列表行,click,P12,,RES id,P11,进入研究详情
+P12,研究阶段异常,error,P12,P12-S01,RES id,P12,恢复 Drawer
+P12,查看/生成结论,click,P13,,RES id,P12,进入研究结论
+P13,发布结论,click,P13,P13-S01,RES id,P13,发布 Drawer
+P14,来源列表行,click,P15,,source id,P14,进入来源详情
+P14,来源健康,click,P16,,,P14,进入来源健康
+P17,新建监控计划,click,P17,P17-S01,,P17,Drawer
+P17,暂停/恢复快捷操作,click,P17,P17-S02,PLAN id,P17,Drawer
+P17,监控计划列表行,click,P18,,PLAN id,P17,进入计划详情
+P18,暂停/恢复,click,P18,P17-S02,PLAN id,P18,复用暂停/恢复状态
+P18,手动运行,click,P18,P17-S03,PLAN id,P18,Drawer
+P17-S03,立即运行,success,P20,,RUN id,P18,进入运行详情
+P19,运行记录行,click,P20,,RUN id,P19,进入运行详情
+P20,失败处理/重试,click,P20,P20-S01,RUN id,P20,Drawer
+P20,查看分析队列,click,P21,,RUN id filter,P20,进入分析队列
+P21,异常任务行,click,P21,P21-S01,TASK id,P21,Drawer
+P22,告警行,click,P22,P22-S01,AL id,P22,Drawer
+P22-S01,查看关联 Run,click,P20,,RUN id,P22,进入运行详情
+P22-S01,查看关联 Opportunity,click,P09,,OPP id,P22,进入机会详情
+P23,新建告警规则,click,P23,P23-S01,,P23,Drawer
+P25,邀请成员,click,P25,P25-S01,,P25,Drawer
+P26,修改成员角色,click,P26,P26-S01,member id,P26,Drawer
+P27,启用 MFA,click,P27,P27-S01,,P27,Step Modal/Drawer
+P27,危险操作,click,P27,P27-S02,,P27,Large Modal
+P28,异常集成,click,P28,P28-S01,integration id,P28,Drawer
+P31,搜索无结果,query_zero_result,P31,P31-S01,query/filter,P31,Content State
+P32,登录需要 MFA,mfa_required,P32,P32-S01,returnTo,P32,Auth Content State
+P32-S01,验证并继续,success,DYNAMIC,,returnTo,P32,回到原请求页面
+P33,申请访问权限,click,P33,P33-S01,resource id,P33,Drawer
+P33-S01,权限获批,approved,DYNAMIC,,resource id,P33,刷新并进入受保护资源
+P34,今日雷达,click,P01,,,P34,恢复入口
+P34,机会池,click,P08,,,P34,恢复入口
+P34,情报,click,P02,,,P34,恢复入口
+P34,研究,click,P11,,,P34,恢复入口

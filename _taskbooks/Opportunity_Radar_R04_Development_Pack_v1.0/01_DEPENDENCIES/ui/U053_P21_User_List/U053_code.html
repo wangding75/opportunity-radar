@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>机会情报 R04 - 用户与角色</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration (Design System) -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#191c1e",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-primary-container": "#eeefff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#d0e1fb",
+                        "on-secondary-container": "#54647a",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#505f76",
+                        "surface-tint": "#0053db",
+                        "surface-variant": "#e0e3e5",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary-container": "#eef0ff",
+                        "on-primary-fixed": "#00174b",
+                        "outline-variant": "#c3c6d7",
+                        "on-tertiary-fixed": "#131b2e",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#434655",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d8dadc",
+                        "tertiary-fixed": "#dae2fd",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "surface": "#f7f9fb",
+                        "on-secondary-fixed": "#0b1c30",
+                        "inverse-surface": "#2d3133",
+                        "surface-container": "#eceef0",
+                        "on-error": "#ffffff",
+                        "tertiary": "#4d556b",
+                        "outline": "#737686",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "inverse-on-surface": "#eff1f3",
+                        "primary-fixed": "#dbe1ff",
+                        "tertiary-container": "#656d84",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "secondary-fixed": "#d3e4fe",
+                        "inverse-primary": "#b4c5ff",
+                        "surface-container-high": "#e6e8ea",
+                        "primary-container": "#2563eb",
+                        "primary": "#004ac6",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "background": "#f8fafc",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-surface": "#0f172a",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter", "PingFang SC", "sans-serif"],
+                        "display": ["Inter", "PingFang SC", "sans-serif"],
+                        "body": ["Inter", "PingFang SC", "sans-serif"],
+                        "label": ["Inter", "PingFang SC", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body overflow-hidden h-screen w-screen flex antialiased">
+<!-- Sidebar Navigation (AppShell) -->
+<nav class="fixed left-0 top-0 h-full w-[216px] bg-surface-container-lowest border-r border-outline-variant flex flex-col z-20">
+<!-- Logo / Brand -->
+<div class="h-[56px] px-6 flex items-center border-b border-outline-variant invisible md:visible">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">radar</span>
+</div>
+<div>
+<h1 class="text-label-md font-bold text-on-surface leading-tight">机会情报 R04</h1>
+<p class="text-[10px] text-secondary">业务闭环系统</p>
+</div>
+</div>
+</div>
+<!-- Main Nav Links -->
+<div class="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-1">
+<!-- Inactive Tab -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface-variant">dashboard</span>
+<span class="font-medium text-label-sm">工作台</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface-variant">star</span>
+<span class="font-medium text-label-sm">机会</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface-variant">insights</span>
+<span class="font-medium text-label-sm">情报</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface-variant">science</span>
+<span class="font-medium text-label-sm">研究</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface-variant">settings_input_component</span>
+<span class="font-medium text-label-sm">运行</span>
+</a>
+<!-- Expanded Section: 管理 -->
+<div class="mt-2 flex flex-col">
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface font-medium cursor-default">
+<span class="material-symbols-outlined fill text-secondary">settings</span>
+<span class="flex-1 text-label-sm">管理</span>
+<span class="material-symbols-outlined text-secondary">expand_less</span>
+</div>
+<!-- Sub Menu -->
+<div class="flex flex-col ml-[36px] mt-1 gap-1 border-l-2 border-surface-variant pl-2">
+<!-- Active Sub-tab -->
+<a class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-container text-on-primary-container font-bold transition-colors" href="#">
+<span class="text-label-sm">用户与角色</span>
+</a>
+<a class="flex items-center gap-2 px-3 py-2 rounded-lg text-secondary hover:text-on-surface transition-colors" href="#">
+<span class="text-label-sm font-medium">审计日志</span>
+</a>
+<a class="flex items-center gap-2 px-3 py-2 rounded-lg text-secondary hover:text-on-surface transition-colors" href="#">
+<span class="text-label-sm font-medium">系统设置</span>
+</a>
+<a class="flex items-center gap-2 px-3 py-2 rounded-lg text-secondary hover:text-on-surface transition-colors" href="#">
+<span class="text-label-sm font-medium">系统诊断</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Footer Profile/Settings shortcut -->
+<div class="p-4 border-t border-outline-variant">
+<div class="flex items-center gap-3 cursor-pointer hover:bg-surface-container p-2 rounded-lg transition-colors">
+<img alt="User Avatar" class="w-8 h-8 rounded-full border border-outline-variant object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdIKSBprlBXzMKorff-OMCu3ZmKTS9PFj44FkpJOYVh_sEJxBTa6uer65fGWO_mxB5jyeC8FNZf32vsUJwvFhwl1-SF-Tcwep99pc33Glp1YLtOHBe5mExQufRlMyjYmT1Xd_dIy3MTRsGZNfDWWV7mojfFNATjOIIrSCiKr0jq905W1TSo31pWeVYL6L2_vSY_o1erRbC9kiskUHTRTs6PQBN9uYNgwYYE3rYuKN-8vodQoznzIvQOrzsBIRCgR_VimzimWxXx-Bt"/>
+<div class="flex-1 overflow-hidden">
+<p class="text-label-sm font-medium text-on-surface truncate">Admin.Sys</p>
+<p class="text-[10px] text-secondary truncate">系统管理员</p>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Workspace Area -->
+<div class="flex-1 flex flex-col ml-[216px] w-[calc(100%-216px)]">
+<!-- Top App Bar -->
+<header class="h-[56px] bg-surface-container-lowest flex items-center justify-between px-6 border-b border-outline-variant shrink-0 z-10">
+<!-- Search -->
+<div class="flex-1 max-w-md">
+<div class="relative flex items-center w-full h-9 rounded-lg bg-surface-container-low border border-outline-variant focus-within:border-primary focus-within:ring-1 focus-within:ring-primary overflow-hidden transition-all">
+<span class="material-symbols-outlined absolute left-3 text-secondary text-[20px]">search</span>
+<input class="w-full h-full pl-10 pr-4 bg-transparent text-body-sm text-on-surface focus:outline-none placeholder:text-secondary" placeholder="全局搜索..." type="text"/>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-2">
+<button class="w-9 h-9 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container transition-colors" title="刷新">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+<div class="relative">
+<button class="w-9 h-9 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container transition-colors" title="通知">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<!-- Notification Badge -->
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full ring-2 ring-surface-container-lowest"></span>
+</div>
+<button class="w-9 h-9 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container transition-colors" title="帮助">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+</div>
+</header>
+<!-- Scrollable Page Content -->
+<main class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+<!-- Page Header -->
+<div class="flex flex-col gap-1">
+<h2 class="text-[24px] font-bold text-on-surface font-headline tracking-tight">用户与角色</h2>
+<p class="text-body-sm text-secondary">查看用户身份、角色、访问状态与安全信息</p>
+</div>
+<!-- Read-Only Notice Array (Capability Constraint) -->
+<div class="bg-surface-container border border-outline-variant rounded-lg p-3 flex items-start gap-3 w-full max-w-4xl">
+<span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">info</span>
+<p class="text-body-sm text-on-surface-variant leading-relaxed">
+<span class="font-medium text-on-surface">只读视图：</span> 用户邀请、停用、角色调整等写接口尚未确认。本页面目前仅提供当前权限体系、用户状态及安全基线的浏览与检索功能，不模拟虚假操作。
+                </p>
+</div>
+<!-- Tabs Navigation -->
+<div class="border-b border-outline-variant flex gap-6">
+<button class="px-1 py-3 border-b-2 border-primary text-primary font-bold text-label-md flex items-center gap-2">
+<span>用户</span>
+<span class="bg-primary-container text-on-primary-container text-[10px] px-2 py-0.5 rounded-full font-medium">124</span>
+</button>
+<button class="px-1 py-3 border-b-2 border-transparent text-secondary hover:text-on-surface-variant font-medium text-label-md transition-colors">
+                    角色权限
+                </button>
+</div>
+<!-- Tool/Filter Bar -->
+<div class="flex items-center justify-between gap-4">
+<div class="flex items-center gap-3 flex-1">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[18px]">search</span>
+<input class="w-full h-9 pl-9 pr-3 rounded-lg border border-outline-variant bg-surface-container-lowest text-body-sm focus:outline-none focus:border-primary" placeholder="搜索姓名或邮箱..." type="text"/>
+</div>
+<div class="h-5 w-px bg-outline-variant mx-1"></div>
+<!-- Filter Dropdowns (Simulated) -->
+<button class="h-9 px-3 rounded-lg border border-outline-variant bg-surface-container-lowest flex items-center gap-2 hover:bg-surface-container transition-colors text-body-sm text-secondary">
+<span class="material-symbols-outlined text-[16px]">filter_list</span>
+<span>角色</span>
+<span class="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+</button>
+<button class="h-9 px-3 rounded-lg border border-outline-variant bg-surface-container-lowest flex items-center gap-2 hover:bg-surface-container transition-colors text-body-sm text-secondary">
+<span>状态: 全部</span>
+<span class="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+</button>
+<button class="h-9 px-3 rounded-lg border border-outline-variant bg-surface-container-lowest flex items-center gap-2 hover:bg-surface-container transition-colors text-body-sm text-secondary">
+<span>安全状态</span>
+<span class="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+</button>
+</div>
+<!-- Explicitly omitting write actions like 'Add User' per prompt constraints -->
+<div class="flex items-center gap-2">
+<button class="h-9 w-9 rounded-lg border border-outline-variant bg-surface-container-lowest flex items-center justify-center hover:bg-surface-container transition-colors text-secondary" title="导出列表">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+</div>
+<!-- Main Content Area: Master-Detail Split View -->
+<div class="flex-1 flex gap-6 min-h-[500px]">
+<!-- Data Table (Master) -->
+<div class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col shadow-sm">
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left text-body-sm whitespace-nowrap">
+<thead class="bg-surface-container border-b border-outline-variant text-secondary font-medium sticky top-0">
+<tr>
+<th class="px-4 py-3 w-10"><input class="rounded border-outline-variant text-primary focus:ring-primary" disabled="" type="checkbox"/></th>
+<th class="px-4 py-3">用户</th>
+<th class="px-4 py-3">角色</th>
+<th class="px-4 py-3">状态</th>
+<th class="px-4 py-3">MFA</th>
+<th class="px-4 py-3">安全状态</th>
+<th class="px-4 py-3 text-right">最近活跃</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant text-on-surface">
+<!-- Active Row Example -->
+<tr class="bg-primary-fixed hover:bg-primary-fixed-dim transition-colors cursor-pointer group">
+<td class="px-4 py-3"><input class="rounded border-outline-variant text-primary focus:ring-primary" disabled="" type="checkbox"/></td>
+<td class="px-4 py-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-label-sm">陈</div>
+<div class="flex flex-col">
+<span class="font-medium text-on-primary-fixed">陈分析师</span>
+<span class="text-[11px] text-on-primary-fixed-variant">chen.a@opportunity.local</span>
+</div>
+</div>
+</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-surface-container-high text-on-surface border border-outline-variant">情报分析员</span>
+</td>
+<td class="px-4 py-3">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+<span>正常</span>
+</div>
+</td>
+<td class="px-4 py-3">已开启</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0]">
+<span class="material-symbols-outlined text-[14px]">format_image_left</span>
+                                            良好
+                                        </span>
+</td>
+<td class="px-4 py-3 text-right text-secondary">10 分钟前</td>
+</tr>
+<!-- Normal Row -->
+<tr class="hover:bg-surface-container transition-colors cursor-pointer group">
+<td class="px-4 py-3"><input class="rounded border-outline-variant text-primary focus:ring-primary" disabled="" type="checkbox"/></td>
+<td class="px-4 py-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-bold text-label-sm">王</div>
+<div class="flex flex-col">
+<span class="font-medium">王总监</span>
+<span class="text-[11px] text-secondary">wang.dir@opportunity.local</span>
+</div>
+</div>
+</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-surface-container-high text-on-surface border border-outline-variant">业务总监</span>
+</td>
+<td class="px-4 py-3">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+<span>正常</span>
+</div>
+</td>
+<td class="px-4 py-3">已开启</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0]">
+<span class="material-symbols-outlined text-[14px]">format_image_left</span>
+                                            良好
+                                        </span>
+</td>
+<td class="px-4 py-3 text-right text-secondary">2 小时前</td>
+</tr>
+<!-- Warning Row -->
+<tr class="hover:bg-surface-container transition-colors cursor-pointer group">
+<td class="px-4 py-3"><input class="rounded border-outline-variant text-primary focus:ring-primary" disabled="" type="checkbox"/></td>
+<td class="px-4 py-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-label-sm">李</div>
+<div class="flex flex-col">
+<span class="font-medium">李实习生</span>
+<span class="text-[11px] text-secondary">li.intern@opportunity.local</span>
+</div>
+</div>
+</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-surface-container-high text-on-surface border border-outline-variant">只读访客</span>
+</td>
+<td class="px-4 py-3">
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+<span>离线</span>
+</div>
+</td>
+<td class="px-4 py-3 text-error font-medium">未开启</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#FFFBEB] text-[#B45309] border border-[#FDE68A]">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                                            风险
+                                        </span>
+</td>
+<td class="px-4 py-3 text-right text-secondary">5 天前</td>
+</tr>
+<!-- Locked Row -->
+<tr class="hover:bg-surface-container transition-colors cursor-pointer group opacity-75">
+<td class="px-4 py-3"><input class="rounded border-outline-variant text-primary focus:ring-primary" disabled="" type="checkbox"/></td>
+<td class="px-4 py-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center font-bold text-label-sm">张</div>
+<div class="flex flex-col">
+<span class="font-medium">张系统</span>
+<span class="text-[11px] text-secondary">zhang.sys@opportunity.local</span>
+</div>
+</div>
+</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-surface-container-high text-on-surface border border-outline-variant">系统对接</span>
+</td>
+<td class="px-4 py-3">
+<div class="flex items-center gap-1.5 text-error">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span>已锁定</span>
+</div>
+</td>
+<td class="px-4 py-3 text-secondary">-</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-surface-container-high text-secondary border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">do_not_disturb_on</span>
+                                            阻断
+                                        </span>
+</td>
+<td class="px-4 py-3 text-right text-secondary">2023-10-01</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination (Simulated) -->
+<div class="p-3 border-t border-outline-variant bg-surface-container flex items-center justify-between text-body-sm text-secondary">
+<span>显示 1 至 4 项，共 124 项</span>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded flex items-center justify-center hover:bg-surface-container-high disabled:opacity-50"><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
+<button class="w-8 h-8 rounded flex items-center justify-center bg-primary-container text-on-primary-container font-medium">1</button>
+<button class="w-8 h-8 rounded flex items-center justify-center hover:bg-surface-container-high">2</button>
+<button class="w-8 h-8 rounded flex items-center justify-center hover:bg-surface-container-high"><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
+</div>
+</div>
+</div>
+<!-- Inspector Panel (Detail) -->
+<aside class="w-[360px] bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col shadow-sm shrink-0">
+<!-- Inspector Header -->
+<div class="p-5 border-b border-outline-variant flex items-start justify-between bg-primary-fixed/30 rounded-t-xl">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-[20px] shadow-sm">陈</div>
+<div>
+<h3 class="font-bold text-on-surface text-title-md leading-tight">陈分析师</h3>
+<p class="text-body-sm text-secondary mt-0.5">情报分析员</p>
+<span class="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#10B981] text-white">
+                                    在线
+                                </span>
+</div>
+</div>
+<button class="text-secondary hover:text-on-surface transition-colors" title="关闭面板">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Inspector Body -->
+<div class="p-5 flex-1 overflow-y-auto space-y-6">
+<!-- Section: 身份与状态 -->
+<div>
+<h4 class="text-label-sm font-bold text-on-surface mb-3 uppercase tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-secondary">badge</span>
+                                身份信息
+                            </h4>
+<div class="space-y-3 text-body-sm">
+<div class="flex justify-between items-center border-b border-surface-variant pb-2">
+<span class="text-secondary">邮箱账户</span>
+<span class="text-on-surface font-medium">chen.a@opportunity.local</span>
+</div>
+<div class="flex justify-between items-center border-b border-surface-variant pb-2">
+<span class="text-secondary">账户 ID</span>
+<span class="text-on-surface font-mono text-[11px] bg-surface px-1.5 rounded">USR-8829-A1</span>
+</div>
+<div class="flex justify-between items-center border-b border-surface-variant pb-2">
+<span class="text-secondary">创建时间</span>
+<span class="text-on-surface">2023-05-12 14:30</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-secondary">当前会话数</span>
+<span class="text-on-surface bg-surface-container-high px-2 py-0.5 rounded text-[11px] font-medium">2 台设备</span>
+</div>
+</div>
+</div>
+<!-- Section: 权限范围 -->
+<div>
+<h4 class="text-label-sm font-bold text-on-surface mb-3 uppercase tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-secondary">policy</span>
+                                核心权限摘要
+                            </h4>
+<div class="bg-surface-container rounded-lg p-3 space-y-2 text-body-sm">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-[16px] text-[#10B981] mt-0.5">check_circle</span>
+<div>
+<p class="font-medium text-on-surface">机会对象 (读/写)</p>
+<p class="text-[11px] text-secondary">允许查看及更新指派到本人的机会状态。</p>
+</div>
+</div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-[16px] text-[#10B981] mt-0.5">check_circle</span>
+<div>
+<p class="font-medium text-on-surface">研究与运行 (读)</p>
+<p class="text-[11px] text-secondary">允许查看所有脱敏的分析结果与调度日志。</p>
+</div>
+</div>
+<div class="flex items-start gap-2 opacity-50">
+<span class="material-symbols-outlined text-[16px] text-outline mt-0.5">cancel</span>
+<div>
+<p class="font-medium text-on-surface line-through">系统管理</p>
+<p class="text-[11px] text-secondary">无任何管理模块访问权限。</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Section: 安全状态 -->
+<div>
+<h4 class="text-label-sm font-bold text-on-surface mb-3 uppercase tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-secondary">security</span>
+                                安全基线
+                            </h4>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+<span class="text-body-sm text-on-surface">多因素认证 (MFA)</span>
+</div>
+<span class="text-[11px] font-medium px-2 py-0.5 rounded bg-surface-container text-secondary">已绑定 TOTP</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+<span class="text-body-sm text-on-surface">密码策略</span>
+</div>
+<span class="text-[11px] font-medium px-2 py-0.5 rounded bg-surface-container text-secondary">30 天内已更新</span>
+</div>
+</div>
+</div>
+<!-- Section: 最近活动日志 (Mini) -->
+<div>
+<h4 class="text-label-sm font-bold text-on-surface mb-3 uppercase tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-secondary">history</span>
+                                最近安全事件
+                            </h4>
+<div class="relative border-l border-outline-variant ml-2 space-y-4 pb-2">
+<div class="relative pl-4">
+<span class="absolute -left-1 top-1 w-2 h-2 rounded-full bg-outline-variant ring-4 ring-surface-container-lowest"></span>
+<p class="text-[11px] text-secondary">今天 09:12</p>
+<p class="text-body-sm font-medium text-on-surface">成功登录 (IP: 192.168.1.100)</p>
+</div>
+<div class="relative pl-4">
+<span class="absolute -left-1 top-1 w-2 h-2 rounded-full bg-outline-variant ring-4 ring-surface-container-lowest"></span>
+<p class="text-[11px] text-secondary">昨天 18:30</p>
+<p class="text-body-sm font-medium text-on-surface">请求访问结构化分析报告 (ID: R-091)</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Inspector Actions -->
+<div class="p-4 border-t border-outline-variant bg-surface-container-low rounded-b-xl flex gap-3">
+<button class="flex-1 py-2 px-3 border border-outline-variant bg-surface-container-lowest text-on-surface font-medium text-label-sm rounded-lg hover:bg-surface-container transition-colors flex justify-center items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">manage_search</span>
+                            查看审计日志
+                        </button>
+<button class="flex-1 py-2 px-3 border border-outline-variant bg-surface-container-lowest text-on-surface font-medium text-label-sm rounded-lg hover:bg-surface-container transition-colors flex justify-center items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">admin_panel_settings</span>
+                            账户安全信息
+                        </button>
+</div>
+</aside>
+</div>
+</main>
+</div>
+</body></html>

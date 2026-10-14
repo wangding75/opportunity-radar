@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>P01 — 工作台 | 机会情报 R04</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "tertiary-container": "#656d84",
+                        "secondary-fixed": "#d3e4fe",
+                        "outline-variant": "#c3c6d7",
+                        "tertiary": "#4d556b",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-tint": "#0053db",
+                        "on-tertiary-fixed": "#131b2e",
+                        "surface-container-low": "#f2f4f6",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "tertiary-fixed": "#dae2fd",
+                        "secondary-container": "#d0e1fb",
+                        "on-tertiary-container": "#eef0ff",
+                        "primary-container": "#2563eb",
+                        "on-secondary-container": "#54647a",
+                        "inverse-surface": "#2d3133",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-error": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "primary-fixed": "#dbe1ff",
+                        "inverse-primary": "#b4c5ff",
+                        "on-surface": "#191c1e",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-primary-container": "#eeefff",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "surface": "#f7f9fb",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#f7f9fb",
+                        "outline": "#737686",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "primary": "#004ac6",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "inverse-on-surface": "#eff1f3",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-surface-variant": "#434655",
+                        "on-background": "#191c1e",
+                        "secondary": "#505f76",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-primary-fixed": "#00174b",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#d8dadc",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "background": "#f7f9fb"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "display": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "body": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "label": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased min-h-screen flex">
+<!-- AppShell: SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-[216px] bg-surface-container-lowest border-r border-outline-variant flex flex-col py-4 z-20">
+<!-- Brand Header -->
+<div class="px-6 pb-6 border-b border-outline-variant/30 mb-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary text-on-primary flex items-center justify-center font-bold text-lg flex-shrink-0">R04</div>
+<div class="overflow-hidden">
+<h1 class="text-headline-sm font-bold text-on-surface truncate tracking-tight">机会情报 R04</h1>
+<p class="text-xs text-on-surface-variant truncate">业务闭环系统</p>
+</div>
+</div>
+<!-- Primary Navigation Links -->
+<div class="flex-1 px-3 space-y-1">
+<!-- Active Tab: 工作台 -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary-container text-on-secondary-container font-bold transition-colors duration-200" href="#">
+<span class="material-symbols-outlined filled text-lg">dashboard</span>
+<span class="text-sm">工作台</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:text-on-surface">star</span>
+<span class="text-sm font-medium group-hover:text-on-surface">机会</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:text-on-surface">insights</span>
+<span class="text-sm font-medium group-hover:text-on-surface">情报</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:text-on-surface">science</span>
+<span class="text-sm font-medium group-hover:text-on-surface">研究</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:text-on-surface">settings_input_component</span>
+<span class="text-sm font-medium group-hover:text-on-surface">运行</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:text-on-surface">settings</span>
+<span class="text-sm font-medium group-hover:text-on-surface">管理</span>
+</a>
+</div>
+<!-- Footer Navigation Links -->
+<div class="px-3 pt-4 border-t border-outline-variant/30 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:text-on-surface">switch_account</span>
+<span class="text-sm font-medium group-hover:text-on-surface">系统诊断</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:text-on-surface">history</span>
+<span class="text-sm font-medium group-hover:text-on-surface">审计日志</span>
+</a>
+</div>
+</nav>
+<!-- AppShell: TopNavBar -->
+<header class="fixed top-0 right-0 left-[216px] h-[56px] bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-6 z-10">
+<!-- Global Search -->
+<div class="flex-1 max-w-md">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full h-8 pl-9 pr-3 bg-surface-container rounded-full border-none text-sm text-on-surface placeholder:text-on-surface-variant/70 focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all" placeholder="全局搜索机会、情报、任务..." type="text"/>
+</div>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-2">
+<button aria-label="Refresh" class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors focus:outline-none">
+<span class="material-symbols-outlined text-xl">refresh</span>
+</button>
+<button aria-label="Notifications" class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors focus:outline-none relative">
+<span class="material-symbols-outlined text-xl">notifications</span>
+<span class="absolute top-2 right-2.5 w-1.5 h-1.5 bg-error rounded-full ring-2 ring-surface-container-lowest"></span>
+</button>
+<button aria-label="Help" class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors focus:outline-none">
+<span class="material-symbols-outlined text-xl">help</span>
+</button>
+<div class="w-px h-5 bg-outline-variant mx-2"></div>
+<button class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a system administrator in a well-lit, modern corporate environment. Light mode aesthetic, cool neutral tones with a subtle blue accent in the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWCs4nqn80FHQdM1IlYrb_ffGVXKyehA54MbOwLAGAw-95edF9j58zTbvyvP-TqQMR-cf1zYdpPSuSMsBxfE2iCyxPSI5P6ceF5EbRXK-gQKI5GL1nxlehzY5HttnWjwSDmmxt9OHkp4eNVzdykOBSPKvcif88qS1QY5DvSMiNwx-YlSFG4RfZxwMb9DfCOKDGglj87uIB8OBCQnfgIjAz7sRUjtowURwHg8NZ7kp5cGQPrk4-pQffEF-Xm7Sp-DK4_RaDlQbhnqOt"/>
+</button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="ml-[216px] mt-[56px] flex-1 p-5 lg:p-6 overflow-y-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
+<div>
+<h2 class="text-2xl font-headline font-bold text-on-surface tracking-tight">工作台</h2>
+<p class="text-sm text-on-surface-variant mt-1">快速判断今天最值得关注的机会、情报变化与运行异常</p>
+</div>
+<div class="flex-shrink-0">
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface-container border border-outline-variant rounded hover:bg-surface-container-high hover:border-outline text-sm font-medium text-on-surface transition-colors focus:ring-2 focus:ring-primary focus:outline-none">
+<span class="material-symbols-outlined text-sm">refresh</span>
+                    刷新视图
+                </button>
+</div>
+</div>
+<!-- Summary Indicators -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+<!-- Indicator 1: 新增重点机会 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex items-center justify-between group cursor-pointer hover:border-primary/50 transition-colors">
+<div>
+<p class="text-xs font-medium text-on-surface-variant mb-1">新增重点机会</p>
+<div class="flex items-baseline gap-2">
+<span class="text-xl font-bold font-headline text-on-surface">8</span>
+<span class="text-[10px] text-tertiary-container bg-tertiary-container/10 px-1.5 py-0.5 rounded">过去 24H</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined filled">star</span>
+</div>
+</div>
+<!-- Indicator 2: 高置信度新情报 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex items-center justify-between group cursor-pointer hover:border-primary/50 transition-colors">
+<div>
+<p class="text-xs font-medium text-on-surface-variant mb-1">高置信度新情报</p>
+<div class="flex items-baseline gap-2">
+<span class="text-xl font-bold font-headline text-on-surface">23</span>
+<span class="text-[10px] text-tertiary-container bg-tertiary-container/10 px-1.5 py-0.5 rounded">需处理</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed group-hover:bg-secondary group-hover:text-on-secondary transition-colors">
+<span class="material-symbols-outlined filled">insights</span>
+</div>
+</div>
+<!-- Indicator 3: 运行异常 -->
+<div class="bg-surface-container-lowest border border-error-container rounded-lg p-4 flex items-center justify-between group cursor-pointer hover:border-error/50 transition-colors relative overflow-hidden">
+<!-- Subtle warning background pattern -->
+<div class="absolute right-0 top-0 w-32 h-32 bg-error-container/20 rounded-bl-full -z-0"></div>
+<div class="relative z-10">
+<p class="text-xs font-medium text-on-surface-variant mb-1 flex items-center gap-1">
+                        运行异常
+                        <span class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span>
+</p>
+<div class="flex items-baseline gap-2">
+<span class="text-xl font-bold font-headline text-error">3</span>
+<span class="text-[10px] text-error bg-error-container/50 px-1.5 py-0.5 rounded">未确认</span>
+</div>
+</div>
+<div class="relative z-10 w-10 h-10 rounded-full bg-error-container flex items-center justify-center text-on-error-container group-hover:bg-error group-hover:text-on-error transition-colors">
+<span class="material-symbols-outlined filled">warning</span>
+</div>
+</div>
+</div>
+<!-- Main Layout (2:1 Grid) -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+<!-- Left Column (2/3): 重点机会 -->
+<div class="lg:col-span-2 flex flex-col min-h-0 bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden">
+<div class="px-5 py-4 border-b border-outline-variant/50 flex items-center justify-between bg-surface/50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">star_rate</span>
+<h3 class="text-sm font-bold text-on-surface">重点机会</h3>
+</div>
+<a class="text-xs text-primary hover:underline flex items-center" href="#">
+                        查看全部 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</a>
+</div>
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left text-sm whitespace-nowrap">
+<thead class="text-xs text-on-surface-variant bg-surface-container-low/50 border-b border-outline-variant/30">
+<tr>
+<th class="px-5 py-3 font-medium">机会 / ID</th>
+<th class="px-5 py-3 font-medium w-20">评分</th>
+<th class="px-5 py-3 font-medium w-24">置信度</th>
+<th class="px-5 py-3 font-medium">类别</th>
+<th class="px-5 py-3 font-medium hidden md:table-cell">关键原因</th>
+<th class="px-5 py-3 font-medium w-28 text-right">更新时间</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-lowest/80 hover:shadow-sm cursor-pointer transition-all group">
+<td class="px-5 py-3">
+<div class="font-medium text-on-surface group-hover:text-primary transition-colors">东南亚物流基础设施合作窗口</div>
+<div class="text-[11px] text-on-surface-variant font-mono mt-0.5">OR-2026-0042</div>
+</td>
+<td class="px-5 py-3">
+<div class="inline-flex items-center gap-1 bg-primary-container/20 text-on-primary-container px-2 py-0.5 rounded font-bold font-mono">
+                                        92
+                                    </div>
+</td>
+<td class="px-5 py-3">
+<span class="inline-flex items-center gap-1 text-[11px] font-medium text-[#046c4e] bg-[#def7ec] px-1.5 py-0.5 rounded-sm">
+<span class="material-symbols-outlined text-[12px] filled">check_circle</span> 高
+                                    </span>
+</td>
+<td class="px-5 py-3 text-on-surface-variant text-xs">战略合作</td>
+<td class="px-5 py-3 text-on-surface-variant text-xs hidden md:table-cell truncate max-w-[150px]" title="基础设施需求爆发">基础设施需求爆发</td>
+<td class="px-5 py-3 text-right text-[11px] text-on-surface-variant">2024-03-20</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-lowest/80 hover:shadow-sm cursor-pointer transition-all group">
+<td class="px-5 py-3">
+<div class="font-medium text-on-surface group-hover:text-primary transition-colors">欧洲新环保法规下的新能源替代</div>
+<div class="text-[11px] text-on-surface-variant font-mono mt-0.5">OR-2025-0108</div>
+</td>
+<td class="px-5 py-3">
+<div class="inline-flex items-center gap-1 bg-primary-container/20 text-on-primary-container px-2 py-0.5 rounded font-bold font-mono">
+                                        88
+                                    </div>
+</td>
+<td class="px-5 py-3">
+<span class="inline-flex items-center gap-1 text-[11px] font-medium text-[#046c4e] bg-[#def7ec] px-1.5 py-0.5 rounded-sm">
+<span class="material-symbols-outlined text-[12px] filled">check_circle</span> 高
+                                    </span>
+</td>
+<td class="px-5 py-3 text-on-surface-variant text-xs">合规替代</td>
+<td class="px-5 py-3 text-on-surface-variant text-xs hidden md:table-cell truncate max-w-[150px]" title="竞争对手退出区域市场">竞争对手退出区域市场</td>
+<td class="px-5 py-3 text-right text-[11px] text-on-surface-variant">2024-03-19</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-lowest/80 hover:shadow-sm cursor-pointer transition-all group">
+<td class="px-5 py-3">
+<div class="font-medium text-on-surface group-hover:text-primary transition-colors">中东主权基金科技领域投资意向</div>
+<div class="text-[11px] text-on-surface-variant font-mono mt-0.5">OR-2025-0095</div>
+</td>
+<td class="px-5 py-3">
+<div class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface px-2 py-0.5 rounded font-medium font-mono">
+                                        76
+                                    </div>
+</td>
+<td class="px-5 py-3">
+<span class="inline-flex items-center gap-1 text-[11px] font-medium text-[#8e4b10] bg-[#fdf6b2] px-1.5 py-0.5 rounded-sm">
+<span class="material-symbols-outlined text-[12px] filled">remove</span> 中
+                                    </span>
+</td>
+<td class="px-5 py-3 text-on-surface-variant text-xs">融资并购</td>
+<td class="px-5 py-3 text-on-surface-variant text-xs hidden md:table-cell truncate max-w-[150px]" title="核心决策人变更">核心决策人变更</td>
+<td class="px-5 py-3 text-right text-[11px] text-on-surface-variant">2024-03-18</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-lowest/80 hover:shadow-sm cursor-pointer transition-all group">
+<td class="px-5 py-3">
+<div class="font-medium text-on-surface group-hover:text-primary transition-colors">北美供应链重组导致的本地化缺口</div>
+<div class="text-[11px] text-on-surface-variant font-mono mt-0.5">OR-2025-0112</div>
+</td>
+<td class="px-5 py-3">
+<div class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface px-2 py-0.5 rounded font-medium font-mono">
+                                        72
+                                    </div>
+</td>
+<td class="px-5 py-3">
+<span class="inline-flex items-center gap-1 text-[11px] font-medium text-[#8e4b10] bg-[#fdf6b2] px-1.5 py-0.5 rounded-sm">
+<span class="material-symbols-outlined text-[12px] filled">remove</span> 中
+                                    </span>
+</td>
+<td class="px-5 py-3 text-on-surface-variant text-xs">产能布局</td>
+<td class="px-5 py-3 text-on-surface-variant text-xs hidden md:table-cell truncate max-w-[150px]" title="关税政策异动">关税政策异动</td>
+<td class="px-5 py-3 text-right text-[11px] text-on-surface-variant">2024-03-18</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right Column (1/3): Split Vertically -->
+<div class="lg:col-span-1 flex flex-col gap-6">
+<!-- 需要关注 (Needs Attention) -->
+<div class="bg-surface-container-lowest border border-error-container/50 rounded-lg overflow-hidden flex-1 min-h-[220px] flex flex-col">
+<div class="px-4 py-3 border-b border-outline-variant/30 flex items-center justify-between bg-error-container/5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-error text-[18px]">warning</span>
+<h3 class="text-sm font-bold text-on-surface">需要关注</h3>
+</div>
+</div>
+<div class="p-2 flex-1 overflow-y-auto">
+<ul class="space-y-1">
+<!-- Alert Item 1 -->
+<li>
+<a class="block p-2.5 rounded hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-error text-[16px] mt-0.5">api</span>
+<div>
+<div class="text-xs font-medium text-on-surface group-hover:text-primary">全球物流实时监控节点无响应</div>
+<div class="text-[11px] text-on-surface-variant mt-0.5">数据源抓取失败，已重试 3 次</div>
+<div class="text-[10px] text-tertiary mt-1 font-mono">2 小时前</div>
+</div>
+</div>
+</a>
+</li>
+<!-- Alert Item 2 -->
+<li>
+<a class="block p-2.5 rounded hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-error text-[16px] mt-0.5">sync_problem</span>
+<div>
+<div class="text-xs font-medium text-on-surface group-hover:text-primary">东南亚政经新闻源新鲜度延迟</div>
+<div class="text-[11px] text-on-surface-variant mt-0.5">最近一次同步滞后超过 12 小时</div>
+<div class="text-[10px] text-tertiary mt-1 font-mono">4 小时前</div>
+</div>
+</div>
+</a>
+</li>
+<!-- Alert Item 3 -->
+<li>
+<a class="block p-2.5 rounded hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-tertiary text-[16px] mt-0.5">data_alert</span>
+<div>
+<div class="text-xs font-medium text-on-surface group-hover:text-primary">竞品产能分析队列拥堵</div>
+<div class="text-[11px] text-on-surface-variant mt-0.5">队列深度超阈值，分析任务延迟执行</div>
+<div class="text-[10px] text-tertiary mt-1 font-mono">5 小时前</div>
+</div>
+</div>
+</a>
+</li>
+</ul>
+</div>
+</div>
+<!-- 最近研究结果 (Recent Research Results) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden flex-1 min-h-[220px] flex flex-col">
+<div class="px-4 py-3 border-b border-outline-variant/30 flex items-center justify-between bg-surface/50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">science</span>
+<h3 class="text-sm font-bold text-on-surface">最近研究结果</h3>
+</div>
+</div>
+<div class="p-2 flex-1 overflow-y-auto">
+<ul class="space-y-1">
+<!-- Research Item 1 -->
+<li>
+<a class="block p-2.5 rounded hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="text-[10px] font-medium bg-secondary-fixed/50 text-on-secondary-fixed px-1.5 py-0.5 rounded-sm">结构化分析</span>
+<span class="text-[10px] text-tertiary font-mono">今天 09:30</span>
+</div>
+<div class="text-xs font-medium text-on-surface group-hover:text-primary leading-tight">针对欧洲新环保法规合规成本的量化评估模型</div>
+<div class="text-[11px] text-on-surface-variant truncate">关联: OR-2025-0108</div>
+</div>
+</a>
+</li>
+<!-- Research Item 2 -->
+<li>
+<a class="block p-2.5 rounded hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="text-[10px] font-medium bg-tertiary-fixed/50 text-on-tertiary-fixed px-1.5 py-0.5 rounded-sm">关系图谱</span>
+<span class="text-[10px] text-tertiary font-mono">昨天 16:45</span>
+</div>
+<div class="text-xs font-medium text-on-surface group-hover:text-primary leading-tight">中东主权基金科技投资历史网络及潜在标的</div>
+<div class="text-[11px] text-on-surface-variant truncate">关联: OR-2025-0095</div>
+</div>
+</a>
+</li>
+<!-- Research Item 3 -->
+<li>
+<a class="block p-2.5 rounded hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="text-[10px] font-medium bg-secondary-fixed/50 text-on-secondary-fixed px-1.5 py-0.5 rounded-sm">结构化分析</span>
+<span class="text-[10px] text-tertiary font-mono">昨天 11:15</span>
+</div>
+<div class="text-xs font-medium text-on-surface group-hover:text-primary leading-tight">东南亚港口基建吞吐能力缺口专项测算</div>
+<div class="text-[11px] text-on-surface-variant truncate">关联: OR-2026-0042</div>
+</div>
+</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Area: 最新情报变化 (Latest Intelligence Changes) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden mb-8">
+<div class="px-5 py-4 border-b border-outline-variant/50 flex items-center justify-between bg-surface/50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">feed</span>
+<h3 class="text-sm font-bold text-on-surface">最新情报变化</h3>
+</div>
+<a class="text-xs text-secondary hover:text-primary transition-colors flex items-center" href="#">
+                    进入情报工作台 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</a>
+</div>
+<div class="divide-y divide-outline-variant/30">
+<!-- Intel Item 1 -->
+<div class="p-4 hover:bg-surface-container-lowest/80 transition-colors group flex flex-col sm:flex-row gap-4 sm:items-center">
+<div class="sm:w-28 flex-shrink-0">
+<div class="text-[11px] text-tertiary font-mono">2024-03-21 10:15</div>
+<div class="inline-flex items-center gap-1 mt-1 bg-error-container/20 text-on-error-container px-1.5 py-0.5 rounded-sm text-[10px] font-medium border border-error-container/30">
+<span class="material-symbols-outlined text-[10px]">priority_high</span> 重要预警
+                        </div>
+</div>
+<div class="flex-1 min-w-0">
+<a class="block focus:outline-none" href="#">
+<h4 class="text-sm font-medium text-on-surface group-hover:text-primary truncate mb-1">某主要竞争对手宣布撤出拉美C端市场</h4>
+<p class="text-xs text-on-surface-variant line-clamp-1">由于当地监管政策收紧及本土供应链成本上升，竞品在年度投资者会议上正式确认放弃该区域扩张计划，预计留下约 15% 的市场空白。</p>
+</a>
+</div>
+<div class="flex-shrink-0 flex sm:flex-col items-center sm:items-end gap-3 sm:gap-1 w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-outline-variant/20 sm:border-t-0">
+<div class="text-[11px] text-tertiary flex items-center gap-1 max-w-[120px] truncate" title="路透社科技频道 / 财报摘要">
+<span class="material-symbols-outlined text-[12px]">public</span> 财报摘要抓取
+                        </div>
+<a class="ml-auto sm:ml-0 inline-flex items-center gap-1 text-[11px] text-primary hover:underline bg-primary-container/10 px-2 py-1 rounded" href="#">
+<span class="material-symbols-outlined text-[12px]">link</span> 未关联机会
+                        </a>
+</div>
+</div>
+<!-- Intel Item 2 -->
+<div class="p-4 hover:bg-surface-container-lowest/80 transition-colors group flex flex-col sm:flex-row gap-4 sm:items-center">
+<div class="sm:w-28 flex-shrink-0">
+<div class="text-[11px] text-tertiary font-mono">2024-03-21 08:42</div>
+<div class="inline-flex items-center gap-1 mt-1 bg-surface-container-highest text-on-surface-variant px-1.5 py-0.5 rounded-sm text-[10px] font-medium border border-outline-variant/30">
+                            常规跟踪
+                        </div>
+</div>
+<div class="flex-1 min-w-0">
+<a class="block focus:outline-none" href="#">
+<h4 class="text-sm font-medium text-on-surface group-hover:text-primary truncate mb-1">印尼交通部发布《2025-2030港口扩建初步规划》草案</h4>
+<p class="text-xs text-on-surface-variant line-clamp-1">该草案明确提及将对三个主要货运港口进行数字化升级与自动化装卸设备引入，总预算规模约为 12 亿美元，鼓励外资技术提供商参与竞标。</p>
+</a>
+</div>
+<div class="flex-shrink-0 flex sm:flex-col items-center sm:items-end gap-3 sm:gap-1 w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-outline-variant/20 sm:border-t-0">
+<div class="text-[11px] text-tertiary flex items-center gap-1 max-w-[120px] truncate" title="印尼政府官网 RSS">
+<span class="material-symbols-outlined text-[12px]">account_balance</span> 官方政策源
+                        </div>
+<a class="ml-auto sm:ml-0 inline-flex items-center gap-1 text-[11px] text-primary hover:underline bg-primary-container/10 px-2 py-1 rounded" href="#">
+<span class="material-symbols-outlined text-[12px]">link</span> OR-2026-0042
+                        </a>
+</div>
+</div>
+<!-- Intel Item 3 -->
+<div class="p-4 hover:bg-surface-container-lowest/80 transition-colors group flex flex-col sm:flex-row gap-4 sm:items-center">
+<div class="sm:w-28 flex-shrink-0">
+<div class="text-[11px] text-tertiary font-mono">2024-03-20 22:15</div>
+<div class="inline-flex items-center gap-1 mt-1 bg-surface-container-highest text-on-surface-variant px-1.5 py-0.5 rounded-sm text-[10px] font-medium border border-outline-variant/30">
+                            语义提取
+                        </div>
+</div>
+<div class="flex-1 min-w-0">
+<a class="block focus:outline-none" href="#">
+<h4 class="text-sm font-medium text-on-surface group-hover:text-primary truncate mb-1">多篇行业研报指出固态电池商业化时间点可能提前至2026年</h4>
+<p class="text-xs text-on-surface-variant line-clamp-1">自然语言处理模块在分析本周内发布的 15 篇顶级券商研报后发现，分析师对固态电池量产节点的共识从 2028 年前移至 2026 年，重点提及两家核心技术供应商的突破。</p>
+</a>
+</div>
+<div class="flex-shrink-0 flex sm:flex-col items-center sm:items-end gap-3 sm:gap-1 w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-outline-variant/20 sm:border-t-0">
+<div class="text-[11px] text-tertiary flex items-center gap-1 max-w-[120px] truncate" title="研报聚合分析器">
+<span class="material-symbols-outlined text-[12px]">insights</span> NLP 分析器
+                        </div>
+<a class="ml-auto sm:ml-0 inline-flex items-center gap-1 text-[11px] text-primary hover:underline bg-primary-container/10 px-2 py-1 rounded" href="#">
+<span class="material-symbols-outlined text-[12px]">link</span> 关联 3 个机会
+                        </a>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

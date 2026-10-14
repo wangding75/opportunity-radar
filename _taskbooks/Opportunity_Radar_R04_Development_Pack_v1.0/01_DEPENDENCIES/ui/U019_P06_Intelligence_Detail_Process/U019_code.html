@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>机会情报 R04 - 情报详情</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-highest": "#e0e3e5",
+                    "surface-tint": "#0053db",
+                    "tertiary": "#4d556b",
+                    "surface": "#f7f9fb",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-primary-fixed": "#00174b",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "surface-container-high": "#e6e8ea",
+                    "on-primary": "#ffffff",
+                    "on-background": "#191c1e",
+                    "background": "#f7f9fb",
+                    "on-tertiary-container": "#eef0ff",
+                    "on-secondary": "#ffffff",
+                    "outline-variant": "#c3c6d7",
+                    "on-surface": "#191c1e",
+                    "inverse-on-surface": "#eff1f3",
+                    "on-tertiary-fixed-variant": "#3f465c",
+                    "on-tertiary": "#ffffff",
+                    "surface-dim": "#d8dadc",
+                    "surface-bright": "#f7f9fb",
+                    "on-primary-container": "#eeefff",
+                    "on-tertiary-fixed": "#131b2e",
+                    "inverse-primary": "#b4c5ff",
+                    "primary-container": "#2563eb",
+                    "outline": "#737686",
+                    "tertiary-fixed-dim": "#bec6e0",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "tertiary-container": "#656d84",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-container": "#54647a",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "secondary": "#505f76",
+                    "on-error": "#ffffff",
+                    "primary-fixed": "#dbe1ff",
+                    "error-container": "#ffdad6",
+                    "inverse-surface": "#2d3133",
+                    "surface-container-low": "#f2f4f6",
+                    "tertiary-fixed": "#dae2fd",
+                    "surface-container": "#eceef0",
+                    "secondary-fixed": "#d3e4fe",
+                    "primary": "#004ac6",
+                    "on-secondary-fixed": "#0b1c30",
+                    "surface-variant": "#e0e3e5",
+                    "on-surface-variant": "#434655",
+                    "secondary-container": "#d0e1fb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter", "PingFang SC", "Microsoft YaHei", "system-ui", "sans-serif"],
+                    "display": ["Inter", "PingFang SC", "Microsoft YaHei", "system-ui", "sans-serif"],
+                    "body": ["Inter", "PingFang SC", "Microsoft YaHei", "system-ui", "sans-serif"],
+                    "label": ["Inter", "PingFang SC", "Microsoft YaHei", "system-ui", "sans-serif"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { overflow: hidden; width: 2560px; height: 2048px; background-color: #f7f9fb; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .filled-icon { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        /* Custom scrollbar for content area */
+        .content-scroll::-webkit-scrollbar { width: 8px; }
+        .content-scroll::-webkit-scrollbar-track { background: transparent; }
+        .content-scroll::-webkit-scrollbar-thumb { background-color: #c3c6d7; border-radius: 4px; }
+    </style>
+</head>
+<body class="font-body text-on-background bg-background flex">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-[216px] bg-surface-container-lowest border-r border-outline-variant flex flex-col py-4 z-20">
+<div class="px-6 mb-8 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl filled-icon">radar</span>
+<div>
+<h1 class="text-headline-sm font-bold text-on-surface">机会情报 R04</h1>
+<p class="text-xs text-on-surface-variant">业务闭环系统</p>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-1 px-3">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 font-body text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                工作台
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 font-body text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined">star</span>
+                机会
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary-container text-on-secondary-container font-bold cursor-pointer active:scale-95 font-body text-label-sm" href="#">
+<span class="material-symbols-outlined filled-icon">insights</span>
+                情报
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 font-body text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined">science</span>
+                研究
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 font-body text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+                运行
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 font-body text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined">settings</span>
+                管理
+            </a>
+</div>
+<div class="mt-auto flex flex-col gap-1 px-3 pt-4 border-t border-outline-variant">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 font-body text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined">switch_account</span>
+                系统诊断
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 font-body text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined">history</span>
+                审计日志
+            </a>
+</div>
+</nav>
+<!-- Main Viewport -->
+<div class="flex-1 ml-[216px] flex flex-col h-full w-[calc(2560px-216px)]">
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-[216px] h-[56px] bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-6 z-10">
+<!-- Search on Left -->
+<div class="flex items-center bg-surface-container-low rounded-full px-4 py-1.5 w-96 border border-outline-variant focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mr-2">search</span>
+<input class="bg-transparent border-none focus:outline-none text-sm text-on-surface w-full placeholder-on-surface-variant font-body" placeholder="全局搜索机会、情报或任务..." type="text"/>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer p-1 rounded-full hover:bg-surface-container-high" title="刷新">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer p-1 rounded-full hover:bg-surface-container-high relative" title="通知">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer p-1 rounded-full hover:bg-surface-container-high mr-2" title="帮助">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of an Asian male in his mid-30s wearing a dark navy suit and white shirt, smiling slightly against a soft, bright white studio background. The lighting is even and flat, typical of corporate ID photos, with a clean and modern aesthetic suitable for a high-end enterprise software avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuATC7OziKS-jS4Ng1w7CiBch2wqr2KMI_wGQdb19LzPVBhKDDKa8prJwrfaP7uVJAG3jAf5O-Mg_6Y9vESAwgtkuoNnla3XxZr-giNmELTwGwDboAUtIrLTOUiVXG-z0v6i2YFBoAIWbGzoPHQYChRUOREiwrJUib4TxUbtM1Vr1ujnJSJ3RRTm6prSACiqWanV3XHDEJG0Ejx7N5tH1umSLTJlzJy-vJuEG-Vu-POe7aFp_-TVc_Rc_gswd1-IMnIfQDx6q3N2gBtj"/>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<main class="mt-[56px] p-[24px] h-[calc(2048px-56px)] flex flex-col gap-6 content-scroll overflow-y-auto">
+<!-- Breadcrumbs -->
+<div class="flex items-center text-sm text-on-surface-variant font-body">
+<a class="hover:text-primary transition-colors" href="#">情报</a>
+<span class="material-symbols-outlined text-sm mx-1">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">最新情报</a>
+<span class="material-symbols-outlined text-sm mx-1">chevron_right</span>
+<span class="text-on-surface font-medium">情报详情</span>
+</div>
+<!-- EntityHeader -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 shadow-sm flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<span class="bg-surface-container-high text-on-surface-variant px-2 py-0.5 rounded text-xs font-medium uppercase tracking-wider">INT-8992</span>
+<span class="bg-primary-container text-on-primary-container px-2 py-0.5 rounded text-xs font-medium">高置信度</span>
+<span class="bg-[#eef0ff] text-[#003ea8] px-2 py-0.5 rounded text-xs font-medium">港口基建</span>
+</div>
+<h2 class="text-2xl font-bold text-on-surface font-headline tracking-tight mb-2">东南亚港口自动化资本开支预算连续上调</h2>
+<div class="flex items-center gap-6 text-sm text-on-surface-variant font-body">
+<div class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">domain</span>来源: 国际海事时报</div>
+<div class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">calendar_today</span>发现时间: 2023-10-24 14:32:01</div>
+<div class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">fact_check</span>质量评分: 92/100</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-sm font-medium text-on-surface hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">share</span>分享
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-medium hover:bg-on-primary-fixed-variant transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>关联机会
+                        </button>
+</div>
+</div>
+<!-- Tab Navigation -->
+<div class="flex border-b border-outline-variant mt-2">
+<a class="px-6 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors" href="#">摘要</a>
+<a class="px-6 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors" href="#">原始证据</a>
+<a class="px-6 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors" href="#">关系</a>
+<a class="px-6 py-3 text-sm font-bold text-primary border-b-2 border-primary" href="#">处理过程</a>
+</div>
+</div>
+<!-- Main Content Area: Process Pipeline -->
+<div class="flex gap-6 flex-1 min-h-0">
+<!-- Left: Pipeline Flow -->
+<div class="flex-1 bg-surface-container-lowest rounded-xl border border-outline-variant p-6 flex flex-col gap-6 overflow-y-auto content-scroll shadow-sm">
+<div class="flex justify-between items-center pb-4 border-b border-outline-variant">
+<h3 class="text-lg font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">account_tree</span>
+                            数据处理流水线
+                        </h3>
+<div class="flex items-center gap-2 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+                            总耗时: 4.8s
+                        </div>
+</div>
+<div class="relative pl-6 py-2">
+<!-- Vertical line -->
+<div class="absolute left-[11px] top-6 bottom-6 w-0.5 bg-outline-variant z-0"></div>
+<!-- Stage 1: Collection -->
+<div class="relative z-10 flex gap-6 mb-8 group">
+<div class="w-6 h-6 rounded-full bg-surface-container-lowest border-2 border-primary flex items-center justify-center mt-1 flex-shrink-0">
+<span class="material-symbols-outlined text-[14px] text-primary filled-icon">check</span>
+</div>
+<div class="flex-1 bg-surface rounded-lg border border-outline-variant p-4 group-hover:border-primary transition-colors">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h4 class="font-bold text-on-surface text-base flex items-center gap-2">
+                                            采集 (Collection)
+                                            <span class="bg-[#eef0ff] text-[#003ea8] px-2 py-0.5 rounded text-xs font-medium">成功</span>
+</h4>
+<div class="text-xs text-on-surface-variant mt-1 flex items-center gap-4">
+<span>开始: 14:32:01.100</span>
+<span>耗时: 1.2s</span>
+<span>组件: Crawler-Engine v2.4.1</span>
+</div>
+</div>
+<button class="text-xs text-primary hover:underline flex items-center gap-1 font-medium bg-surface-container-high px-2 py-1 rounded">
+                                        查看数据源详情 <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-4 text-sm bg-surface-container-lowest p-3 rounded border border-outline-variant">
+<div>
+<span class="text-on-surface-variant block mb-1 text-xs">输入</span>
+<span class="font-mono text-xs text-on-surface break-all">URL: https://www.maritime-executive.com/news/southeast...</span>
+</div>
+<div>
+<span class="text-on-surface-variant block mb-1 text-xs">输出摘要</span>
+<span class="font-mono text-xs text-on-surface break-all">Raw HTML (42KB), Status 200 OK</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Stage 2: Parsing -->
+<div class="relative z-10 flex gap-6 mb-8 group">
+<div class="w-6 h-6 rounded-full bg-surface-container-lowest border-2 border-primary flex items-center justify-center mt-1 flex-shrink-0">
+<span class="material-symbols-outlined text-[14px] text-primary filled-icon">check</span>
+</div>
+<div class="flex-1 bg-surface rounded-lg border border-outline-variant p-4 group-hover:border-primary transition-colors">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h4 class="font-bold text-on-surface text-base flex items-center gap-2">
+                                            解析 (Parsing)
+                                            <span class="bg-[#eef0ff] text-[#003ea8] px-2 py-0.5 rounded text-xs font-medium">成功</span>
+</h4>
+<div class="text-xs text-on-surface-variant mt-1 flex items-center gap-4">
+<span>开始: 14:32:02.300</span>
+<span>耗时: 0.4s</span>
+<span>组件: DOM-Parser v1.2.0</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 text-sm bg-surface-container-lowest p-3 rounded border border-outline-variant">
+<div>
+<span class="text-on-surface-variant block mb-1 text-xs">输入</span>
+<span class="font-mono text-xs text-on-surface break-all">Raw HTML (42KB)</span>
+</div>
+<div>
+<span class="text-on-surface-variant block mb-1 text-xs">输出摘要</span>
+<span class="font-mono text-xs text-on-surface break-all">Extracted Title, Body Text (1.2KB), Author, Date</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Stage 3: Cleaning -->
+<div class="relative z-10 flex gap-6 mb-8 group">
+<div class="w-6 h-6 rounded-full bg-surface-container-lowest border-2 border-primary flex items-center justify-center mt-1 flex-shrink-0">
+<span class="material-symbols-outlined text-[14px] text-primary filled-icon">check</span>
+</div>
+<div class="flex-1 bg-surface rounded-lg border border-outline-variant p-4 group-hover:border-primary transition-colors">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h4 class="font-bold text-on-surface text-base flex items-center gap-2">
+                                            清洗 &amp; 去重 (Cleaning &amp; Deduplication)
+                                            <span class="bg-[#eef0ff] text-[#003ea8] px-2 py-0.5 rounded text-xs font-medium">成功</span>
+</h4>
+<div class="text-xs text-on-surface-variant mt-1 flex items-center gap-4">
+<span>开始: 14:32:02.700</span>
+<span>耗时: 0.8s</span>
+<span>组件: Text-Sanitizer v3.1 + HashCheck</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 text-sm bg-surface-container-lowest p-3 rounded border border-outline-variant">
+<div>
+<span class="text-on-surface-variant block mb-1 text-xs">输出摘要</span>
+<span class="font-mono text-xs text-on-surface break-all">Cleaned Text (1.1KB), Simhash: 8f4a2b1... (Novelty: 98%)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Stage 4: Extraction -->
+<div class="relative z-10 flex gap-6 mb-8 group">
+<div class="w-6 h-6 rounded-full bg-surface-container-lowest border-2 border-primary flex items-center justify-center mt-1 flex-shrink-0">
+<span class="material-symbols-outlined text-[14px] text-primary filled-icon">check</span>
+</div>
+<div class="flex-1 bg-surface rounded-lg border border-outline-variant p-4 group-hover:border-primary transition-colors">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h4 class="font-bold text-on-surface text-base flex items-center gap-2">
+                                            实体抽取 &amp; 关系匹配 (Extraction &amp; Matching)
+                                            <span class="bg-[#eef0ff] text-[#003ea8] px-2 py-0.5 rounded text-xs font-medium">成功</span>
+</h4>
+<div class="text-xs text-on-surface-variant mt-1 flex items-center gap-4">
+<span>开始: 14:32:03.500</span>
+<span>耗时: 2.1s</span>
+<span>组件: NLP-NER-Model v4.0.2</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 text-sm bg-surface-container-lowest p-3 rounded border border-outline-variant">
+<div>
+<span class="text-on-surface-variant block mb-1 text-xs">输出摘要</span>
+<span class="font-mono text-xs text-on-surface break-all">Entities: [Port of Singapore, Automation, CAPEX]</span>
+</div>
+<div>
+<span class="text-on-surface-variant block mb-1 text-xs">关系输出</span>
+<span class="font-mono text-xs text-on-surface break-all">Relations: (Port of Singapore)-[INCREASED]-&gt;(CAPEX)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Stage 5: Linking -->
+<div class="relative z-10 flex gap-6 group">
+<div class="w-6 h-6 rounded-full bg-surface-container-lowest border-2 border-primary flex items-center justify-center mt-1 flex-shrink-0">
+<span class="material-symbols-outlined text-[14px] text-primary filled-icon">check</span>
+</div>
+<div class="flex-1 bg-surface rounded-lg border border-outline-variant p-4 group-hover:border-primary transition-colors">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h4 class="font-bold text-on-surface text-base flex items-center gap-2">
+                                            机会关联 &amp; 入库 (Linking &amp; Storage)
+                                            <span class="bg-[#eef0ff] text-[#003ea8] px-2 py-0.5 rounded text-xs font-medium">成功</span>
+</h4>
+<div class="text-xs text-on-surface-variant mt-1 flex items-center gap-4">
+<span>开始: 14:32:05.600</span>
+<span>耗时: 0.3s</span>
+<span>组件: Graph-DB-Writer v1.8</span>
+</div>
+</div>
+<button class="text-xs text-primary hover:underline flex items-center gap-1 font-medium bg-surface-container-high px-2 py-1 rounded">
+                                        查看关联机会 <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</button>
+</div>
+<div class="text-sm bg-surface-container-lowest p-3 rounded border border-outline-variant">
+<span class="text-on-surface-variant block mb-1 text-xs">输出摘要</span>
+<span class="font-mono text-xs text-on-surface break-all">Linked to OPP-4092, Status: PERSISTED, Canon-ID: CAN-88392</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Metadata & Logs -->
+<div class="w-[480px] flex flex-col gap-6">
+<!-- Run Info Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-5 shadow-sm">
+<h3 class="text-sm font-bold text-on-surface mb-4 pb-2 border-b border-outline-variant uppercase tracking-wider">运行上下文</h3>
+<div class="flex flex-col gap-3 text-sm">
+<div class="flex justify-between">
+<span class="text-on-surface-variant">RUN-ID</span>
+<span class="font-mono font-medium text-on-surface">RUN-29938</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">分析队列</span>
+<a class="font-mono font-medium text-primary hover:underline flex items-center gap-1" href="#">AQ-ID: 7721 <span class="material-symbols-outlined text-[14px]">open_in_new</span></a>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">处理人</span>
+<span class="text-on-surface">系统自动 (System_Worker_04)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">最后更新</span>
+<span class="text-on-surface">2023-10-24 14:32:05</span>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant flex justify-end">
+<button class="text-sm text-primary hover:bg-surface-container-high px-3 py-1.5 rounded transition-colors flex items-center gap-1 font-medium">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span> 查看运行详情
+                                </button>
+</div>
+</div>
+</div>
+<!-- Tech Logs Fragment -->
+<div class="bg-[#1e1e1e] rounded-xl border border-[#333] flex flex-col flex-1 min-h-0 shadow-sm overflow-hidden">
+<div class="bg-[#2d2d2d] px-4 py-2 border-b border-[#444] flex justify-between items-center">
+<h3 class="text-xs font-mono text-[#a0a0a0]">技术日志片段 (tail -n 20)</h3>
+<button class="text-[#a0a0a0] hover:text-white transition-colors" title="全屏查看">
+<span class="material-symbols-outlined text-[16px]">fullscreen</span>
+</button>
+</div>
+<div class="p-4 font-mono text-[11px] text-[#d4d4d4] overflow-y-auto content-scroll leading-relaxed tracking-tight flex-1">
+<pre class="whitespace-pre-wrap">[14:32:01.100] INFO [Crawler] Starting fetch job for source ID: 492
+[14:32:02.285] INFO [Crawler] Fetch complete. Status: 200, Size: 42109 bytes
+[14:32:02.300] INFO [DOM-Parser] Initializing DOM tree...
+[14:32:02.690] INFO [DOM-Parser] Extraction success. Title length: 48, Body length: 1204
+[14:32:02.700] INFO [Text-Sanitizer] Removing boilerplate and normalize unicode
+[14:32:03.480] INFO [HashCheck] Simhash generated: 8f4a2b199c0d. Distance: 12 (Novelty passed)
+[14:32:03.500] INFO [NLP-NER] Loading model weights...
+[14:32:05.120] DEBUG [NLP-NER] Extracted entities: Port of Singapore (LOC), Automation (TECH), CAPEX (FIN)
+[14:32:05.580] INFO [NLP-NER] Relation matching completed.
+[14:32:05.600] INFO [DB-Writer] Initiating transaction...
+[14:32:05.890] INFO [DB-Writer] Successfully linked to OPP-4092. Persisted as CAN-88392.
+[14:32:05.900] INFO [Pipeline] Execution finished successfully in 4800ms.
+</pre>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>P29 — 404 对象不存在</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#0053db",
+                        "on-error-container": "#93000a",
+                        "surface": "#f7f9fb",
+                        "inverse-surface": "#2d3133",
+                        "background": "#f7f9fb",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#dae2fd",
+                        "on-surface": "#191c1e",
+                        "on-background": "#191c1e",
+                        "inverse-primary": "#b4c5ff",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "on-primary-fixed": "#00174b",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "secondary-container": "#d0e1fb",
+                        "secondary": "#505f76",
+                        "on-surface-variant": "#434655",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "surface-variant": "#e0e3e5",
+                        "on-tertiary-fixed": "#131b2e",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#656d84",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "surface-container": "#eceef0",
+                        "primary-fixed": "#dbe1ff",
+                        "secondary-fixed": "#d3e4fe",
+                        "outline": "#737686",
+                        "surface-dim": "#d8dadc",
+                        "primary-container": "#2563eb",
+                        "outline-variant": "#c3c6d7",
+                        "tertiary": "#4d556b",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-primary-container": "#eeefff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#eef0ff",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e6e8ea",
+                        "primary": "#004ac6",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface-bright": "#f7f9fb",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-secondary-container": "#54647a",
+                        "surface-container-low": "#f2f4f6",
+                        "on-secondary-fixed": "#0b1c30",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "display": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "body": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "label": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased min-h-screen flex">
+<!-- Content Canvas (Navigation Shell Suppressed as per Semantic Shell Mandate for 404/Dead End) -->
+<main class="flex-1 flex items-center justify-center p-6 h-screen w-full">
+<!-- Error State Container -->
+<div class="max-w-md w-full flex flex-col items-center text-center">
+<!-- 404 & Title -->
+<div class="mb-6 flex flex-col items-center">
+<span class="text-label-sm font-semibold tracking-wider text-secondary mb-2 bg-surface-container-high px-2 py-1 rounded">404</span>
+<h1 class="font-headline text-3xl font-bold text-on-surface tracking-tight">对象不存在</h1>
+</div>
+<!-- Description -->
+<p class="text-body-md text-on-surface-variant mb-8 max-w-sm">
+                请求的对象可能已删除、已移动，或当前暂不可用。
+            </p>
+<!-- Technical Info (Monospace) -->
+<div class="bg-surface-container-low border border-outline-variant rounded p-3 mb-8 w-full text-left font-mono text-sm text-secondary">
+<div class="flex items-center justify-between mb-1">
+<span class="text-xs text-on-surface-variant">Object ID:</span>
+<span class="font-medium text-on-surface">OR-2026-9999</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs text-on-surface-variant">Request Path:</span>
+<span class="text-xs text-on-surface truncate ml-2">/opportunities/OR-2026-9999</span>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col gap-3 w-full">
+<!-- Primary Action -->
+<button class="w-full bg-primary text-on-primary font-medium rounded h-10 px-4 hover:bg-primary-fixed-dim transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    返回上一页
+                </button>
+<!-- Secondary Actions -->
+<div class="flex gap-3 w-full">
+<button class="flex-1 border border-outline text-on-surface font-medium rounded h-10 px-4 hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">search</span>
+                        全局搜索
+                    </button>
+<button class="flex-1 border border-outline text-on-surface font-medium rounded h-10 px-4 hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+                        返回工作台
+                    </button>
+</div>
+</div>
+<!-- Contextual Link -->
+<div class="mt-8">
+<a class="text-primary hover:text-primary-fixed-dim font-medium text-sm flex items-center gap-1 transition-colors" href="#">
+                    查看机会列表
+                    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+</div>
+</main>
+</body></html>

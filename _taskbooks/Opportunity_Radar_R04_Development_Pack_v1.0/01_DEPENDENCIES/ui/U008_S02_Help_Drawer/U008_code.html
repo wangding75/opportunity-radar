@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Opportunity Radar R04 - Help Center Drawer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#d8dadc",
+                    "primary-fixed": "#dbe1ff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-background": "#191c1e",
+                    "surface-container-low": "#f2f4f6",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "on-primary": "#ffffff",
+                    "inverse-surface": "#2d3133",
+                    "outline-variant": "#c3c6d7",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed": "#0b1c30",
+                    "outline": "#737686",
+                    "on-secondary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "primary-container": "#2563eb",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-variant": "#e0e3e5",
+                    "tertiary-fixed-dim": "#bec6e0",
+                    "on-surface-variant": "#434655",
+                    "inverse-primary": "#b4c5ff",
+                    "tertiary-container": "#656d84",
+                    "secondary-container": "#d0e1fb",
+                    "error": "#ba1a1a",
+                    "background": "#f7f9fb",
+                    "secondary": "#505f76",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#0053db",
+                    "on-primary-container": "#eeefff",
+                    "surface-container": "#eceef0",
+                    "tertiary": "#4d556b",
+                    "surface-container-high": "#e6e8ea",
+                    "secondary-fixed": "#d3e4fe",
+                    "primary": "#004ac6",
+                    "on-tertiary-fixed-variant": "#3f465c",
+                    "tertiary-fixed": "#dae2fd",
+                    "on-surface": "#191c1e",
+                    "on-error": "#ffffff",
+                    "surface-bright": "#f7f9fb",
+                    "on-tertiary-container": "#eef0ff",
+                    "on-secondary-container": "#54647a",
+                    "on-primary-fixed": "#00174b",
+                    "on-tertiary-fixed": "#131b2e",
+                    "surface-container-highest": "#e0e3e5",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "surface": "#f7f9fb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                    "display": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                    "body": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                    "label": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body overflow-hidden h-screen w-screen flex">
+<!-- AppShell: SideNavBar (Shared Component) -->
+<nav class="w-[216px] h-screen flex flex-col bg-surface-container-low border-r border-outline-variant fixed left-0 top-0 z-40">
+<!-- Branding Area -->
+<div class="h-[64px] flex items-center px-4 shrink-0">
+<span class="text-xl font-headline font-black text-primary truncate" title="Opportunity Radar">Opportunity Radar</span>
+</div>
+<div class="px-4 pb-4">
+<p class="text-xs text-on-surface-variant">R04 中文业务闭环</p>
+</div>
+<!-- Main Navigation Tabs -->
+<div class="flex-1 flex flex-col gap-1 px-3 overflow-y-auto">
+<!-- Active Tab: 工作台 -->
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary-container text-on-secondary-container font-bold rounded-lg cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-label-md">工作台</span>
+</a>
+<!-- Inactive Tabs -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 rounded-lg" href="#">
+<span class="material-symbols-outlined">auto_graph</span>
+<span class="text-label-md">机会</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 rounded-lg" href="#">
+<span class="material-symbols-outlined">language</span>
+<span class="text-label-md">情报</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 rounded-lg" href="#">
+<span class="material-symbols-outlined">science</span>
+<span class="text-label-md">研究</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 rounded-lg" href="#">
+<span class="material-symbols-outlined">bolt</span>
+<span class="text-label-md">运行</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-label-md">管理</span>
+</a>
+</div>
+<!-- Footer Navigation -->
+<div class="p-3 border-t border-outline-variant flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 rounded-lg" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="text-label-md">审计日志</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 rounded-lg" href="#">
+<span class="material-symbols-outlined">tune</span>
+<span class="text-label-md">系统设置</span>
+</a>
+</div>
+</nav>
+<!-- AppShell: TopNavBar (Shared Component) -->
+<header class="h-[56px] w-full bg-surface border-b border-outline-variant fixed top-0 right-0 left-[216px] flex items-center justify-between px-6 z-30" style="width: calc(100% - 216px);">
+<!-- Search Bar (on_left) -->
+<div class="flex-1 max-w-md">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant">search</span>
+<input class="w-full h-10 pl-10 pr-4 rounded-full bg-surface-container-low border border-transparent focus:border-primary focus:bg-surface-container-lowest focus:ring-0 text-body-sm text-on-surface transition-colors" placeholder="全局搜索机会、情报或实体 ID..." type="text"/>
+</div>
+</div>
+<!-- Trailing Icon Actions -->
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-full flex items-center justify-center relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<!-- Help Icon (Active state indicating Drawer is open) -->
+<button class="p-2 text-primary bg-primary-fixed hover:bg-secondary-container transition-colors rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">help</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-full flex items-center justify-center ml-2 border border-outline-variant">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas (Background: P01 - Workbench) -->
+<main class="ml-[216px] mt-[56px] w-full h-[calc(100vh-56px)] bg-background p-6 overflow-hidden relative">
+<!-- Blurred background content representing Workbench -->
+<div class="filter blur-sm opacity-60 pointer-events-none h-full w-full flex flex-col gap-6">
+<h1 class="text-2xl font-bold text-on-surface">工作台分诊</h1>
+<div class="grid grid-cols-3 gap-6">
+<!-- Mock Cards -->
+<div class="h-64 bg-surface-container-lowest border border-outline-variant rounded-xl p-4"></div>
+<div class="h-64 bg-surface-container-lowest border border-outline-variant rounded-xl p-4"></div>
+<div class="h-64 bg-surface-container-lowest border border-outline-variant rounded-xl p-4"></div>
+</div>
+<div class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl mt-4"></div>
+</div>
+<!-- Overlay for Drawer Focus -->
+<div class="absolute inset-0 bg-surface-variant/30 backdrop-blur-[2px] z-10 transition-opacity"></div>
+</main>
+<!-- Help Center Drawer (NavigationDrawer pattern) -->
+<aside class="fixed right-0 top-[56px] bottom-0 w-[420px] bg-surface-container-lowest border-l border-outline-variant shadow-xl z-20 flex flex-col transition-transform duration-300">
+<!-- Drawer Header -->
+<div class="h-[72px] px-6 flex items-center justify-between border-b border-outline-variant shrink-0">
+<div>
+<h2 class="text-headline-sm font-bold text-on-surface">帮助</h2>
+<p class="text-body-sm text-on-surface-variant mt-0.5">当前页面说明与常用排查入口</p>
+</div>
+<button aria-label="Close help" class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Drawer Content (Internal Scrolling) -->
+<div class="flex-1 overflow-y-auto p-6 flex flex-col gap-8">
+<!-- Section 1: 当前页面说明 -->
+<section>
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-primary text-xl">info</span>
+<h3 class="text-label-lg font-bold text-on-surface">当前页面说明</h3>
+</div>
+<p class="text-body-sm text-on-surface-variant leading-relaxed">
+                    当前位于 <strong>工作台</strong>。工作台是机会分诊的核心视图，用于集中展示重点机会、最新情报变化、运行异常和最近研究结果。点击任意机会摘要卡片，可下钻至 <strong>机会详情</strong> 查看支撑证据。
+                </p>
+</section>
+<!-- Section 2: 常用使用路径 -->
+<section>
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-primary text-xl">route</span>
+<h3 class="text-label-lg font-bold text-on-surface">常用使用路径</h3>
+</div>
+<div class="bg-surface-container-low p-4 rounded-lg flex flex-col gap-3">
+<div>
+<span class="text-label-sm font-semibold text-secondary block mb-1">机会溯源链路：</span>
+<div class="flex items-center flex-wrap gap-1 text-body-sm text-on-surface">
+<span class="bg-surface-container-lowest px-2 py-1 rounded border border-outline-variant">工作台</span>
+<span class="material-symbols-outlined text-outline text-sm">arrow_forward</span>
+<span class="bg-surface-container-lowest px-2 py-1 rounded border border-outline-variant">机会</span>
+<span class="material-symbols-outlined text-outline text-sm">arrow_forward</span>
+<span class="bg-surface-container-lowest px-2 py-1 rounded border border-outline-variant">证据</span>
+<span class="material-symbols-outlined text-outline text-sm">arrow_forward</span>
+<span class="bg-surface-container-lowest px-2 py-1 rounded border border-outline-variant">情报/来源</span>
+</div>
+</div>
+<div class="w-full h-px bg-outline-variant/50"></div>
+<div>
+<span class="text-label-sm font-semibold text-secondary block mb-1">故障排查链路：</span>
+<div class="flex items-center flex-wrap gap-1 text-body-sm text-on-surface">
+<span class="bg-surface-container-lowest px-2 py-1 rounded border border-outline-variant">运行</span>
+<span class="material-symbols-outlined text-outline text-sm">arrow_forward</span>
+<span class="bg-surface-container-lowest px-2 py-1 rounded border border-outline-variant">运行详情</span>
+<span class="material-symbols-outlined text-outline text-sm">arrow_forward</span>
+<span class="bg-surface-container-lowest px-2 py-1 rounded border border-outline-variant">数据源/队列</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: 术语说明 -->
+<section>
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-primary text-xl">menu_book</span>
+<h3 class="text-label-lg font-bold text-on-surface">术语说明</h3>
+</div>
+<ul class="flex flex-col gap-3">
+<li class="bg-surface-container-low p-3 rounded-lg border-l-2 border-primary">
+<span class="text-label-md font-bold text-on-surface block">机会分数 (Opportunity Score)</span>
+<span class="text-body-sm text-on-surface-variant block mt-1">系统基于预设维度计算的机会潜在价值评分，0-100 分。</span>
+</li>
+<li class="bg-surface-container-low p-3 rounded-lg border-l-2 border-secondary">
+<span class="text-label-md font-bold text-on-surface block">置信度 (Confidence)</span>
+<span class="text-body-sm text-on-surface-variant block mt-1">情报来源和分析逻辑的可靠性评级，分为高、中、低。</span>
+</li>
+<li class="bg-surface-container-low p-3 rounded-lg border-l-2 border-tertiary">
+<span class="text-label-md font-bold text-on-surface block">证据覆盖 (Evidence Coverage)</span>
+<span class="text-body-sm text-on-surface-variant block mt-1">当前机会研究结果被有效证据支撑的百分比。</span>
+</li>
+<li class="bg-surface-container-low p-3 rounded-lg border-l-2 border-outline">
+<span class="text-label-md font-bold text-on-surface block">数据新鲜度 (Data Freshness)</span>
+<span class="text-body-sm text-on-surface-variant block mt-1">距离底层数据源最后一次成功同步的时间间隔。</span>
+</li>
+</ul>
+</section>
+<!-- Section 4 & 5: 排查与账户 (Combined for compactness) -->
+<section class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container px-4 py-3 rounded-xl hover:bg-surface-variant transition-colors cursor-pointer">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-on-surface-variant text-lg">troubleshoot</span>
+<span class="text-label-md font-bold text-on-surface">故障排查</span>
+</div>
+<ul class="text-body-sm text-primary flex flex-col gap-1 mt-2">
+<li class="hover:underline">系统诊断入口</li>
+<li class="hover:underline">运行记录列表</li>
+</ul>
+</div>
+<div class="bg-surface-container px-4 py-3 rounded-xl hover:bg-surface-variant transition-colors cursor-pointer">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-on-surface-variant text-lg">shield_person</span>
+<span class="text-label-md font-bold text-on-surface">权限说明</span>
+</div>
+<ul class="text-body-sm text-primary flex flex-col gap-1 mt-2">
+<li class="hover:underline">账户与安全设置</li>
+<li class="hover:underline">403 权限拒绝指南</li>
+</ul>
+</div>
+</section>
+</div>
+<!-- Drawer Footer (Plain text links) -->
+<div class="p-4 border-t border-outline-variant bg-surface-container-lowest shrink-0 flex items-center justify-between">
+<a class="text-body-sm text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-sm">monitor_heart</span>
+                查看系统诊断
+            </a>
+<a class="text-body-sm text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-sm">lock</span>
+                查看账户与安全
+            </a>
+</div>
+</aside>
+</body></html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Opportunity Radar R04 - 个人账户与安全</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#dae2fd",
+                        "tertiary": "#4d556b",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#b4c5ff",
+                        "primary": "#004ac6",
+                        "surface-container": "#eceef0",
+                        "primary-container": "#2563eb",
+                        "secondary-container": "#d0e1fb",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-secondary-fixed": "#0b1c30",
+                        "inverse-surface": "#2d3133",
+                        "secondary": "#505f76",
+                        "tertiary-container": "#656d84",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "on-primary": "#ffffff",
+                        "on-background": "#191c1e",
+                        "on-surface-variant": "#434655",
+                        "on-primary-container": "#eeefff",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#131b2e",
+                        "on-secondary-container": "#54647a",
+                        "surface-container-highest": "#e0e3e5",
+                        "outline": "#737686",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "surface-tint": "#0053db",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-bright": "#f7f9fb",
+                        "surface-container-high": "#e6e8ea",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#d3e4fe",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "background": "#f7f9fb",
+                        "surface-variant": "#e0e3e5",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-container": "#eef0ff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-primary-fixed": "#00174b",
+                        "on-surface": "#191c1e",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#c3c6d7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "display": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "body": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "label": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .icon-filled { font-variation-settings: 'FILL' 1; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface w-[2560px] h-[2048px] overflow-hidden flex">
+<!-- AppShell: SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-[216px] bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant flex flex-col z-20">
+<div class="h-[64px] flex items-center px-4 border-b border-outline-variant">
+<span class="material-symbols-outlined text-primary text-3xl mr-2">radar</span>
+<div>
+<div class="text-primary font-display font-bold text-lg leading-tight">机会情报系统</div>
+<div class="text-xs text-on-surface-variant">Opportunity Radar R04</div>
+</div>
+</div>
+<div class="flex-1 py-4 flex flex-col gap-1 px-3 overflow-y-auto">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body text-label-md font-medium">工作台</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">rocket_launch</span>
+<span class="font-body text-label-md font-medium">机会</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-body text-label-md font-medium">情报</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-body text-label-md font-medium">研究</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span class="font-body text-label-md font-medium">运行</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary-container text-on-secondary-fixed-variant font-bold border-r-4 border-primary transition-colors duration-150 ease-in-out opacity-90" href="#">
+<span class="material-symbols-outlined">admin_panel_settings</span>
+<span class="font-body text-label-md">管理</span>
+</a>
+</div>
+<div class="p-3 border-t border-outline-variant flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-body text-label-md font-medium">审计日志</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body text-label-md font-medium">系统设置</span>
+</a>
+</div>
+</nav>
+<!-- AppShell: TopNavBar -->
+<header class="fixed top-0 right-0 h-[56px] w-[calc(100%-216px)] bg-surface border-b border-outline-variant flex items-center justify-between px-6 z-10">
+<div class="flex items-center flex-1 max-w-2xl">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-1.5 pl-10 pr-4 text-body-medium focus:ring-2 focus:ring-primary focus:bg-surface outline-none transition-colors" placeholder="搜索管理对象..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="hover:bg-surface-container-low p-2 rounded-full transition-colors hover:text-primary active:scale-95">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+<button class="hover:bg-surface-container-low p-2 rounded-full transition-colors hover:text-primary active:scale-95">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="hover:bg-surface-container-low p-2 rounded-full transition-colors hover:text-primary active:scale-95">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="hover:bg-surface-container-low p-2 rounded-full transition-colors hover:text-primary active:scale-95">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[216px] mt-[56px] w-[calc(100%-216px)] h-[calc(100%-56px)] flex flex-col">
+<!-- Read-only Notice -->
+<div class="bg-surface-container-low border-b border-outline-variant py-2 px-6 flex items-center gap-2 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-base">info</span>
+<span>密码、MFA、会话终止等安全写操作需以后端验证接口为准；当前原型仅展示状态。</span>
+</div>
+<div class="flex-1 flex overflow-hidden">
+<!-- Left Content Area -->
+<div class="flex-1 flex flex-col p-[24px_24px_20px_24px] overflow-hidden">
+<!-- Page Header -->
+<div class="mb-6 flex-shrink-0">
+<h1 class="font-headline font-bold text-2xl text-on-surface mb-1">个人账户与安全</h1>
+<p class="text-body-medium text-on-surface-variant">查看当前账户身份、会话与安全状态</p>
+</div>
+<!-- Tabs -->
+<div class="border-b border-outline-variant flex gap-6 mb-6 flex-shrink-0">
+<a class="pb-3 text-body-medium font-medium text-on-surface-variant hover:text-primary transition-colors" href="#">个人资料</a>
+<a class="pb-3 text-body-medium font-bold text-primary border-b-2 border-primary" href="#">登录与 MFA</a>
+<a class="pb-3 text-body-medium font-medium text-on-surface-variant hover:text-primary transition-colors" href="#">活动会话</a>
+<a class="pb-3 text-body-medium font-medium text-on-surface-variant hover:text-primary transition-colors" href="#">访问令牌</a>
+</div>
+<!-- Content Scrollable Area -->
+<div class="flex-1 overflow-y-auto pr-4 custom-scrollbar">
+<div class="grid grid-cols-2 gap-6 mb-6">
+<!-- Password Status -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined">password</span>
+</div>
+<div>
+<h3 class="font-headline font-bold text-lg">密码状态</h3>
+<p class="text-sm text-on-surface-variant">上次更新: 3个月前</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center text-sm border-b border-surface-variant pb-2">
+<span class="text-on-surface-variant">当前策略</span>
+<span class="font-medium text-on-surface">高强度策略</span>
+</div>
+<div class="flex justify-between items-center text-sm border-b border-surface-variant pb-2">
+<span class="text-on-surface-variant">复杂度要求</span>
+<span class="font-medium text-on-surface">字母+数字+特殊符号</span>
+</div>
+<div class="flex justify-between items-center text-sm border-b border-surface-variant pb-2">
+<span class="text-on-surface-variant">最小长度</span>
+<span class="font-medium text-on-surface">12 字符</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">密码过期</span>
+<span class="font-medium text-on-surface">90 天</span>
+</div>
+</div>
+</div>
+<!-- MFA Status -->
+<div class="bg-surface-container-lowest border border-primary/20 rounded-xl p-6 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10"></div>
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined">fingerprint</span>
+</div>
+<div>
+<h3 class="font-headline font-bold text-lg">多因素认证 (MFA)</h3>
+<div class="flex items-center gap-2 text-sm mt-1">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="text-on-surface font-medium">已开启</span>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-3 mt-6">
+<div class="flex justify-between items-center text-sm border-b border-surface-variant pb-2">
+<span class="text-on-surface-variant">认证方式</span>
+<span class="font-medium text-on-surface">TOTP (手机验证码)</span>
+</div>
+<div class="flex justify-between items-center text-sm border-b border-surface-variant pb-2">
+<span class="text-on-surface-variant">备用代码</span>
+<span class="font-medium text-on-surface">剩余 8 个</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">上次验证</span>
+<span class="font-medium text-on-surface">2023-10-27 14:30</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Security History -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 mb-6">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-tertiary">history</span>
+<h3 class="font-headline font-bold text-lg">近期安全历史</h3>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<div class="bg-surface-container-low rounded-lg p-4">
+<div class="text-sm text-on-surface-variant mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-sm">location_on</span> 最近登录位置</div>
+<div class="font-medium text-on-surface">北京, 中国</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-4">
+<div class="text-sm text-on-surface-variant mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-sm">devices</span> 最近登录设备</div>
+<div class="font-medium text-on-surface">Chrome / macOS</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-4">
+<div class="text-sm text-on-surface-variant mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-sm">gpp_bad</span> 登录失败尝试 (7天)</div>
+<div class="font-medium text-on-surface">0 次</div>
+</div>
+</div>
+</div>
+<!-- Risk Warnings -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-on-surface">gpp_maybe</span>
+<h3 class="font-headline font-bold text-lg">风险状态检测</h3>
+</div>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-green-600 icon-filled mt-0.5">check_circle</span>
+<div>
+<div class="font-medium text-on-surface">异地登录检测</div>
+<div class="text-sm text-on-surface-variant">未发现异常的地理位置跳跃。</div>
+</div>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-green-600 icon-filled mt-0.5">check_circle</span>
+<div>
+<div class="font-medium text-on-surface">密码泄露检查</div>
+<div class="text-sm text-on-surface-variant">当前密码未在已知泄露数据库中发现。</div>
+</div>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-yellow-600 icon-filled mt-0.5">warning</span>
+<div>
+<div class="font-medium text-on-surface">休眠账户检测</div>
+<div class="text-sm text-on-surface-variant">账户已连续活跃，未处于休眠状态。</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Right Sidebar Panel -->
+<div class="w-[320px] bg-surface-container-lowest border-l border-outline-variant p-6 flex flex-col flex-shrink-0 overflow-y-auto">
+<h3 class="font-headline font-bold text-lg mb-6">安全摘要</h3>
+<!-- Security Score/Summary -->
+<div class="flex flex-col items-center mb-8">
+<div class="w-24 h-24 rounded-full border-4 border-green-500 flex items-center justify-center mb-3 bg-green-50 dark:bg-green-900/20">
+<span class="material-symbols-outlined text-4xl text-green-600">verified_user</span>
+</div>
+<div class="text-xl font-bold text-on-surface">高</div>
+<div class="text-sm text-on-surface-variant">整体账户安全等级</div>
+</div>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">MFA 状态</span>
+<span class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded text-xs font-medium">已开启</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">密码强度</span>
+<span class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded text-xs font-medium">高</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">活跃会话</span>
+<span class="px-2 py-1 bg-surface-container-high text-on-surface rounded text-xs font-medium">2 个</span>
+</div>
+</div>
+<!-- Recent Events -->
+<h4 class="font-headline font-bold text-base mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">history</span> 最近动态
+                </h4>
+<div class="space-y-4 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-outline-variant mb-6 pl-6">
+<!-- Event 1 -->
+<div class="relative flex items-start gap-4">
+<div class="absolute -left-6 w-5 h-5 rounded-full bg-surface-container-highest border-2 border-surface flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-on-surface-variant"></div>
+</div>
+<div>
+<div class="text-sm font-medium text-on-surface">新设备登录</div>
+<div class="text-xs text-on-surface-variant mt-0.5">2023-10-27 14:30</div>
+<div class="text-xs text-on-surface-variant mt-1 bg-surface-container-low px-2 py-1 rounded inline-block">MacBook Pro - Chrome</div>
+</div>
+</div>
+<!-- Event 2 -->
+<div class="relative flex items-start gap-4">
+<div class="absolute -left-6 w-5 h-5 rounded-full bg-surface-container-highest border-2 border-surface flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-on-surface-variant"></div>
+</div>
+<div>
+<div class="text-sm font-medium text-on-surface">密码修改</div>
+<div class="text-xs text-on-surface-variant mt-0.5">2023-07-15 09:12</div>
+</div>
+</div>
+<!-- Event 3 -->
+<div class="relative flex items-start gap-4">
+<div class="absolute -left-6 w-5 h-5 rounded-full bg-surface-container-highest border-2 border-surface flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-on-surface-variant"></div>
+</div>
+<div>
+<div class="text-sm font-medium text-on-surface">MFA 配置更新</div>
+<div class="text-xs text-on-surface-variant mt-0.5">2023-01-10 11:45</div>
+</div>
+</div>
+</div>
+<!-- Action Link -->
+<div class="mt-auto pt-4 border-t border-outline-variant">
+<a class="flex items-center justify-center gap-2 w-full py-2 px-4 rounded border border-outline hover:bg-surface-container-low transition-colors text-sm font-medium text-on-surface" href="#">
+                        查看我的审计记录
+                        <span class="material-symbols-outlined text-sm">open_in_new</span>
+</a>
+</div>
+</div>
+</div>
+</main>
+<style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: theme('colors.outline-variant');
+            border-radius: 20px;
+        }
+    </style>
+</body></html>

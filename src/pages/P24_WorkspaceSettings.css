@@ -1,0 +1,17 @@
+.workspace-settings__layout { grid-template-columns: 224px minmax(0, 880px) !important; align-items: start; gap: var(--space-12) !important; }
+.workspace-settings__nav { position: sticky; top: calc(var(--topbar-height) + var(--page-gutter)); }
+.workspace-settings__content { min-width: 0; }
+.workspace-settings__content .card { box-shadow: none; }
+.workspace-settings .btn:disabled, .workspace-settings input:disabled, .workspace-settings select:disabled { cursor: not-allowed; opacity: .62; }
+.workspace-settings__danger { margin-top: var(--space-4); }
+
+@media (max-width: 1024px) {
+  .workspace-settings__layout { grid-template-columns: minmax(0, 1fr) !important; gap: var(--space-6) !important; }
+  .workspace-settings__nav { position: static; display: flex; overflow-x: auto; padding: var(--space-2) !important; }
+  .workspace-settings__nav button { flex: 0 0 auto; width: auto !important; border-left: 0 !important; border-bottom: 2px solid transparent; }
+}
+
+@media (max-width: 640px) {
+  .workspace-settings__row, .workspace-settings__row--hero, .workspace-settings__danger-actions { grid-template-columns: minmax(0, 1fr) !important; }
+  .workspace-settings__danger-actions { gap: var(--space-2) !important; }
+}

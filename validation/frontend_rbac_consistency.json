@@ -13,7 +13,7 @@
     "no_browser_credential_storage": true
   },
   "summary": {
-    "backend_routes_checked": 99,
+    "backend_routes_checked": 105,
     "admin_actions_checked": 5,
     "write_actions_checked": 5,
     "permission_matrix_version": "rbac-v1",

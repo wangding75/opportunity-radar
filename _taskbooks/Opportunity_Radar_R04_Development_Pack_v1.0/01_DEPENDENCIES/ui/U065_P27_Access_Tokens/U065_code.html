@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>个人账户与安全 - 访问令牌</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#eff1f3",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#eef0ff",
+                        "on-primary-fixed": "#00174b",
+                        "primary-fixed": "#dbe1ff",
+                        "surface-container-low": "#f2f4f6",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "on-background": "#191c1e",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-primary-container": "#eeefff",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-secondary-container": "#54647a",
+                        "tertiary-fixed": "#dae2fd",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "inverse-surface": "#2d3133",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-secondary-fixed": "#0b1c30",
+                        "error": "#ba1a1a",
+                        "on-surface": "#191c1e",
+                        "background": "#f7f9fb",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e6e8ea",
+                        "primary": "#004ac6",
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#f7f9fb",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#0053db",
+                        "surface-dim": "#d8dadc",
+                        "tertiary": "#4d556b",
+                        "tertiary-container": "#656d84",
+                        "outline-variant": "#c3c6d7",
+                        "inverse-primary": "#b4c5ff",
+                        "secondary-container": "#d0e1fb",
+                        "surface-variant": "#e0e3e5",
+                        "primary-container": "#2563eb",
+                        "secondary": "#505f76",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "outline": "#737686",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-tertiary-fixed": "#131b2e",
+                        "on-surface-variant": "#434655"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter", "PingFang SC", "Microsoft YaHei", "system-ui", "sans-serif"],
+                        "display": ["Inter", "PingFang SC", "Microsoft YaHei", "system-ui", "sans-serif"],
+                        "body": ["Inter", "PingFang SC", "Microsoft YaHei", "system-ui", "sans-serif"],
+                        "label": ["Inter", "PingFang SC", "Microsoft YaHei", "system-ui", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background h-full overflow-hidden flex font-body">
+<!-- AppShell: SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-[216px] bg-surface-container-lowest border-r border-outline-variant flex flex-col py-4 z-20">
+<!-- Brand / Header -->
+<div class="px-6 pb-6 mb-2 border-b border-outline-variant/50">
+<h1 class="text-headline-sm font-bold text-on-surface">机会情报 R04</h1>
+<p class="text-label-sm text-secondary mt-1">业务闭环系统</p>
+</div>
+<!-- Main Nav -->
+<div class="flex-1 overflow-y-auto mt-2">
+<ul class="space-y-1 px-3">
+<li>
+<a class="flex items-center px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">dashboard</span>
+                        工作台
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">star</span>
+                        机会
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">insights</span>
+                        情报
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">science</span>
+                        研究
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">settings_input_component</span>
+                        运行
+                    </a>
+</li>
+<li>
+<!-- ACTIVE STATE -->
+<a class="flex items-center px-3 py-2 rounded-lg bg-secondary-container text-on-secondary-container font-bold transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]" style="font-variation-settings: 'FILL' 1;">settings</span>
+                        管理
+                    </a>
+</li>
+</ul>
+</div>
+<!-- Footer Nav -->
+<div class="mt-auto px-3 border-t border-outline-variant/50 pt-4">
+<ul class="space-y-1">
+<li>
+<a class="flex items-center px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">switch_account</span>
+                        系统诊断
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-high transition-colors duration-200 cursor-pointer active:scale-95 text-label-sm font-medium" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">history</span>
+                        审计日志
+                    </a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- AppShell: TopNavBar -->
+<header class="fixed top-0 right-0 left-[216px] h-[56px] bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-6 z-10">
+<!-- Global Search Placeholder (Search on left) -->
+<div class="flex items-center flex-1 max-w-md">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-1.5 pl-10 pr-4 text-body-md text-on-surface focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-colors" disabled="" placeholder="搜索..." type="text"/>
+</div>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center space-x-2">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-sm ml-2 cursor-pointer border border-outline-variant">
+                Z
+            </div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-[216px] mt-[56px] w-[calc(100%-216px)] h-[calc(100vh-56px)] overflow-hidden flex flex-col bg-surface p-6">
+<!-- Page Header & TabBar -->
+<div class="flex-none mb-6">
+<div class="flex items-start justify-between mb-4">
+<div>
+<h2 class="text-headline-md font-bold text-on-surface">个人账户与安全</h2>
+<p class="text-body-md text-on-surface-variant mt-1">管理您的个人信息、登录安全与 API 访问。</p>
+</div>
+</div>
+<!-- Read-only Notice Banner -->
+<div class="bg-surface-variant border-l-4 border-tertiary-container rounded-r-lg p-4 mb-6 flex items-start">
+<span class="material-symbols-outlined text-tertiary-container mr-3 mt-0.5">info</span>
+<p class="text-body-sm text-on-surface-variant">
+                    密码、MFA、会话终止等安全操作需以后端验证接口为准；当前原型仅展示状态。
+                </p>
+</div>
+<!-- TabBar -->
+<div class="border-b border-outline-variant flex space-x-8">
+<button class="pb-3 text-body-md text-on-surface-variant hover:text-primary transition-colors font-medium border-b-2 border-transparent">
+                    个人资料
+                </button>
+<button class="pb-3 text-body-md text-on-surface-variant hover:text-primary transition-colors font-medium border-b-2 border-transparent">
+                    登录与 MFA
+                </button>
+<button class="pb-3 text-body-md text-on-surface-variant hover:text-primary transition-colors font-medium border-b-2 border-transparent">
+                    活动会话
+                </button>
+<!-- ACTIVE TAB -->
+<button class="pb-3 text-body-md text-primary font-bold border-b-2 border-primary">
+                    访问令牌
+                </button>
+</div>
+</div>
+<!-- Banner Alert Footer/Top Content Area -->
+<div class="bg-tertiary-container/10 border border-tertiary-container/20 rounded-lg p-3 mb-4 flex items-center justify-center flex-none">
+<span class="material-symbols-outlined text-tertiary text-sm mr-2">visibility</span>
+<span class="text-label-sm text-on-surface-variant font-medium">当前仅展示已有令牌状态，暂不支持创建、轮换或撤销</span>
+</div>
+<!-- Split View: Table List & Detail Panel -->
+<div class="flex-1 flex gap-6 overflow-hidden">
+<!-- Left: Main List (Table) -->
+<div class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col shadow-sm">
+<div class="px-5 py-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-low/50">
+<h3 class="text-title-md font-bold text-on-surface">有效令牌 (3)</h3>
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-secondary text-[20px] cursor-not-allowed opacity-50" title="过滤不可用">filter_list</span>
+</div>
+</div>
+<div class="flex-1 overflow-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container sticky top-0 z-10 text-label-sm font-bold text-on-surface-variant">
+<tr>
+<th class="px-5 py-3 border-b border-outline-variant">令牌名称</th>
+<th class="px-5 py-3 border-b border-outline-variant">令牌ID</th>
+<th class="px-5 py-3 border-b border-outline-variant">权限范围</th>
+<th class="px-5 py-3 border-b border-outline-variant">最近使用</th>
+<th class="px-5 py-3 border-b border-outline-variant">状态</th>
+</tr>
+</thead>
+<tbody class="text-body-sm text-on-surface divide-y divide-outline-variant/50">
+<!-- Selected Row -->
+<tr class="bg-secondary-container/20 hover:bg-secondary-container/30 transition-colors cursor-pointer">
+<td class="px-5 py-3">
+<div class="font-medium">自动化采集脚本 - Prod</div>
+<div class="text-label-sm text-secondary mt-0.5">创建于 2023-10-12</div>
+</td>
+<td class="px-5 py-3 font-mono text-xs text-secondary">tk_live_9f8a2...</td>
+<td class="px-5 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-surface-variant text-on-surface-variant">api:read</span>
+</td>
+<td class="px-5 py-3">
+<div>10分钟前</div>
+<div class="text-xs text-secondary">192.168.1.105</div>
+</td>
+<td class="px-5 py-3">
+<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-tertiary-container/10 text-tertiary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-1.5"></span>
+                                        活跃
+                                    </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer">
+<td class="px-5 py-3">
+<div class="font-medium">BI 报表同步 (Readonly)</div>
+<div class="text-label-sm text-secondary mt-0.5">创建于 2023-09-01</div>
+</td>
+<td class="px-5 py-3 font-mono text-xs text-secondary">tk_read_b4c1x...</td>
+<td class="px-5 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-surface-variant text-on-surface-variant">reports:read</span>
+</td>
+<td class="px-5 py-3">
+<div>昨晚 23:00</div>
+<div class="text-xs text-secondary">10.0.0.52</div>
+</td>
+<td class="px-5 py-3">
+<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-tertiary-container/10 text-tertiary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-1.5"></span>
+                                        活跃
+                                    </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer">
+<td class="px-5 py-3">
+<div class="font-medium text-on-surface-variant/70">开发机测试 Token</div>
+<div class="text-label-sm text-secondary/70 mt-0.5">创建于 2023-08-15</div>
+</td>
+<td class="px-5 py-3 font-mono text-xs text-secondary/70">tk_test_7h2p9...</td>
+<td class="px-5 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-surface-variant/50 text-on-surface-variant/70">all</span>
+</td>
+<td class="px-5 py-3 text-secondary/70">
+<div>30天未活动</div>
+<div class="text-xs">--</div>
+</td>
+<td class="px-5 py-3">
+<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-surface-variant text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-outline mr-1.5"></span>
+                                        闲置
+                                    </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right: Detail Panel -->
+<div class="w-[360px] bg-surface-container-lowest border border-outline-variant rounded-xl overflow-y-auto shadow-sm flex flex-col flex-none">
+<!-- Header -->
+<div class="p-5 border-b border-outline-variant bg-surface-container-low/30 sticky top-0">
+<div class="flex items-center justify-between mb-2">
+<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-tertiary-container/10 text-tertiary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-1.5"></span>
+                            活跃
+                        </span>
+<span class="text-xs font-mono text-secondary">tk_live_9f8a2...</span>
+</div>
+<h3 class="text-title-md font-bold text-on-surface break-words">自动化采集脚本 - Prod</h3>
+<p class="text-label-sm text-secondary mt-1">最后活动于 10 分钟前</p>
+</div>
+<!-- Detail Body -->
+<div class="p-5 space-y-6 flex-1">
+<!-- Metadata Grid -->
+<div class="grid grid-cols-1 gap-4">
+<div>
+<span class="block text-label-sm font-medium text-secondary mb-1">作用域 (Scope)</span>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-surface-variant rounded text-xs text-on-surface-variant font-mono">api:read</span>
+<span class="px-2 py-1 bg-surface-variant rounded text-xs text-on-surface-variant font-mono">opportunities:list</span>
+</div>
+</div>
+<div>
+<span class="block text-label-sm font-medium text-secondary mb-1">用途 (Purpose)</span>
+<p class="text-body-sm text-on-surface">用于生产环境每日晚间自动化情报抓取脚本的只读数据访问。</p>
+</div>
+<div>
+<span class="block text-label-sm font-medium text-secondary mb-1">创建来源 (Source)</span>
+<p class="text-body-sm text-on-surface font-mono text-sm">192.168.1.50 (Internal VPN)</p>
+</div>
+<div>
+<span class="block text-label-sm font-medium text-secondary mb-1">到期时间 (Expires)</span>
+<p class="text-body-sm text-on-surface">2024-10-12 23:59:59 (剩余 365 天)</p>
+</div>
+</div>
+<hr class="border-outline-variant/50"/>
+<!-- Usage Summary -->
+<div>
+<h4 class="text-label-md font-bold text-on-surface mb-3 flex items-center">
+<span class="material-symbols-outlined text-[18px] mr-2 text-primary">data_usage</span>
+                            最近调用摘要
+                        </h4>
+<div class="bg-surface p-3 rounded-lg border border-outline-variant/50">
+<div class="flex justify-between items-center mb-2">
+<span class="text-label-sm text-secondary">过去 24 小时</span>
+<span class="text-label-sm font-bold text-on-surface">1,240 次</span>
+</div>
+<div class="w-full bg-surface-variant rounded-full h-1.5 mb-2">
+<div class="bg-primary h-1.5 rounded-full" style="width: 45%"></div>
+</div>
+<p class="text-xs text-secondary">主要访问端点: <code class="bg-surface-variant px-1 rounded">/api/v1/opportunities</code></p>
+</div>
+</div>
+<!-- Risk Notice -->
+<div class="bg-surface-container-high p-4 rounded-lg border-l-2 border-outline">
+<h4 class="text-label-sm font-bold text-on-surface mb-1 flex items-center">
+<span class="material-symbols-outlined text-[16px] mr-1 text-on-surface-variant">shield_lock</span>
+                            风险提示
+                        </h4>
+<p class="text-xs text-on-surface-variant leading-relaxed">
+                            此令牌拥有较为敏感的业务数据读取权限。请确保调用方 IP 在预期范围内。如发现异常调用，请联系管理员核查。
+                        </p>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="p-5 border-t border-outline-variant bg-surface-container-lowest mt-auto">
+<button class="w-full flex justify-center items-center py-2 px-4 border border-outline rounded-lg text-label-md font-medium text-on-surface hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px] mr-2">history</span>
+                        查看审计记录
+                    </button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

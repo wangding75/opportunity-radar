@@ -21,6 +21,26 @@ def test_health_and_sources():
     assert route.json()["selected_provider_id"] == "heuristic"
 
 
+def test_bootstrap_and_error_contract_include_request_context():
+    bootstrap = client.get("/api/v1/auth/bootstrap")
+    assert bootstrap.status_code == 200
+    body = bootstrap.json()
+    assert body["session"]["authenticated"] is False
+    assert body["workspace"] == {"id": "default", "name": "Opportunity Radar"}
+    assert "opportunities" in body["modules"]
+
+    error = client.post("/api/v1/collect/not-a-source", json={"query": "x", "limit": 1}, headers={"X-Request-ID": "contract-test"})
+    assert error.status_code == 404
+    payload = error.json()
+    assert payload["code"] == "NOT_FOUND"
+    assert payload["message"]
+    assert payload["field_errors"] == []
+    assert payload["request_id"] == "contract-test"
+    assert payload["retryable"] is False
+    # Retained temporarily for legacy callers.
+    assert "not-a-source" in payload["detail"]
+
+
 def test_import_pipeline_and_dedup():
     payload = {"records": [
         {"source_id":"test","query":"AI短剧","item_type":"PRODUCT","title":"AI短剧批量生成工具","text":"短剧 自动剪辑 矩阵发布","payload":{"price":99}},
@@ -37,6 +57,32 @@ def test_import_pipeline_and_dedup():
     dashboard = client.get("/api/v1/dashboard").json()
     assert dashboard["totals"]["observations"] >= 2
     assert dashboard["totals"]["sources"] >= 2
+
+
+def test_observation_read_contract_uses_content_addressed_public_id():
+    payload = {"records": [
+        {"source_id": "observation-contract", "query": "contract", "item_type": "PRODUCT", "title": "Public observation", "text": "evidence body"},
+    ]}
+    assert client.post("/api/v1/import", json=payload).status_code == 200
+    listing = client.get("/api/v1/observations", params={"q": "Public", "limit": 1})
+    assert listing.status_code == 200
+    body = listing.json()
+    assert body["has_more"] is False
+    item = body["items"][0]
+    assert item["public_id"].startswith("obs_")
+    assert len(item["public_id"]) == 68
+    # Compatibility callers can still receive the integer, but product links
+    # must use public_id.
+    assert isinstance(item["id"], int)
+
+    detail = client.get(f"/api/v1/observations/{item['public_id']}")
+    assert detail.status_code == 200
+    assert detail.json()["title"] == "Public observation"
+    assert "raw_payload" not in detail.json()
+
+    filtered = client.get("/api/v1/observations", params={"item_type": "JOB", "observed_after": "2100-01-01T00:00:00"})
+    assert filtered.status_code == 200
+    assert filtered.json()["items"] == []
 
 
 def test_instrumented_app_contract():
@@ -120,6 +166,10 @@ def test_opportunity_detail_bounds_evidence_and_exposes_summary():
     assert body["analysis"]["citation_contract_version"] == "1"
     assert body["analysis"]["citations"]
     assert body["analysis"]["conflict"] == {}
+    assert body["public_id"] == rows[0]["public_id"]
+    by_public_id = client.get(f"/api/v1/opportunities/{rows[0]['public_id']}")
+    assert by_public_id.status_code == 200
+    assert by_public_id.json()["id"] == rows[0]["id"]
 
 
 def test_instrumented_app_cannot_spoof_registered_connector_source_id():

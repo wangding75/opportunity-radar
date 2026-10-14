@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>P13 — 研究结果详情 - Opportunity Radar R04</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#f7f9fb",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "surface-variant": "#e0e3e5",
+                        "surface-tint": "#0053db",
+                        "surface": "#f7f9fb",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed": "#00174b",
+                        "surface-container-high": "#e6e8ea",
+                        "primary-container": "#2563eb",
+                        "on-secondary-container": "#54647a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "tertiary": "#4d556b",
+                        "on-tertiary-container": "#eef0ff",
+                        "tertiary-fixed": "#dae2fd",
+                        "on-surface-variant": "#434655",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-dim": "#d8dadc",
+                        "surface-container": "#eceef0",
+                        "inverse-surface": "#2d3133",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary": "#505f76",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#737686",
+                        "on-secondary-fixed": "#0b1c30",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-surface": "#191c1e",
+                        "surface-bright": "#f7f9fb",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-primary-container": "#eeefff",
+                        "secondary-container": "#d0e1fb",
+                        "on-tertiary-fixed": "#131b2e",
+                        "on-background": "#191c1e",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#b4c5ff",
+                        "tertiary-container": "#656d84",
+                        "primary": "#004ac6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter", "system-ui", "sans-serif"],
+                        "display": ["Inter", "system-ui", "sans-serif"],
+                        "body": ["Inter", "system-ui", "sans-serif"],
+                        "label": ["Inter", "system-ui", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface flex min-h-screen">
+<!-- SideNavBar (AppShell) -->
+<aside class="fixed left-0 top-0 h-full w-[216px] bg-surface-container-low dark:bg-surface-container-lowest text-primary dark:text-primary-fixed-dim font-body text-label-md font-medium border-r border-outline-variant flex flex-col py-4 z-20">
+<!-- Brand Logo -->
+<div class="px-6 mb-8 flex flex-col">
+<span class="text-primary font-display font-bold text-lg">机会社情系统</span>
+<span class="text-xs text-on-surface-variant mt-1">Opportunity Radar R04</span>
+</div>
+<!-- Main Navigation -->
+<nav class="flex-1 px-3 space-y-1">
+<a class="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+                工作台
+            </a>
+<a class="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">rocket_launch</span>
+                机会
+            </a>
+<a class="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">hub</span>
+                情报
+            </a>
+<!-- Active Section: 研究 -->
+<div class="space-y-1">
+<a class="bg-secondary-container text-on-secondary-fixed-variant font-bold border-r-4 border-primary transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg opacity-90" href="#">
+<span class="material-symbols-outlined mr-3" style="font-variation-settings: 'FILL' 1;">psychology</span>
+                    研究
+                </a>
+<!-- Sub-navigation for 研究 -->
+<div class="ml-9 pl-3 border-l border-outline-variant space-y-1 py-1">
+<a class="block py-1.5 text-sm text-on-surface-variant hover:text-primary transition-colors" href="#">结构化分析</a>
+<a class="block py-1.5 text-sm text-on-surface-variant hover:text-primary transition-colors" href="#">研究任务</a>
+<a class="block py-1.5 text-sm font-semibold text-primary transition-colors" href="#">研究结果</a>
+</div>
+</div>
+<a class="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">settings_input_component</span>
+                运行
+            </a>
+<a class="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">admin_panel_settings</span>
+                管理
+            </a>
+</nav>
+<!-- Footer Navigation -->
+<div class="px-3 mt-auto space-y-1">
+<a class="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">history_edu</span>
+                审计日志
+            </a>
+<a class="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out flex items-center px-3 py-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+                系统设置
+            </a>
+</div>
+</aside>
+<!-- TopNavBar (AppShell) -->
+<header class="fixed top-0 right-0 h-[56px] w-[calc(100%-216px)] bg-surface dark:bg-surface-bright text-primary dark:text-primary-fixed-dim font-body text-body-medium border-b border-outline-variant flex items-center justify-between px-6 z-10">
+<!-- Global Search -->
+<div class="flex items-center w-96 relative">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary focus:bg-surface transition-all" placeholder="搜索研究报告、机会或情报..." type="text"/>
+</div>
+<!-- Top Nav Actions -->
+<div class="flex items-center space-x-4">
+<button class="text-on-surface-variant hover:text-primary hover:bg-surface-container-low p-2 rounded-full transition-colors Click: scale-95 transition-transform">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary hover:bg-surface-container-low p-2 rounded-full transition-colors Click: scale-95 transition-transform relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary hover:bg-surface-container-low p-2 rounded-full transition-colors Click: scale-95 transition-transform">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary hover:bg-surface-container-low p-2 rounded-full transition-colors Click: scale-95 transition-transform">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[216px] mt-[56px] w-[calc(100%-216px)] min-h-[calc(100vh-56px)] p-6 pb-20">
+<!-- Breadcrumbs & Page Header -->
+<div class="mb-6">
+<nav class="flex items-center text-sm text-on-surface-variant mb-3">
+<a class="hover:text-primary transition-colors" href="#">研究</a>
+<span class="material-symbols-outlined text-[16px] mx-1">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">研究结果</a>
+<span class="material-symbols-outlined text-[16px] mx-1">chevron_right</span>
+<span class="text-on-surface font-medium">RR-1842</span>
+</nav>
+<div class="flex justify-between items-start">
+<div>
+<h1 class="text-2xl font-bold font-headline text-on-surface mb-2">东南亚物流基础设施合作可行性研究</h1>
+<!-- Metadata Row -->
+<div class="flex items-center space-x-4 text-sm text-on-surface-variant">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-[18px] mr-1 text-primary-container">check_circle</span>
+<span class="text-primary-container font-medium">已完成</span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center">
+<span class="mr-1">关联机会:</span>
+<a class="text-primary hover:underline font-medium" href="#">OR-2026-0042</a>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center">
+<span class="mr-1">源任务:</span>
+<span>RT-1842</span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center">
+<span class="mr-1">证据覆盖:</span>
+<span class="font-medium text-on-surface">92%</span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<div class="flex items-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] mr-1">schedule</span>
+<span>2 小时前</span>
+</div>
+</div>
+</div>
+<!-- Header Actions -->
+<div class="flex space-x-3">
+<button class="flex items-center px-4 py-2 bg-surface-container border border-outline-variant rounded-lg text-sm font-medium hover:bg-surface-container-high transition-colors text-on-surface">
+<span class="material-symbols-outlined text-[18px] mr-2">ios_share</span>
+                        导出
+                    </button>
+<button class="flex items-center px-4 py-2 bg-surface-container border border-outline-variant rounded-lg text-sm font-medium hover:bg-surface-container-high transition-colors text-on-surface">
+<span class="material-symbols-outlined text-[18px] mr-2">link</span>
+                        复制链接
+                    </button>
+</div>
+</div>
+</div>
+<!-- Read-Only Notice -->
+<div class="bg-surface-container-low border-l-4 border-outline p-4 rounded-r-lg mb-6 flex items-start">
+<span class="material-symbols-outlined text-outline mr-3 mt-0.5">info</span>
+<p class="text-sm text-on-surface-variant">本页展示已有研究结果，不提供重新生成或修改研究状态。</p>
+</div>
+<!-- Tab Navigation -->
+<div class="border-b border-outline-variant mb-6">
+<nav class="flex space-x-8">
+<button class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-3 px-1 text-sm transition-colors">结论</button>
+<button class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-3 px-1 text-sm transition-colors">证据</button>
+<button class="text-on-surface-variant hover:text-primary border-b-2 border-transparent pb-3 px-1 text-sm transition-colors">方法</button>
+<button class="text-primary font-bold border-b-2 border-primary pb-3 px-1 text-sm transition-colors">活动记录</button>
+</nav>
+</div>
+<!-- Timeline Content Area -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-8">
+<div class="max-w-3xl">
+<!-- Timeline Wrapper -->
+<div class="relative border-l-2 border-surface-variant ml-24 space-y-8">
+<!-- Item 1: 2 小时前 -->
+<div class="relative pl-8">
+<!-- Time Label -->
+<div class="absolute -left-[6.5rem] top-1 text-sm font-medium text-on-surface-variant w-20 text-right">
+                        2 小时前
+                    </div>
+<!-- Dot -->
+<div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-primary ring-4 ring-surface-container-lowest"></div>
+<!-- Content -->
+<div>
+<div class="flex items-center space-x-3 mb-2">
+<span class="px-2.5 py-1 text-xs font-semibold bg-primary-container text-on-primary-container rounded-lg">结果发布</span>
+<div class="flex items-center text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] mr-1">smart_toy</span>
+<span class="font-medium mr-3">系统自动</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant mx-2"></span>
+<span>关联: <a class="text-primary hover:underline font-medium" href="#">RR-1842</a></span>
+</div>
+</div>
+<p class="text-sm text-on-surface">
+                            研究结果已发布。研究覆盖率达到 <strong>92%</strong>，综合置信度：<strong>高</strong>。
+                        </p>
+</div>
+</div>
+<!-- Item 2: 3 小时前 -->
+<div class="relative pl-8">
+<!-- Time Label -->
+<div class="absolute -left-[6.5rem] top-1 text-sm font-medium text-on-surface-variant w-20 text-right">
+                        3 小时前
+                    </div>
+<!-- Dot -->
+<div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-outline-variant ring-4 ring-surface-container-lowest"></div>
+<!-- Content -->
+<div>
+<div class="flex items-center space-x-3 mb-2">
+<span class="px-2.5 py-1 text-xs font-semibold bg-surface-container-high text-on-surface rounded-lg">分析完成</span>
+<div class="flex items-center text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] mr-1">person</span>
+<span class="font-medium mr-3">陈分析师</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant mx-2"></span>
+<span>关联: <a class="text-primary hover:underline font-medium" href="#">AN-2042</a></span>
+</div>
+</div>
+<p class="text-sm text-on-surface">
+                            结构化分析阶段结束。生成核心结论 <strong>4 条</strong>，包含<strong>印尼港口吞吐量</strong>、<strong>越南冷链</strong>等关键发现。
+                        </p>
+</div>
+</div>
+<!-- Item 3: 5 小时前 -->
+<div class="relative pl-8">
+<!-- Time Label -->
+<div class="absolute -left-[6.5rem] top-1 text-sm font-medium text-on-surface-variant w-20 text-right">
+                        5 小时前
+                    </div>
+<!-- Dot -->
+<div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-outline-variant ring-4 ring-surface-container-lowest"></div>
+<!-- Content -->
+<div>
+<div class="flex items-center space-x-3 mb-2">
+<span class="px-2.5 py-1 text-xs font-semibold bg-surface-container-high text-on-surface rounded-lg">报告导出</span>
+<div class="flex items-center text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] mr-1">person</span>
+<span class="font-medium mr-3">陈分析师</span>
+</div>
+</div>
+<p class="text-sm text-on-surface">
+                            导出 <strong>PDF 研究简报</strong>。用于季度战略评审会议。
+                        </p>
+</div>
+</div>
+<!-- Item 4: 昨天 -->
+<div class="relative pl-8">
+<!-- Time Label -->
+<div class="absolute -left-[6.5rem] top-1 text-sm font-medium text-on-surface-variant w-20 text-right">
+                        昨天
+                    </div>
+<!-- Dot -->
+<div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-outline-variant ring-4 ring-surface-container-lowest"></div>
+<!-- Content -->
+<div>
+<div class="flex items-center space-x-3 mb-2">
+<span class="px-2.5 py-1 text-xs font-semibold bg-surface-container-high text-on-surface rounded-lg">证据新增</span>
+<div class="flex items-center text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] mr-1">bug_report</span>
+<span class="font-medium mr-3">定向爬虫</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant mx-2"></span>
+<span>关联: <a class="text-primary hover:underline font-medium" href="#">E-018</a></span>
+</div>
+</div>
+<p class="text-sm text-on-surface">
+                            关联新证据。来自“<strong>区域港务披露</strong>”的港口自动化资本支出数据。
+                        </p>
+</div>
+</div>
+<!-- Item 5: 2023-10-12 -->
+<div class="relative pl-8">
+<!-- Time Label -->
+<div class="absolute -left-[6.5rem] top-1 text-sm font-medium text-on-surface-variant w-20 text-right">
+                        2023-10-12
+                    </div>
+<!-- Dot -->
+<div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-outline-variant ring-4 ring-surface-container-lowest"></div>
+<!-- Content -->
+<div>
+<div class="flex items-center space-x-3 mb-2">
+<span class="px-2.5 py-1 text-xs font-semibold bg-surface-container-high text-on-surface rounded-lg">任务创建</span>
+<div class="flex items-center text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] mr-1">person</span>
+<span class="font-medium mr-3">陈分析师</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant mx-2"></span>
+<span>关联: <a class="text-primary hover:underline font-medium" href="#">RT-1842</a></span>
+</div>
+</div>
+<p class="text-sm text-on-surface">
+                            研究任务已启动。评估<strong>东南亚核心五国</strong>物流基础设施<strong>数字化转型潜力</strong>。
+                        </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

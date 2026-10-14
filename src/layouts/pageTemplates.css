@@ -1,0 +1,105 @@
+.page-frame {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  min-width: 0;
+}
+
+.triage-layout,
+.entity-detail-layout,
+.analysis-canvas-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 8fr) minmax(280px, 4fr);
+  gap: var(--space-8);
+}
+
+.triage-layout__brief,
+.analysis-canvas-layout__insight,
+.analysis-canvas-layout__controls,
+.list-workspace__filters {
+  grid-column: 1 / -1;
+}
+
+.triage-layout__supporting,
+.entity-detail-layout__activity,
+.analysis-canvas-layout__detail {
+  grid-column: 1 / -1;
+}
+
+.triage-layout__actions,
+.entity-detail-layout__actions,
+.analysis-canvas-layout__explanation {
+  min-width: 0;
+}
+
+.list-workspace {
+  display: grid;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+.list-workspace__body {
+  display: grid;
+  grid-template-columns: minmax(0, 8fr) minmax(320px, 4fr);
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+.list-workspace__list,
+.list-workspace__preview,
+.entity-detail-layout__narrative,
+.analysis-canvas-layout__visualization {
+  min-width: 0;
+}
+
+.settings-layout {
+  display: grid;
+  grid-template-columns: 224px minmax(0, 880px);
+  align-items: start;
+  gap: var(--space-12);
+}
+
+.settings-layout__navigation {
+  position: sticky;
+  top: calc(var(--topbar-height) + var(--page-gutter));
+}
+
+.settings-layout__content {
+  min-width: 0;
+}
+
+.focused-status-layout {
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - var(--topbar-height));
+  padding: var(--space-8);
+}
+
+@media (max-width: 1279px) {
+  .list-workspace__body { grid-template-columns: minmax(0, 1fr); }
+  .list-workspace__preview { display: none; }
+}
+
+@media (max-width: 1024px) {
+  .triage-layout,
+  .entity-detail-layout,
+  .analysis-canvas-layout { grid-template-columns: minmax(0, 1fr); }
+
+  .triage-layout__brief,
+  .analysis-canvas-layout__insight,
+  .analysis-canvas-layout__controls,
+  .triage-layout__supporting,
+  .entity-detail-layout__activity,
+  .analysis-canvas-layout__detail { grid-column: auto; }
+
+  .settings-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
+  .settings-layout__navigation { position: static; overflow-x: auto; }
+}
+
+@media (max-width: 640px) {
+  .page-frame { gap: var(--space-6); }
+  .triage-layout,
+  .entity-detail-layout,
+  .analysis-canvas-layout { gap: var(--space-6); }
+  .focused-status-layout { padding: var(--space-6); }
+}

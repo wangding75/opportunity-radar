@@ -720,6 +720,7 @@ def opportunity_detail(db: Session, opportunity_id: int, *, evidence_limit: int 
 
     return {
         "id": opp.id,
+        "public_id": opp.opportunity_key,
         "opportunity_key": opp.opportunity_key,
         "title": opp.title,
         "stage": opp.stage,

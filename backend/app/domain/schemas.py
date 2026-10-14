@@ -159,6 +159,18 @@ class OpportunityResearchPatch(BaseModel):
     tags: list[str] | None = Field(default=None, max_length=30)
 
 
+class UserObservationStatePatch(BaseModel):
+    """Partial update of the calling user's observation state.
+
+    Omitted fields keep their stored value; the endpoint is idempotent so a
+    retried PUT with the same payload converges on the same state.
+    """
+
+    bookmarked: bool | None = None
+    dismissed: bool | None = None
+    notes: str | None = Field(default=None, max_length=50_000)
+
+
 class AlertRuleCreate(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     enabled: bool = True

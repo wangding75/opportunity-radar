@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>机会情报系统 - 关系图谱</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#4d556b",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "error-container": "#ffdad6",
+                    "background": "#f7f9fb",
+                    "surface": "#f7f9fb",
+                    "inverse-primary": "#b4c5ff",
+                    "outline": "#737686",
+                    "on-primary": "#ffffff",
+                    "on-background": "#191c1e",
+                    "surface-container-low": "#f2f4f6",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed": "#dae2fd",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "tertiary-fixed-dim": "#bec6e0",
+                    "surface-container-highest": "#e0e3e5",
+                    "outline-variant": "#c3c6d7",
+                    "surface-tint": "#0053db",
+                    "surface-container": "#eceef0",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "surface-dim": "#d8dadc",
+                    "surface-container-high": "#e6e8ea",
+                    "surface-bright": "#f7f9fb",
+                    "on-secondary-fixed": "#0b1c30",
+                    "inverse-on-surface": "#eff1f3",
+                    "tertiary-container": "#656d84",
+                    "on-tertiary-fixed-variant": "#3f465c",
+                    "surface-variant": "#e0e3e5",
+                    "secondary-fixed": "#d3e4fe",
+                    "on-surface": "#191c1e",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-container": "#54647a",
+                    "on-primary-container": "#eeefff",
+                    "primary-container": "#2563eb",
+                    "secondary-container": "#d0e1fb",
+                    "on-tertiary-fixed": "#131b2e",
+                    "primary": "#004ac6",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-container": "#eef0ff",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-error-container": "#93000a",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#2d3133",
+                    "secondary": "#505f76",
+                    "primary-fixed": "#dbe1ff",
+                    "on-surface-variant": "#434655",
+                    "on-primary-fixed": "#00174b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                    "display": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                    "body": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                    "label": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface h-screen overflow-hidden flex font-body">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-[216px] bg-surface-container-lowest border-r border-outline-variant flex flex-col p-4 gap-2 z-20">
+<div class="mb-6 px-2">
+<h1 class="text-lg font-headline font-bold text-on-surface tracking-tight">机会情报系统</h1>
+<p class="text-xs text-on-surface-variant mt-1">R04 中文业务闭环</p>
+</div>
+<div class="flex-1 overflow-y-auto space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg font-body text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                工作台
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg font-body text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">star</span>
+                机会
+            </a>
+<!-- 情报 Expandable -->
+<div class="flex flex-col">
+<div class="flex items-center justify-between px-3 py-2 text-on-surface-variant rounded-lg font-body text-label-md">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px]">insights</span>
+                        情报
+                    </div>
+<span class="material-symbols-outlined text-[16px]">expand_less</span>
+</div>
+<div class="ml-9 flex flex-col gap-1 mt-1">
+<a class="px-3 py-1.5 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg text-sm" href="#">最新情报</a>
+<a class="px-3 py-1.5 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg text-sm" href="#">关键词发现</a>
+<a class="px-3 py-1.5 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg text-sm" href="#">关注关键词</a>
+<a class="px-3 py-1.5 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg text-sm" href="#">趋势分析</a>
+<a class="px-3 py-1.5 bg-secondary-container text-on-secondary-container font-bold rounded-lg text-sm" href="#">关系图谱</a>
+</div>
+</div>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg font-body text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+                研究
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg font-body text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">play_circle</span>
+                运行
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg font-body text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+                管理
+            </a>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 h-[56px] left-[216px] bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-6 z-20">
+<div class="flex-1 flex items-center">
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-1.5 bg-surface-container-low border-none rounded-full text-sm focus:ring-2 focus:ring-primary-container text-on-surface placeholder:text-on-surface-variant" placeholder="搜索全局对象..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="hover:text-primary transition-colors p-1"><span class="material-symbols-outlined">refresh</span></button>
+<button class="hover:text-primary transition-colors p-1"><span class="material-symbols-outlined">notifications</span></button>
+<button class="hover:text-primary transition-colors p-1"><span class="material-symbols-outlined">help</span></button>
+<button class="hover:text-primary transition-colors p-1"><span class="material-symbols-outlined">account_circle</span></button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[216px] mt-[56px] w-full h-[calc(100vh-56px)] flex flex-col p-5 bg-background gap-4">
+<!-- Page Header -->
+<div class="flex items-start justify-between shrink-0">
+<div>
+<h2 class="text-2xl font-headline font-bold text-on-surface">关系图谱</h2>
+<p class="text-sm text-on-surface-variant mt-1">探索关键词、实体、机会与来源之间的证据关系</p>
+</div>
+</div>
+<!-- Filter Bar -->
+<div class="bg-surface-container-lowest p-3 rounded-lg border border-outline-variant flex items-center gap-4 shrink-0 shadow-sm">
+<div class="flex items-center gap-2">
+<span class="text-sm font-medium text-on-surface-variant">中心节点</span>
+<div class="relative">
+<input class="pl-3 pr-8 py-1.5 bg-surface-container-low border border-outline-variant rounded-md text-sm text-on-surface w-40 focus:ring-primary-container" readonly="" type="text" value="港口自动化"/>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-[16px] text-on-surface-variant pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+<div class="w-px h-5 bg-outline-variant"></div>
+<div class="flex items-center gap-2">
+<span class="text-sm font-medium text-on-surface-variant">探索深度</span>
+<div class="relative">
+<select class="pl-3 pr-8 py-1.5 bg-surface-container-lowest border border-outline-variant rounded-md text-sm text-on-surface appearance-none w-24">
+<option>1 层</option>
+<option selected="">2 层</option>
+<option>3 层</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-[16px] text-on-surface-variant pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+<div class="w-px h-5 bg-outline-variant"></div>
+<div class="flex items-center gap-2">
+<span class="text-sm font-medium text-on-surface-variant">最低关联强度</span>
+<div class="relative">
+<select class="pl-3 pr-8 py-1.5 bg-surface-container-lowest border border-outline-variant rounded-md text-sm text-on-surface appearance-none w-28">
+<option>所有 (&gt;0)</option>
+<option selected="">中等 (&gt;40)</option>
+<option>强 (&gt;70)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-[16px] text-on-surface-variant pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+<div class="w-px h-5 bg-outline-variant"></div>
+<div class="flex items-center gap-2">
+<span class="text-sm font-medium text-on-surface-variant">时间范围</span>
+<div class="relative">
+<select class="pl-3 pr-8 py-1.5 bg-surface-container-lowest border border-outline-variant rounded-md text-sm text-on-surface appearance-none w-32">
+<option>过去 24 小时</option>
+<option>过去 7 天</option>
+<option selected="">过去 30 天</option>
+<option>全部时间</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-[16px] text-on-surface-variant pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+<div class="ml-auto">
+<button class="px-4 py-1.5 bg-surface-container-low text-on-surface-variant border border-outline-variant rounded-md text-sm font-medium hover:bg-surface-container-high transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">filter_list</span>
+                    更多过滤
+                </button>
+</div>
+</div>
+<!-- Content Area: Split 72 / 28 -->
+<div class="flex-1 flex gap-4 min-h-0">
+<!-- Left: Relationship Graph Canvas (72%) -->
+<div class="flex-[0_0_72%] bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden relative shadow-sm flex flex-col">
+<div class="absolute top-4 left-4 flex gap-2 z-10 bg-surface-container-lowest/80 backdrop-blur p-2 rounded-lg border border-outline-variant">
+<div class="flex items-center gap-1.5 text-xs text-on-surface-variant">
+<div class="w-3 h-3 rounded-full bg-primary"></div> 中心节点
+                    </div>
+<div class="flex items-center gap-1.5 text-xs text-on-surface-variant ml-2">
+<div class="w-3 h-3 rounded-full bg-surface-variant border border-outline"></div> 实体
+                    </div>
+<div class="flex items-center gap-1.5 text-xs text-on-surface-variant ml-2">
+<div class="w-3 h-3 rounded-full bg-surface-container border border-outline-variant"></div> 来源
+                    </div>
+</div>
+<div class="absolute bottom-4 left-4 z-10">
+<div class="flex flex-col gap-1">
+<button class="w-8 h-8 bg-surface-container-lowest border border-outline-variant rounded-md flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high"><span class="material-symbols-outlined text-[20px]">add</span></button>
+<button class="w-8 h-8 bg-surface-container-lowest border border-outline-variant rounded-md flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high"><span class="material-symbols-outlined text-[20px]">remove</span></button>
+<button class="w-8 h-8 bg-surface-container-lowest border border-outline-variant rounded-md flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high mt-1"><span class="material-symbols-outlined text-[20px]">center_focus_strong</span></button>
+</div>
+</div>
+<!-- Simulated Graph Canvas -->
+<div class="flex-1 relative bg-[#F8FAFC]">
+<svg class="w-full h-full" viewbox="0 0 800 600">
+<defs>
+<marker id="arrow-primary" markerheight="6" markerwidth="6" orient="auto" refx="20" refy="0" viewbox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5" fill="#2563eb" opacity="0.8"></path>
+</marker>
+<marker id="arrow-neutral" markerheight="5" markerwidth="5" orient="auto" refx="18" refy="0" viewbox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5" fill="#c3c6d7"></path>
+</marker>
+</defs>
+<!-- Edges -->
+<!-- Primary Edges (Selected Path) -->
+<line marker-end="url(#arrow-primary)" opacity="0.8" stroke="#2563eb" stroke-width="2" x1="400" x2="550" y1="300" y2="200"></line>
+<text class="font-body" fill="#2563eb" font-size="10" font-weight="600" text-anchor="middle" x="475" y="240">强相关 (92)</text>
+<line marker-end="url(#arrow-primary)" opacity="0.8" stroke="#2563eb" stroke-width="2" x1="400" x2="250" y1="300" y2="220"></line>
+<text class="font-body" fill="#2563eb" font-size="10" font-weight="600" text-anchor="middle" x="325" y="250">强相关 (85)</text>
+<!-- Neutral Edges -->
+<line marker-end="url(#arrow-neutral)" stroke="#c3c6d7" stroke-width="1" x1="400" x2="450" y1="300" y2="450"></line>
+<text class="font-body" fill="#737686" font-size="9" text-anchor="middle" x="435" y="380">共现 (55)</text>
+<line marker-end="url(#arrow-neutral)" stroke="#c3c6d7" stroke-width="1" x1="400" x2="280" y1="300" y2="420"></line>
+<line marker-end="url(#arrow-neutral)" stroke="#c3c6d7" stroke-width="1" x1="550" x2="650" y1="200" y2="150"></line>
+<line marker-end="url(#arrow-neutral)" stroke="#c3c6d7" stroke-width="1" x1="550" x2="620" y1="200" y2="280"></line>
+<line marker-end="url(#arrow-neutral)" stroke="#c3c6d7" stroke-width="1" x1="250" x2="150" y1="220" y2="180"></line>
+<!-- Nodes -->
+<!-- Center Node -->
+<circle class="drop-shadow-md cursor-pointer" cx="400" cy="300" fill="#2563eb" r="32"></circle>
+<circle cx="400" cy="300" fill="none" opacity="0.3" r="36" stroke="#2563eb" stroke-width="1"></circle>
+<text class="font-body" fill="#191c1e" font-size="12" font-weight="600" text-anchor="middle" x="400" y="345">港口自动化</text>
+<!-- Primary Neighbors -->
+<circle class="drop-shadow-sm cursor-pointer" cx="550" cy="200" fill="#f8fafc" r="24" stroke="#475569" stroke-width="2"></circle>
+<text class="font-body" fill="#191c1e" font-size="11" text-anchor="middle" x="550" y="238">上海洋山港</text>
+<circle class="drop-shadow-sm cursor-pointer" cx="250" cy="220" fill="#f8fafc" r="24" stroke="#475569" stroke-width="2"></circle>
+<text class="font-body" fill="#191c1e" font-size="11" text-anchor="middle" x="250" y="258">ZPMC</text>
+<!-- Secondary Nodes -->
+<circle class="cursor-pointer" cx="450" cy="450" fill="#f2f4f6" r="18" stroke="#c3c6d7" stroke-width="1"></circle>
+<text class="font-body" fill="#434655" font-size="10" text-anchor="middle" x="450" y="482">5G专网</text>
+<circle class="cursor-pointer" cx="280" cy="420" fill="#f2f4f6" r="18" stroke="#c3c6d7" stroke-width="1"></circle>
+<text class="font-body" fill="#434655" font-size="10" text-anchor="middle" x="280" y="452">自动化AGV</text>
+<circle cx="650" cy="150" fill="#f2f4f6" r="16" stroke="#c3c6d7" stroke-width="1"></circle>
+<text class="font-body" fill="#434655" font-size="9" text-anchor="middle" x="650" y="180">智能调度</text>
+<circle cx="620" cy="280" fill="#f2f4f6" r="16" stroke="#c3c6d7" stroke-width="1"></circle>
+<text class="font-body" fill="#434655" font-size="9" text-anchor="middle" x="620" y="310">数字孪生</text>
+<circle cx="150" cy="180" fill="#f2f4f6" r="16" stroke="#c3c6d7" stroke-width="1"></circle>
+<text class="font-body" fill="#434655" font-size="9" text-anchor="middle" x="150" y="210">起重机订单</text>
+</svg>
+</div>
+</div>
+<!-- Right: Node Details Inspector (28%) -->
+<div class="flex-[0_0_28%] bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm flex flex-col overflow-hidden">
+<div class="p-4 border-b border-outline-variant bg-surface-container-low shrink-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="px-2 py-0.5 bg-primary/10 text-primary-container text-[10px] font-bold rounded-sm uppercase tracking-wide">中心节点</span>
+<span class="px-2 py-0.5 bg-surface-variant text-on-surface-variant text-[10px] font-medium rounded-sm">关键词</span>
+</div>
+<h3 class="text-xl font-headline font-bold text-on-surface">港口自动化</h3>
+<div class="flex items-center gap-4 mt-3">
+<div class="flex flex-col">
+<span class="text-xs text-on-surface-variant">综合信号强度</span>
+<div class="flex items-center gap-1.5 mt-0.5">
+<div class="w-16 h-2 bg-surface-variant rounded-full overflow-hidden">
+<div class="w-[85%] h-full bg-primary"></div>
+</div>
+<span class="text-sm font-semibold text-on-surface">85</span>
+</div>
+</div>
+<div class="w-px h-6 bg-outline-variant"></div>
+<div class="flex flex-col">
+<span class="text-xs text-on-surface-variant">关联证据</span>
+<span class="text-sm font-semibold text-on-surface">1,240 条</span>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-6">
+<!-- Strongest Relationships -->
+<section>
+<h4 class="text-sm font-bold text-on-surface flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-[18px] text-primary">share</span>
+                            核心关联实体
+                        </h4>
+<div class="space-y-2">
+<div class="p-2.5 rounded-lg border border-outline-variant bg-surface hover:bg-surface-container-low transition-colors cursor-pointer group">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center text-[10px] font-bold text-on-surface-variant">企</div>
+<span class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">上海洋山港</span>
+</div>
+<span class="text-xs font-semibold text-primary">强度 92</span>
+</div>
+<div class="mt-1.5 flex items-center gap-2 text-xs text-on-surface-variant pl-8">
+<span>关系类型: 落地应用</span>
+<span>·</span>
+<span>共现: 342次</span>
+</div>
+</div>
+<div class="p-2.5 rounded-lg border border-outline-variant bg-surface hover:bg-surface-container-low transition-colors cursor-pointer group">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center text-[10px] font-bold text-on-surface-variant">企</div>
+<span class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">ZPMC (振华重工)</span>
+</div>
+<span class="text-xs font-semibold text-primary">强度 85</span>
+</div>
+<div class="mt-1.5 flex items-center gap-2 text-xs text-on-surface-variant pl-8">
+<span>关系类型: 设备供应商</span>
+<span>·</span>
+<span>共现: 215次</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Associated Opportunities -->
+<section>
+<h4 class="text-sm font-bold text-on-surface flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-[18px] text-primary">lightbulb</span>
+                            关联机会 (2)
+                        </h4>
+<div class="space-y-2">
+<a class="block p-2.5 rounded-lg border border-outline-variant bg-surface hover:border-primary-container transition-colors" href="#">
+<div class="text-sm font-medium text-on-surface line-clamp-1">亚太地区港口5G专网升级换代机会</div>
+<div class="flex items-center gap-2 mt-1.5">
+<span class="px-1.5 py-0.5 bg-tertiary-container/10 text-tertiary-container text-[10px] rounded">追踪中</span>
+<span class="text-xs text-on-surface-variant">匹配度 88%</span>
+</div>
+</a>
+<a class="block p-2.5 rounded-lg border border-outline-variant bg-surface hover:border-primary-container transition-colors" href="#">
+<div class="text-sm font-medium text-on-surface line-clamp-1">拉美新建深水港全自动化集成项目</div>
+<div class="flex items-center gap-2 mt-1.5">
+<span class="px-1.5 py-0.5 bg-surface-variant text-on-surface-variant text-[10px] rounded">评估中</span>
+<span class="text-xs text-on-surface-variant">匹配度 75%</span>
+</div>
+</a>
+</div>
+</section>
+<!-- Key Evidence -->
+<section>
+<h4 class="text-sm font-bold text-on-surface flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-[18px] text-primary">article</span>
+                            关键证据摘录
+                        </h4>
+<div class="space-y-3">
+<div class="relative pl-3 border-l-2 border-outline-variant">
+<div class="text-xs text-on-surface-variant mb-1 flex justify-between">
+<span>行业研报 · 海事评论</span>
+<span>2天前</span>
+</div>
+<p class="text-sm text-on-surface line-clamp-2">"随着劳动力成本上升，<span class="font-semibold text-primary">港口自动化</span>已成为全球主要枢纽港的必选项，预计未来三年相关投资将以年均22%的速度增长。"</p>
+</div>
+<div class="relative pl-3 border-l-2 border-outline-variant">
+<div class="text-xs text-on-surface-variant mb-1 flex justify-between">
+<span>新闻报道 · 华尔街日报</span>
+<span>5天前</span>
+</div>
+<p class="text-sm text-on-surface line-clamp-2">"北美多个港口运营商正在评估全面引入<span class="font-semibold text-primary">港口自动化</span>解决方案的可行性，以缓解持续的供应链瓶颈问题。"</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Navigation Actions -->
+<div class="p-4 border-t border-outline-variant bg-surface-container-lowest shrink-0 flex flex-col gap-2">
+<button class="w-full py-2 bg-primary text-on-primary rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">travel_explore</span>
+                        查看证据详情
+                    </button>
+<div class="flex gap-2">
+<button class="flex-1 py-1.5 bg-surface-container-low text-on-surface border border-outline-variant rounded-lg text-sm font-medium hover:bg-surface-container-high transition-colors flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+                            趋势
+                        </button>
+<button class="flex-1 py-1.5 bg-surface-container-low text-on-surface border border-outline-variant rounded-lg text-sm font-medium hover:bg-surface-container-high transition-colors flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                            机会
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

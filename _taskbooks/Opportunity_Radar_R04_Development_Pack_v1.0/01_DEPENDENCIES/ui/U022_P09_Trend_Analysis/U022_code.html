@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>趋势分析 - Opportunity Radar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#191c1e",
+                        "error": "#ba1a1a",
+                        "surface-container": "#eceef0",
+                        "primary": "#004ac6",
+                        "outline": "#737686",
+                        "on-primary-container": "#eeefff",
+                        "on-error": "#ffffff",
+                        "on-surface": "#191c1e",
+                        "background": "#f7f9fb",
+                        "on-tertiary-container": "#eef0ff",
+                        "surface-container-high": "#e6e8ea",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "tertiary": "#4d556b",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#2563eb",
+                        "tertiary-container": "#656d84",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary": "#505f76",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary-fixed": "#0b1c30",
+                        "secondary-container": "#d0e1fb",
+                        "on-tertiary-fixed": "#131b2e",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "surface-dim": "#d8dadc",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-surface-variant": "#434655",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "on-secondary-container": "#54647a",
+                        "on-primary-fixed": "#00174b",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#0053db",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-fixed": "#dae2fd",
+                        "primary-fixed": "#dbe1ff",
+                        "surface-bright": "#f7f9fb",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "inverse-primary": "#b4c5ff",
+                        "on-tertiary-fixed-variant": "#3f465c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "display": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "body": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"],
+                        "label": ["Inter", "PingFang SC", "Microsoft YaHei", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body overflow-hidden">
+<!-- TopNav Bar -->
+<header class="fixed top-0 right-0 h-[56px] w-[calc(100%-216px)] bg-surface dark:bg-surface-bright border-b border-outline-variant flex items-center justify-between px-6 z-10">
+<div class="flex items-center gap-6">
+<h2 class="text-primary dark:text-primary-fixed-dim font-bold text-lg hidden">情报中心</h2>
+<nav class="flex gap-6 h-full items-center">
+<a class="text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors px-2 py-1 rounded text-body-medium" href="#">最新情报</a>
+<a class="text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors px-2 py-1 rounded text-body-medium" href="#">关键词发现</a>
+<a class="text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors px-2 py-1 rounded text-body-medium" href="#">关注关键词</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-4 h-[56px] flex items-center mt-4 text-body-medium" href="#">趋势分析</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="pl-9 pr-4 py-1.5 bg-surface-container-low border-none rounded-full text-sm w-64 focus:ring-1 focus:ring-primary outline-none" placeholder="全局搜索..." type="text"/>
+</div>
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-transform active:scale-95"><span class="material-symbols-outlined">refresh</span></button>
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-transform active:scale-95"><span class="material-symbols-outlined">notifications</span></button>
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-transform active:scale-95"><span class="material-symbols-outlined">help</span></button>
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-transform active:scale-95"><span class="material-symbols-outlined">account_circle</span></button>
+</div>
+</header>
+<!-- SideNav Bar -->
+<aside class="fixed left-0 top-0 h-full w-[216px] bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant flex flex-col py-4 z-20 font-body text-label-md font-medium">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-on-primary font-bold">OR</div>
+<div>
+<h1 class="text-primary font-display font-bold text-lg leading-tight">机会情报系统</h1>
+<p class="text-xs text-on-surface-variant">Opportunity Radar R04</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-3 space-y-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                工作台
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">rocket_launch</span>
+                机会
+            </a>
+<!-- Expanded "情报" Menu -->
+<div class="flex flex-col mb-1">
+<a class="flex items-center justify-between px-3 py-2.5 rounded-lg bg-secondary-container text-on-secondary-fixed-variant font-bold border-r-4 border-primary transition-colors duration-150 ease-in-out opacity-90" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">hub</span>
+                        情报
+                    </div>
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</a>
+<div class="pl-10 pr-3 py-1 space-y-1">
+<a class="block py-1.5 text-sm text-on-surface-variant hover:text-primary" href="#">最新情报</a>
+<a class="block py-1.5 text-sm text-on-surface-variant hover:text-primary" href="#">关键词发现</a>
+<a class="block py-1.5 text-sm text-on-surface-variant hover:text-primary" href="#">关注关键词</a>
+<a class="block py-1.5 text-sm text-primary font-semibold" href="#">趋势分析</a>
+<a class="block py-1.5 text-sm text-on-surface-variant hover:text-primary" href="#">关系图谱</a>
+</div>
+</div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">psychology</span>
+                研究
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">settings_input_component</span>
+                运行
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+                管理
+            </a>
+</nav>
+<div class="px-3 mt-auto pt-4 border-t border-outline-variant/50 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">history_edu</span>
+                审计日志
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+                系统设置
+            </a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="fixed top-[56px] left-[216px] w-[calc(100%-216px)] h-[calc(100vh-56px)] overflow-y-auto bg-surface p-6">
+<!-- Page Header & Filter Bar -->
+<div class="mb-6 space-y-4">
+<div>
+<h1 class="text-2xl font-headline font-bold text-on-surface">趋势分析</h1>
+<p class="text-sm text-on-surface-variant mt-1">分析关键词、实体和主题的时间变化与关键拐点</p>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-lowest p-3 rounded-lg border border-outline-variant shadow-sm">
+<div class="flex items-center gap-2">
+<span class="text-sm text-on-surface-variant">分析对象:</span>
+<div class="flex items-center bg-surface-container-low px-3 py-1.5 rounded border border-outline-variant/50 cursor-pointer hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[16px] mr-1 text-primary">tag</span>
+<span class="text-sm font-medium">港口自动化</span>
+<span class="material-symbols-outlined text-[16px] ml-2 text-on-surface-variant">arrow_drop_down</span>
+</div>
+</div>
+<div class="w-px h-6 bg-outline-variant"></div>
+<div class="flex items-center gap-2">
+<span class="text-sm text-on-surface-variant">时间范围:</span>
+<select class="bg-surface-container-low border border-outline-variant/50 text-sm rounded px-3 py-1.5 focus:ring-1 focus:ring-primary outline-none">
+<option>近 90 天</option>
+<option>近 30 天</option>
+<option>今年以来</option>
+</select>
+</div>
+<div class="w-px h-6 bg-outline-variant"></div>
+<div class="flex items-center gap-2">
+<span class="text-sm text-on-surface-variant">数据来源:</span>
+<select class="bg-surface-container-low border border-outline-variant/50 text-sm rounded px-3 py-1.5 focus:ring-1 focus:ring-primary outline-none">
+<option>全部来源</option>
+<option>政策文件</option>
+<option>行业新闻</option>
+</select>
+</div>
+<div class="w-px h-6 bg-outline-variant"></div>
+<div class="flex items-center gap-2">
+<span class="text-sm text-on-surface-variant">归一化方式:</span>
+<select class="bg-surface-container-low border border-outline-variant/50 text-sm rounded px-3 py-1.5 focus:ring-1 focus:ring-primary outline-none">
+<option>相对信号强度</option>
+<option>绝对提及次数</option>
+</select>
+</div>
+<button class="ml-auto bg-primary text-on-primary px-4 py-1.5 rounded hover:bg-primary-container transition-colors text-sm font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">update</span>
+                    更新分析
+                </button>
+</div>
+</div>
+<!-- Split Layout 74/26 -->
+<div class="flex gap-6">
+<!-- Left Column (74%) -->
+<div class="w-[74%] flex flex-col gap-6">
+<!-- Main Trend Chart Area -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-5 h-[400px] flex flex-col relative">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">show_chart</span>
+                            信号强度趋势
+                        </h3>
+<div class="flex items-center gap-4 text-xs text-on-surface-variant">
+<div class="flex items-center gap-1"><div class="w-3 h-3 bg-primary rounded-sm"></div> 港口自动化</div>
+<div class="flex items-center gap-1"><div class="w-3 h-3 bg-outline rounded-sm"></div> 行业基线</div>
+</div>
+</div>
+<!-- Placeholder for Chart (CSS Mockup for Professional Look) -->
+<div class="flex-1 relative border-l border-b border-outline-variant/50">
+<!-- Y-axis labels -->
+<div class="absolute -left-8 top-0 bottom-0 flex flex-col justify-between text-[10px] text-on-surface-variant py-2">
+<span>100</span><span>75</span><span>50</span><span>25</span><span>0</span>
+</div>
+<!-- X-axis labels -->
+<div class="absolute -bottom-6 left-0 right-0 flex justify-between text-[10px] text-on-surface-variant px-4">
+<span>-90d</span><span>-60d</span><span>-30d</span><span>Now</span>
+</div>
+<!-- Grid lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
+<div class="w-full h-px bg-outline-variant/20"></div>
+<div class="w-full h-px bg-outline-variant/20"></div>
+<div class="w-full h-px bg-outline-variant/20"></div>
+<div class="w-full h-px bg-outline-variant/20"></div>
+<div class="w-full h-px bg-outline-variant/20"></div>
+</div>
+<!-- Mock Data Line (SVG) -->
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<!-- Baseline -->
+<path d="M 0,80 Q 20,75 40,80 T 80,75 L 100,78" fill="none" stroke="#737686" stroke-dasharray="2,2" stroke-width="1"></path>
+<!-- Primary Trend -->
+<path d="M 0,85 Q 20,80 30,60 T 50,40 T 70,30 T 90,10 L 100,5" fill="none" stroke="#004ac6" stroke-width="2.5"></path>
+<!-- Area fill under primary -->
+<path d="M 0,85 Q 20,80 30,60 T 50,40 T 70,30 T 90,10 L 100,5 L 100,100 L 0,100 Z" fill="url(#blue-gradient)" opacity="0.1"></path>
+<defs>
+<lineargradient id="blue-gradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#004ac6"></stop>
+<stop offset="100%" stop-color="transparent"></stop>
+</lineargradient>
+</defs>
+<!-- Inflection Point Markers -->
+<circle class="cursor-pointer hover:r-4 transition-all" cx="30" cy="60" fill="#ffffff" r="3" stroke="#004ac6" stroke-width="2"></circle>
+<circle class="cursor-pointer hover:r-4 transition-all" cx="70" cy="30" fill="#ffffff" r="3" stroke="#004ac6" stroke-width="2"></circle>
+<circle class="cursor-pointer hover:r-4 transition-all" cx="90" cy="10" fill="#ffffff" r="3" stroke="#004ac6" stroke-width="2"></circle>
+</svg>
+</div>
+</div>
+<!-- Events & Changes Table -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="p-4 border-b border-outline-variant bg-surface-container-low/50 flex justify-between items-center">
+<h3 class="font-bold text-on-surface text-sm">关键拐点与事件</h3>
+<span class="text-xs text-on-surface-variant">对齐上方时间轴</span>
+</div>
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant text-xs text-on-surface-variant bg-surface">
+<th class="p-3 font-medium w-24">时间</th>
+<th class="p-3 font-medium w-28">事件类型</th>
+<th class="p-3 font-medium">描述</th>
+<th class="p-3 font-medium w-24">影响</th>
+<th class="p-3 font-medium w-20 text-right">证据数</th>
+</tr>
+</thead>
+<tbody class="text-sm text-on-surface">
+<tr class="border-b border-outline-variant/50 hover:bg-surface-container-low transition-colors">
+<td class="p-3 text-on-surface-variant text-xs">前 75 天</td>
+<td class="p-3"><span class="px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded text-xs">政策发布</span></td>
+<td class="p-3">交通部发布《关于加快智慧港口建设的指导意见》</td>
+<td class="p-3 text-error flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">trending_up</span> 高</td>
+<td class="p-3 text-right">14</td>
+</tr>
+<tr class="border-b border-outline-variant/50 hover:bg-surface-container-low transition-colors">
+<td class="p-3 text-on-surface-variant text-xs">前 35 天</td>
+<td class="p-3"><span class="px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded text-xs">行业动态</span></td>
+<td class="p-3">国内首个全自动化集装箱码头二期工程招标公告发布</td>
+<td class="p-3 text-error flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">trending_up</span> 中</td>
+<td class="p-3 text-right">8</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-3 text-on-surface-variant text-xs">前 15 天</td>
+<td class="p-3"><span class="px-2 py-0.5 bg-primary-container text-on-primary rounded text-xs">技术突破</span></td>
+<td class="p-3">某头部设备商发布新一代港口AGV调度系统白皮书</td>
+<td class="p-3 text-error flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">trending_up</span> 高</td>
+<td class="p-3 text-right">22</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right Column (26%) -->
+<div class="w-[26%] flex flex-col gap-6">
+<!-- Trend Summary Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-5">
+<h3 class="font-bold text-on-surface mb-4 text-sm uppercase tracking-wider">趋势研判概览</h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center pb-3 border-b border-outline-variant/50">
+<span class="text-sm text-on-surface-variant">动量</span>
+<div class="flex items-center gap-1 text-primary font-bold">
+<span class="material-symbols-outlined text-[18px]">arrow_upward</span>
+                                +14.2%
+                            </div>
+</div>
+<div class="flex justify-between items-center pb-3 border-b border-outline-variant/50">
+<span class="text-sm text-on-surface-variant">研判置信度</span>
+<span class="font-bold text-on-surface">88%</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm text-on-surface-variant">来源多样性</span>
+<span class="font-bold text-on-surface">12 个来源</span>
+</div>
+</div>
+</div>
+<!-- Key Evidence Section -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-5">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-bold text-on-surface text-sm">核心证据</h3>
+<a class="text-xs text-primary hover:underline flex items-center" href="#">查看证据 <span class="material-symbols-outlined text-[14px]">chevron_right</span></a>
+</div>
+<ul class="space-y-3">
+<li class="text-sm border-l-2 border-secondary-container pl-3 py-1">
+<p class="text-on-surface font-medium line-clamp-1">交通运输部智慧港口建设指南</p>
+<p class="text-xs text-on-surface-variant mt-1">2023-10-12 · 政策文件</p>
+</li>
+<li class="text-sm border-l-2 border-tertiary-container pl-3 py-1">
+<p class="text-on-surface font-medium line-clamp-1">XX港口自动化改造二期中标公示</p>
+<p class="text-xs text-on-surface-variant mt-1">2023-11-05 · 招投标</p>
+</li>
+<li class="text-sm border-l-2 border-primary-container pl-3 py-1">
+<p class="text-on-surface font-medium line-clamp-1">5G+AGV 智能调度技术研讨会纪要</p>
+<p class="text-xs text-on-surface-variant mt-1">2023-11-20 · 行业会议</p>
+</li>
+</ul>
+</div>
+<!-- Associated Opportunities Section -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-5">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-bold text-on-surface text-sm">关联机会</h3>
+</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-2 rounded bg-surface-container-low hover:bg-surface-container transition-colors border border-outline-variant/30">
+<div class="flex flex-col">
+<span class="text-xs font-mono text-primary">OR-2026-0042</span>
+<span class="text-sm text-on-surface font-medium">华东沿海港口技改设备替换</span>
+</div>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[20px]">open_in_new</span></button>
+</div>
+<div class="flex items-center justify-between p-2 rounded bg-surface-container-low hover:bg-surface-container transition-colors border border-outline-variant/30">
+<div class="flex flex-col">
+<span class="text-xs font-mono text-primary">OR-2026-0089</span>
+<span class="text-sm text-on-surface font-medium">某内河大港全自动化码头总包</span>
+</div>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[20px]">open_in_new</span></button>
+</div>
+</div>
+</div>
+<!-- Global Actions -->
+<div class="mt-auto pt-4 flex flex-col gap-2">
+<button class="w-full py-2.5 bg-surface-container-low border border-outline-variant rounded-lg text-on-surface font-medium text-sm hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">account_tree</span>
+                        打开关系图谱
+                    </button>
+<button class="w-full py-2.5 bg-primary text-on-primary rounded-lg font-medium text-sm hover:bg-primary-container transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">rocket_launch</span>
+                        管理关联机会
+                    </button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

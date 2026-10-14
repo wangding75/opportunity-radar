@@ -1,0 +1,14 @@
+.opportunity-detail .btn:disabled, .opportunity-next button:disabled { cursor: not-allowed; opacity: .6; }
+.opportunity-metrics > .card { box-shadow: none; }
+.opportunity-next button { text-align: left; }
+
+@media (max-width: 1024px) {
+  .opportunity-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .opportunity-layout { grid-template-columns: minmax(0, 1fr) !important; }
+}
+
+@media (max-width: 640px) {
+  .opportunity-narrative { grid-template-columns: minmax(0, 1fr) !important; }
+  .opportunity-next__list { grid-template-columns: minmax(0, 1fr) !important; }
+  .opportunity-metrics > .card { padding: var(--space-4) !important; }
+}

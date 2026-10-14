@@ -4,15 +4,24 @@ import csv
 import io
 from datetime import date, datetime
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy import and_, func, or_, select
 from sqlalchemy.orm import Session
 
-from app.core.security import require_admin_auth, require_read_auth
+from app.core.security import require_admin_auth, require_observation_state_auth, require_read_auth
 from app.db.models import AuditLog, Opportunity, RawObservation
 from app.db.session import get_db
+from app.domain.schemas import UserObservationStatePatch
 from app.services.archive import archive_raw_payloads, restore_raw_payload_archive
+from app.services.auth import Principal
+from app.services.observation_state import (
+    delete_user_observation_state,
+    get_user_observation_state,
+    serialize_user_observation_state,
+    upsert_user_observation_state,
+    user_observation_state_map,
+)
 from app.services.pagination import decode_cursor, observation_cursor
 from app.services.research import research_state_map, serialize_research_state
 from app.services.retention import run_retention
@@ -22,16 +31,45 @@ from app.services.weekly_trend_persistence import get_weekly_trend_report
 router = APIRouter(prefix="/api/v1", dependencies=[Depends(require_read_auth)])
 
 
+def _observation_public_id(row: RawObservation) -> str:
+    # content_hash is immutable and unique at ingestion time. Prefixing it gives
+    # product URLs a stable ID without exposing the database sequence.
+    return f"obs_{row.content_hash}"
+
+
+def _observation_from_identifier(db: Session, identifier: str) -> RawObservation | None:
+    if identifier.isdecimal():
+        return db.get(RawObservation, int(identifier))
+    if identifier.startswith("obs_") and len(identifier) == 68:
+        return db.scalar(select(RawObservation).where(RawObservation.content_hash == identifier[4:]))
+    return None
+
+
+def _current_user_id(principal: Principal | None) -> int | None:
+    """Resolve the calling user for per-user observation state.
+
+    In development anonymous mode (AUTH_MODE=disabled) or for legacy API-key
+    principals there is no real user identity; the API must return an explicit
+    null user_state instead of attributing bookmarks to a synthetic user.
+    """
+    if principal is None or principal.user_id is None:
+        return None
+    return principal.user_id
+
+
 @router.get("/observations")
 def observations(
     q: str | None = Query(default=None, max_length=200),
     source_id: str | None = Query(default=None, max_length=100),
     item_type: str | None = Query(default=None, max_length=50),
+    observed_after: datetime | None = Query(default=None),
     offset: int = Query(default=0, ge=0),
     cursor: str | None = Query(default=None, max_length=1000),
     limit: int = Query(default=100, ge=1, le=500),
+    request: Request = None,
     db: Session = Depends(get_db),
 ):
+    user_id = _current_user_id(getattr(request.state, "principal", None) if request is not None else None)
     filters = []
     if q:
         pattern = f"%{q.strip()}%"
@@ -40,6 +78,8 @@ def observations(
         filters.append(RawObservation.source_id == source_id)
     if item_type:
         filters.append(RawObservation.item_type == item_type.strip().upper())
+    if observed_after:
+        filters.append(RawObservation.observed_at >= observed_after)
     count_stmt = select(func.count(RawObservation.id))
     rows_stmt = select(RawObservation)
     if filters:
@@ -64,6 +104,7 @@ def observations(
     has_more = len(rows) > limit
     rows = rows[:limit]
     next_cursor = observation_cursor(rows[-1].observed_at, rows[-1].id) if has_more and rows else None
+    states = user_observation_state_map(db, user_id, [row.id for row in rows]) if user_id is not None else {}
     return {
         "total": total,
         "offset": offset if not cursor else None,
@@ -73,6 +114,7 @@ def observations(
         "items": [
             {
                 "id": row.id,
+                "public_id": _observation_public_id(row),
                 "source_id": row.source_id,
                 "query": row.query,
                 "item_type": row.item_type,
@@ -82,9 +124,111 @@ def observations(
                 "evidence_quality": row.evidence_quality,
                 "acquisition_method": row.acquisition_method,
                 "observed_at": row.observed_at,
+                "user_state": serialize_user_observation_state(states.get(row.id)),
             }
             for row in rows
         ],
+    }
+
+
+@router.get("/observations/{observation_id}")
+def observation_detail(observation_id: str, request: Request = None, db: Session = Depends(get_db)):
+    row = _observation_from_identifier(db, observation_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail="observation not found")
+    user_id = _current_user_id(getattr(request.state, "principal", None) if request is not None else None)
+    state = get_user_observation_state(db, user_id, row.id) if user_id is not None else None
+    return {
+        "public_id": _observation_public_id(row),
+        "source_id": row.source_id,
+        "external_id": row.external_id,
+        "query": row.query,
+        "item_type": row.item_type,
+        "title": row.title,
+        "text": row.text,
+        "source_url": row.source_url,
+        "observed_at": row.observed_at,
+        "acquisition_method": row.acquisition_method,
+        "evidence_quality": row.evidence_quality,
+        "acquisition_risk": row.acquisition_risk,
+        "user_state": serialize_user_observation_state(state),
+    }
+
+
+@router.get("/observations/{observation_id}/state")
+def observation_state(observation_id: str, request: Request = None, db: Session = Depends(get_db)):
+    row = _observation_from_identifier(db, observation_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail="observation not found")
+    user_id = _current_user_id(getattr(request.state, "principal", None) if request is not None else None)
+    if user_id is None:
+        # Anonymous/development mode has no user identity to attach state to.
+        # Explicit null is the contract; never fabricate bookmark defaults.
+        raise HTTPException(status_code=401, detail="authenticated user required for observation state")
+    state = get_user_observation_state(db, user_id, row.id)
+    return {
+        "observation_public_id": _observation_public_id(row),
+        "user_id": user_id,
+        "user_state": serialize_user_observation_state(state),
+    }
+
+
+@router.put("/observations/{observation_id}/state")
+def observation_state_put(
+    observation_id: str,
+    payload: UserObservationStatePatch,
+    request: Request,
+    db: Session = Depends(get_db),
+    principal: Principal = Depends(require_observation_state_auth),
+):
+    row = _observation_from_identifier(db, observation_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail="observation not found")
+    user_id = _current_user_id(principal)
+    if user_id is None:
+        raise HTTPException(status_code=403, detail="a real user identity is required to store observation state")
+    try:
+        state = upsert_user_observation_state(
+            db,
+            user_id,
+            row.id,
+            bookmarked=payload.bookmarked,
+            dismissed=payload.dismissed,
+            notes=payload.notes,
+        )
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    db.commit()
+    return {
+        "observation_public_id": _observation_public_id(row),
+        "user_id": user_id,
+        "user_state": serialize_user_observation_state(state),
+        "request_id": getattr(request.state, "request_id", None),
+    }
+
+
+@router.delete("/observations/{observation_id}/state")
+def observation_state_delete(
+    observation_id: str,
+    request: Request,
+    db: Session = Depends(get_db),
+    principal: Principal = Depends(require_observation_state_auth),
+):
+    row = _observation_from_identifier(db, observation_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail="observation not found")
+    user_id = _current_user_id(principal)
+    if user_id is None:
+        raise HTTPException(status_code=403, detail="a real user identity is required to delete observation state")
+    delete_user_observation_state(db, user_id, row.id)
+    db.commit()
+    return {
+        "observation_public_id": _observation_public_id(row),
+        "user_id": user_id,
+        "user_state": None,
+        "request_id": getattr(request.state, "request_id", None),
     }
 
 

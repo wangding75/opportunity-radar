@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>机会情报系统 - 数据源运行记录</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#2563eb",
+                    "primary-fixed": "#dbe1ff",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#434655",
+                    "primary": "#004ac6",
+                    "surface-container-highest": "#e0e3e5",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-secondary-container": "#54647a",
+                    "on-primary-fixed": "#00174b",
+                    "tertiary": "#4d556b",
+                    "on-tertiary-container": "#eef0ff",
+                    "inverse-primary": "#b4c5ff",
+                    "on-tertiary-fixed-variant": "#3f465c",
+                    "inverse-on-surface": "#eff1f3",
+                    "background": "#f7f9fb",
+                    "on-primary": "#ffffff",
+                    "inverse-surface": "#2d3133",
+                    "secondary": "#505f76",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e0e3e5",
+                    "surface-container-low": "#f2f4f6",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "surface": "#f7f9fb",
+                    "on-background": "#191c1e",
+                    "tertiary-container": "#656d84",
+                    "error-container": "#ffdad6",
+                    "secondary-container": "#d0e1fb",
+                    "surface-tint": "#0053db",
+                    "surface-container": "#eceef0",
+                    "secondary-fixed": "#d3e4fe",
+                    "on-surface": "#191c1e",
+                    "on-secondary-fixed": "#0b1c30",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f7f9fb",
+                    "tertiary-fixed": "#dae2fd",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#131b2e",
+                    "tertiary-fixed-dim": "#bec6e0",
+                    "on-error-container": "#93000a",
+                    "outline-variant": "#c3c6d7",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "surface-dim": "#d8dadc",
+                    "outline": "#737686",
+                    "on-primary-container": "#eeefff",
+                    "surface-container-high": "#e6e8ea"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter", "sans-serif"],
+                    "display": ["Inter", "sans-serif"],
+                    "body": ["Inter", "sans-serif"],
+                    "label": ["Inter", "sans-serif"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { overflow: hidden; background-color: theme('colors.background'); }
+        .content-scroll { height: calc(100vh - 56px); overflow-y: auto; }
+        
+        /* Custom Scrollbar for better UI */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: theme('colors.outline-variant'); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: theme('colors.outline'); }
+    </style>
+</head>
+<body class="text-on-surface font-body antialiased flex h-screen w-screen selection:bg-primary selection:text-on-primary">
+<!-- AppShell: SideNavBar (Extracted from JSON rules) -->
+<nav class="fixed left-0 top-0 h-screen w-[216px] bg-surface-container-lowest border-r border-outline-variant flex flex-col p-4 gap-2 z-50">
+<!-- Brand Logo -->
+<div class="mb-6 px-2 flex flex-col gap-1">
+<h1 class="text-headline-sm font-bold text-primary truncate" title="机会情报系统">机会情报系统</h1>
+<span class="text-label-sm text-secondary truncate">R04 中文业务闭环</span>
+</div>
+<!-- Navigation Tabs -->
+<div class="flex-1 flex flex-col gap-1 overflow-y-auto">
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg px-3 py-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-body text-label-sm tracking-wide">工作台</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg px-3 py-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 0;">star</span>
+<span class="font-body text-label-sm tracking-wide">机会</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg px-3 py-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="insights" style="font-variation-settings: 'FILL' 0;">insights</span>
+<span class="font-body text-label-sm tracking-wide">情报</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg px-3 py-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="science" style="font-variation-settings: 'FILL' 0;">science</span>
+<span class="font-body text-label-sm tracking-wide">研究</span>
+</a>
+<!-- Active Tab: 运行 -->
+<a class="flex items-center gap-3 bg-secondary-container text-on-secondary-container rounded-lg px-3 py-2 font-bold transition-colors duration-200 opacity-90 scale-[0.99]" href="#">
+<span class="material-symbols-outlined" data-icon="settings_input_component" style="font-variation-settings: 'FILL' 1;">settings_input_component</span>
+<span class="font-body text-label-sm tracking-wide">运行</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg px-3 py-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-body text-label-sm tracking-wide">管理</span>
+</a>
+</div>
+<!-- Footer Tabs -->
+<div class="mt-auto pt-4 border-t border-outline-variant flex flex-col gap-1">
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg px-3 py-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+<span class="font-body text-label-sm tracking-wide">审计日志</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg px-3 py-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="diagnostics">switch_account</span>
+<span class="font-body text-label-sm tracking-wide">系统诊断</span>
+</a>
+</div>
+</nav>
+<!-- AppShell: TopNavBar (Extracted from JSON rules) -->
+<header class="fixed top-0 right-0 h-[56px] left-[216px] z-40 bg-surface-container-lowest border-b border-outline-variant flex justify-between items-center px-6 w-[calc(100%-216px)]">
+<!-- Left Side: Nav Links -->
+<div class="flex items-center gap-8 h-full pt-4">
+<!-- Active Sub-Nav: 数据源 -->
+<a class="text-primary font-bold border-b-2 border-primary pb-3 font-body text-body-medium cursor-pointer" href="#">数据源</a>
+<a class="text-secondary hover:text-primary pb-3 transition-all font-body text-body-medium cursor-pointer" href="#">监控计划</a>
+<a class="text-secondary hover:text-primary pb-3 transition-all font-body text-body-medium cursor-pointer" href="#">运行记录</a>
+<a class="text-secondary hover:text-primary pb-3 transition-all font-body text-body-medium cursor-pointer" href="#">分析队列</a>
+<a class="text-secondary hover:text-primary pb-3 transition-all font-body text-body-medium cursor-pointer" href="#">告警</a>
+</div>
+<!-- Right Side: Actions -->
+<div class="flex items-center gap-4">
+<button class="text-secondary hover:text-primary transition-colors flex items-center justify-center p-2 rounded-full hover:bg-surface-container-low" title="刷新">
+<span class="material-symbols-outlined" data-icon="refresh">refresh</span>
+</button>
+<button class="text-secondary hover:text-primary transition-colors flex items-center justify-center p-2 rounded-full hover:bg-surface-container-low" title="通知">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-secondary hover:text-primary transition-colors flex items-center justify-center p-2 rounded-full hover:bg-surface-container-low" title="帮助">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-variant flex items-center justify-center border border-outline-variant shrink-0 ml-2">
+<span class="material-symbols-outlined text-secondary text-sm">person</span>
+</div>
+</div>
+</header>
+<!-- Main Workspace Area -->
+<main class="ml-[216px] mt-[56px] w-[calc(100%-216px)] content-scroll bg-background relative flex flex-col">
+<!-- Entity Header -->
+<div class="bg-surface-container-lowest px-6 pt-5 pb-0 border-b border-outline-variant shrink-0">
+<!-- Breadcrumbs / Context -->
+<div class="flex items-center gap-2 text-sm text-secondary mb-3">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">database</span>
+<span>数据源列表</span>
+</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-on-surface">区域港务披露</span>
+</div>
+<!-- Title & Badges -->
+<div class="flex items-start justify-between mb-6">
+<div class="flex items-center gap-4">
+<h2 class="text-2xl font-headline font-bold text-on-surface">区域港务披露</h2>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-xs font-medium bg-surface-variant text-on-surface-variant border border-outline-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">tag</span>
+                            SRC-PORT-01
+                        </span>
+<span class="px-2 py-0.5 rounded text-xs font-medium bg-secondary-container text-on-secondary-container border border-outline-variant">
+                            数据源
+                        </span>
+<!-- Health Status -->
+<span class="px-2 py-0.5 rounded text-xs font-medium bg-[#ecfdf5] text-[#047857] border border-[#a7f3d0] flex items-center gap-1">
+<div class="w-1.5 h-1.5 rounded-full bg-[#10b981]"></div>
+                            良好
+                        </span>
+</div>
+</div>
+</div>
+<!-- Entity Tabs -->
+<div class="flex items-center gap-6 border-outline-variant">
+<a class="pb-3 text-sm font-medium text-secondary hover:text-primary transition-colors" href="#">概览</a>
+<a class="pb-3 text-sm font-medium text-primary border-b-2 border-primary" href="#">运行记录</a>
+<a class="pb-3 text-sm font-medium text-secondary hover:text-primary transition-colors" href="#">产出</a>
+<a class="pb-3 text-sm font-medium text-secondary hover:text-primary transition-colors" href="#">错误</a>
+</div>
+</div>
+<!-- Content Layout (List + Inspector) -->
+<div class="flex-1 flex w-full h-full overflow-hidden">
+<!-- Left Pane: List Data -->
+<div class="flex-1 flex flex-col p-6 overflow-hidden min-w-[600px] border-r border-outline-variant">
+<!-- Filter Bar -->
+<div class="flex items-center justify-between mb-4 shrink-0">
+<div class="flex items-center gap-3">
+<!-- Date Range -->
+<div class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant rounded-md px-3 py-1.5 text-sm">
+<span class="material-symbols-outlined text-[18px] text-secondary">calendar_today</span>
+<span class="text-on-surface">最近 7 天</span>
+<span class="material-symbols-outlined text-[18px] text-outline cursor-pointer hover:text-on-surface">arrow_drop_down</span>
+</div>
+<!-- Status Filter -->
+<div class="flex items-center bg-surface-container-lowest border border-outline-variant rounded-md overflow-hidden text-sm">
+<button class="px-3 py-1.5 bg-surface-container-low text-on-surface font-medium border-r border-outline-variant">全部</button>
+<button class="px-3 py-1.5 text-secondary hover:bg-surface-container-lowest transition-colors border-r border-outline-variant">成功</button>
+<button class="px-3 py-1.5 text-secondary hover:bg-surface-container-lowest transition-colors border-r border-outline-variant">失败</button>
+<button class="px-3 py-1.5 text-secondary hover:bg-surface-container-lowest transition-colors">运行中</button>
+</div>
+</div>
+<div class="text-sm text-secondary">
+                        共找到 124 条记录
+                    </div>
+</div>
+<!-- DataTable Container -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg flex-1 overflow-auto">
+<table class="w-full text-left border-collapse text-sm whitespace-nowrap">
+<thead class="bg-surface-container-low text-secondary sticky top-0 z-10 shadow-sm">
+<tr>
+<th class="px-4 py-3 font-medium border-b border-outline-variant">RUN-ID</th>
+<th class="px-4 py-3 font-medium border-b border-outline-variant">开始时间</th>
+<th class="px-4 py-3 font-medium border-b border-outline-variant">状态</th>
+<th class="px-4 py-3 font-medium border-b border-outline-variant">触发方式</th>
+<th class="px-4 py-3 font-medium border-b border-outline-variant">工作节点</th>
+<th class="px-4 py-3 font-medium border-b border-outline-variant text-right">耗时</th>
+<th class="px-4 py-3 font-medium border-b border-outline-variant text-right">获取/写入</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant text-on-surface">
+<!-- Highlighted Row (Active) -->
+<tr class="bg-primary-fixed/30 hover:bg-primary-fixed/40 transition-colors cursor-pointer group">
+<td class="px-4 py-3 font-medium text-primary">RN-8902</td>
+<td class="px-4 py-3">2023-10-27 14:00:00</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-[#ecfdf5] text-[#047857] border border-[#a7f3d0]">
+<span class="material-symbols-outlined text-[12px]">check_circle</span>
+                                        已完成
+                                    </span>
+</td>
+<td class="px-4 py-3 text-secondary">定时调度</td>
+<td class="px-4 py-3 text-secondary font-mono text-xs">Worker-01</td>
+<td class="px-4 py-3 text-right">12m 45s</td>
+<td class="px-4 py-3 text-right">
+<div class="flex items-center justify-end gap-2">
+<span class="text-tertiary" title="获取数">1,452</span>
+<span class="text-outline">/</span>
+<span class="text-on-surface" title="写入数">890</span>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-lowest transition-colors cursor-pointer">
+<td class="px-4 py-3 font-medium">RN-8901</td>
+<td class="px-4 py-3">2023-10-27 12:00:00</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-error-container text-on-error-container border border-error-container/50">
+<span class="material-symbols-outlined text-[12px]">error</span>
+                                        失败
+                                    </span>
+</td>
+<td class="px-4 py-3 text-secondary">定时调度</td>
+<td class="px-4 py-3 text-secondary font-mono text-xs">Worker-02</td>
+<td class="px-4 py-3 text-right">3m 12s</td>
+<td class="px-4 py-3 text-right">
+<div class="flex items-center justify-end gap-2 text-secondary">
+<span>320</span> <span>/</span> <span>0</span>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-lowest transition-colors cursor-pointer">
+<td class="px-4 py-3 font-medium">RN-8900</td>
+<td class="px-4 py-3">2023-10-27 11:30:15</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-[#ecfdf5] text-[#047857] border border-[#a7f3d0]">
+<span class="material-symbols-outlined text-[12px]">check_circle</span>
+                                        已完成
+                                    </span>
+</td>
+<td class="px-4 py-3 text-secondary">手动触发</td>
+<td class="px-4 py-3 text-secondary font-mono text-xs">Worker-01</td>
+<td class="px-4 py-3 text-right">8m 05s</td>
+<td class="px-4 py-3 text-right">
+<div class="flex items-center justify-end gap-2">
+<span class="text-tertiary">980</span> <span class="text-outline">/</span> <span class="text-on-surface">980</span>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-lowest transition-colors cursor-pointer">
+<td class="px-4 py-3 font-medium">RN-8899</td>
+<td class="px-4 py-3">2023-10-27 10:00:00</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-[#ecfdf5] text-[#047857] border border-[#a7f3d0]">
+<span class="material-symbols-outlined text-[12px]">check_circle</span>
+                                        已完成
+                                    </span>
+</td>
+<td class="px-4 py-3 text-secondary">定时调度</td>
+<td class="px-4 py-3 text-secondary font-mono text-xs">Worker-03</td>
+<td class="px-4 py-3 text-right">15m 20s</td>
+<td class="px-4 py-3 text-right">
+<div class="flex items-center justify-end gap-2">
+<span class="text-tertiary">2,100</span> <span class="text-outline">/</span> <span class="text-on-surface">1,850</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right Pane: Inspector Panel -->
+<div class="w-[360px] bg-surface-container-lowest shrink-0 overflow-y-auto flex flex-col p-6 shadow-[-4px_0_24px_rgba(0,0,0,0.02)] relative">
+<!-- Inspector Header -->
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-bold text-on-surface">运行详情</h3>
+<span class="px-2 py-1 bg-surface-container-low rounded text-xs font-mono text-secondary">RN-8902</span>
+</div>
+<!-- Status Banner -->
+<div class="bg-[#ecfdf5] border border-[#a7f3d0] rounded-lg p-4 flex items-start gap-3 mb-6">
+<span class="material-symbols-outlined text-[#10b981] mt-0.5">check_circle</span>
+<div>
+<div class="font-medium text-[#047857] mb-1">执行成功</div>
+<div class="text-xs text-[#065f46] opacity-80">任务已按计划完成所有数据提取与写入流程，无严重警告。</div>
+</div>
+</div>
+<!-- Key Metrics Grid -->
+<div class="grid grid-cols-2 gap-4 mb-8">
+<div class="bg-surface p-3 rounded-lg border border-outline-variant/50">
+<div class="text-xs text-secondary mb-1">总耗时</div>
+<div class="text-lg font-medium text-on-surface">12<span class="text-sm font-normal text-secondary ml-0.5">m</span> 45<span class="text-sm font-normal text-secondary ml-0.5">s</span></div>
+</div>
+<div class="bg-surface p-3 rounded-lg border border-outline-variant/50">
+<div class="text-xs text-secondary mb-1">成功写入</div>
+<div class="text-lg font-medium text-on-surface">890<span class="text-sm font-normal text-secondary ml-1">条</span></div>
+</div>
+</div>
+<!-- Detailed Info List -->
+<div class="flex flex-col gap-4 mb-8">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<span class="text-sm text-secondary">开始时间</span>
+<span class="text-sm text-on-surface font-medium">2023-10-27 14:00:00</span>
+</div>
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<span class="text-sm text-secondary">结束时间</span>
+<span class="text-sm text-on-surface font-medium">2023-10-27 14:12:45</span>
+</div>
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<span class="text-sm text-secondary">触发机制</span>
+<span class="text-sm text-on-surface font-medium">定时调度 (Cron)</span>
+</div>
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<span class="text-sm text-secondary">提取记录数</span>
+<span class="text-sm text-on-surface font-medium">1,452</span>
+</div>
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<span class="text-sm text-secondary">过滤/丢弃数</span>
+<span class="text-sm text-tertiary font-medium">562</span>
+</div>
+</div>
+<!-- Action Button (Read Only navigation) -->
+<div class="mt-auto pt-6">
+<a class="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-surface-container text-on-surface font-medium rounded border border-outline-variant hover:bg-surface-container-high transition-colors text-sm" href="#">
+<span>查看完整运行详情</span>
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</a>
+</div>
+</div>
+</div>
+</main>
+</body></html>
